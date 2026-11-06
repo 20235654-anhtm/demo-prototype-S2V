@@ -1,0 +1,55 @@
+import type { Voice } from "@/types/project";
+
+export const mockVoices: Voice[] = [
+  {
+    id: "voice-1",
+    name: "Duy Phương nâng cao (Beta)",
+    avatar: "https://api.dicebear.com/9.x/personas/svg?seed=duyphuong",
+    audioSampleUrl: "#",
+    costPerChar: 2,
+    tags: ["Nâng cao", "Sách nói"],
+    isPremium: true,
+    region: "HN",
+  },
+  {
+    id: "voice-2",
+    name: "Thanh Long nâng cao",
+    avatar: "https://api.dicebear.com/9.x/personas/svg?seed=thanhlong",
+    audioSampleUrl: "#",
+    costPerChar: 2,
+    tags: ["Nâng cao", "Sách nói"],
+    isPremium: true,
+    region: "HN",
+  },
+  {
+    id: "voice-3",
+    name: "HN - Hà Chi",
+    avatar: "https://api.dicebear.com/9.x/personas/svg?seed=hachi",
+    audioSampleUrl: "#",
+    costPerChar: 1,
+    tags: ["Cơ bản", "Sách nói"],
+    isPremium: false,
+    region: "HN",
+  },
+  {
+    id: "voice-4",
+    name: "SG - Chí Đạt",
+    avatar: "https://api.dicebear.com/9.x/personas/svg?seed=chidat",
+    audioSampleUrl: "#",
+    costPerChar: 1,
+    tags: ["Cơ bản", "Tin tức"],
+    isPremium: false,
+    region: "SG",
+  },
+  {
+    id: "voice-5",
+    name: "HN - Thanh Long",
+    avatar: "https://api.dicebear.com/9.x/personas/svg?seed=thanhlong2",
+    audioSampleUrl: "#",
+    costPerChar: 1,
+    tags: ["Cơ bản", "Sách nói"],
+    isPremium: false,
+    region: "HN",
+  },
+];
+
