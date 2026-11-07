@@ -25,17 +25,19 @@ export default function DiffPreview({
   return (
     <div className="rounded-xl border-2 border-emerald-500/60 bg-emerald-50/10 p-3.5 space-y-4 shadow-sm animate-in fade-in duration-200">
       {/* Sticky Review Bar */}
-      <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-950 text-emerald-50 shadow-xs">
+      <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 shadow-xs">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs font-semibold">Đang xem trước kết quả chia lại ({proposal.newShots.length} cảnh mới đề xuất)</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-xs font-semibold text-emerald-900">
+            Đang xem trước kết quả chia lại ({proposal.newShots.length} cảnh mới đề xuất)
+          </span>
         </div>
         <div className="flex items-center gap-1.5">
           <Button
             size="sm"
             onClick={onCancel}
-            variant="ghost"
-            className="h-7 text-xs text-emerald-200 hover:text-white hover:bg-emerald-900 cursor-pointer"
+            variant="outline"
+            className="h-7 text-xs border-emerald-200 text-emerald-800 hover:bg-emerald-100 cursor-pointer bg-white"
           >
             <X className="w-3.5 h-3.5 mr-1" />
             Hủy bỏ
@@ -43,7 +45,7 @@ export default function DiffPreview({
           <Button
             size="sm"
             onClick={onApply}
-            className="h-7 text-xs bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold cursor-pointer shadow-xs"
+            className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer shadow-xs"
           >
             <Check className="w-3.5 h-3.5 mr-1 stroke-[3]" />
             Áp dụng

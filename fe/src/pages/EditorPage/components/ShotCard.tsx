@@ -117,13 +117,22 @@ export default function ShotCard({
             </Button>
           </div>
 
-          {/* Textarea for editing script */}
+          {/* Textarea tự động dãn chiều cao theo nội dung, không có thanh cuộn trong */}
           <textarea
             value={shot.text}
-            onChange={(e) => onTextChange(shot.id, e.target.value)}
+            onChange={(e) => {
+              onTextChange(shot.id, e.target.value);
+              e.target.style.height = "auto";
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
+            ref={(el) => {
+              if (el) {
+                el.style.height = "auto";
+                el.style.height = `${el.scrollHeight}px`;
+              }
+            }}
             onClick={(e) => e.stopPropagation()}
-            rows={2}
-            className="w-full text-xs text-foreground/90 bg-transparent resize-none outline-none leading-relaxed focus:bg-background focus:p-1.5 focus:border focus:rounded-md transition-all font-sans"
+            className="w-full text-xs text-foreground/90 bg-transparent resize-none outline-none leading-relaxed focus:bg-background focus:p-1.5 focus:border focus:rounded-md transition-all font-sans overflow-hidden block"
             placeholder="Nội dung lời đọc của phân cảnh..."
           />
         </div>

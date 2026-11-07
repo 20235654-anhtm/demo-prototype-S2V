@@ -21,39 +21,45 @@ export default function ScriptSelectionToolbar({
   const canMerge = selectedCount > 1 && isAdjacent;
 
   return (
-    <div className="sticky top-0 z-20 flex items-center justify-between px-3 py-2 bg-primary text-primary-foreground rounded-lg shadow-md mb-3 animate-in fade-in slide-in-from-top-2 duration-150">
+    <div className="sticky top-0 z-20 flex items-center justify-between px-3 py-2 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md border border-primary/25 dark:border-primary/30 rounded-xl shadow-md shadow-black/5 mb-3 animate-in fade-in slide-in-from-top-2 duration-150">
       {/* Left: Count */}
-      <div className="flex items-center gap-2 text-xs font-medium">
-        <CheckSquare className="w-4 h-4 text-yellow-400" />
-        <span>Đã chọn {selectedCount} phân cảnh</span>
+      <div className="flex items-center gap-2 text-xs font-medium text-foreground">
+        <span className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10 text-primary font-semibold text-[11px]">
+          <CheckSquare className="w-3.5 h-3.5" />
+        </span>
+        <span>
+          Đã chọn <strong className="text-primary font-semibold">{selectedCount}</strong> phân cảnh
+        </span>
       </div>
 
       {/* Middle & Right: Actions */}
       <div className="flex items-center gap-1.5">
-        {/* Button ✦ Chia lại */}
+        {/* Button ✦ Chia lại (Điểm nhấn AI) */}
         <Button
           size="sm"
           onClick={onOpenResplit}
-          className="h-7 text-xs bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-semibold"
+          className="h-7 px-2.5 text-xs bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-white font-medium shadow-2xs cursor-pointer gap-1 transition-colors"
         >
-          <Sparkles className="w-3 h-3 mr-1 text-slate-950" />
-          Chia lại
+          <Sparkles className="w-3 h-3 text-amber-100" />
+          <span>Chia lại</span>
         </Button>
 
         {/* Button 🔗 Gộp */}
         {selectedCount > 1 && (
           <Button
             size="sm"
-            variant="secondary"
+            variant="outline"
             onClick={onMerge}
             disabled={!canMerge}
             title={!isAdjacent ? "Chỉ gộp được các cảnh liền kề" : "Gộp thành 1 phân cảnh"}
-            className={`h-7 text-xs ${
-              !canMerge ? "opacity-50 cursor-not-allowed text-muted-foreground" : "font-medium"
+            className={`h-7 px-2.5 text-xs border-border/80 bg-background hover:bg-muted cursor-pointer transition-colors ${
+              !canMerge
+                ? "opacity-40 cursor-not-allowed text-muted-foreground"
+                : "font-medium text-foreground"
             }`}
           >
             <Link2 className="w-3 h-3 mr-1" />
-            Gộp
+            <span>Gộp</span>
           </Button>
         )}
 
@@ -62,11 +68,11 @@ export default function ScriptSelectionToolbar({
           size="sm"
           variant="ghost"
           onClick={onClearSelection}
-          className="h-7 px-2 text-xs text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+          className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer transition-colors"
           title="Bỏ chọn toàn bộ"
         >
-          <X className="w-3.5 h-3.5 mr-1" />
-          Bỏ chọn
+          <X className="w-3.5 h-3.5 mr-0.5" />
+          <span>Bỏ chọn</span>
         </Button>
       </div>
     </div>

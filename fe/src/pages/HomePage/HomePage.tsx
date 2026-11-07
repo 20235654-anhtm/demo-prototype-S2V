@@ -38,8 +38,20 @@ export default function HomePage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      {/* Toolbar */}
+    <div className="h-full flex flex-col overflow-y-auto">
+      {/* Header Dashboard của HomePage */}
+      <header className="sticky top-0 z-30 border-b px-6 py-3 flex items-center justify-between bg-white dark:bg-neutral-900 shrink-0">
+        <span className="text-lg font-bold">Story2Video</span>
+        <div className="flex items-center gap-2 text-sm">
+          <span>Myanh</span>
+          <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">
+            M
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto p-6 w-full flex-1">
+        {/* Toolbar */}
       <ProjectToolbar
         viewMode={viewMode}
         onViewModeChange={setViewMode}
@@ -81,6 +93,7 @@ export default function HomePage() {
         onOpenChange={setIsModalOpen}
         onCreateProject={handleCreateProject}
       />
+      </div>
     </div>
   );
 }
