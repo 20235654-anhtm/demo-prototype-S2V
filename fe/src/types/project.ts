@@ -5,7 +5,7 @@ export interface Project {
   textPreview?: string;       // Văn bản xem trước (nếu không có thumbnail)
   createdAt: string;          // Thời gian tạo (ISO string hoặc relative)
   author: string;
-  status: "Creation draft" | "Completed";
+  status?: "Creation draft";
 }
 
 export interface Voice {

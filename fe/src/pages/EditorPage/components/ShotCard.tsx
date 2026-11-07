@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Lock, Unlock, Sparkles, Check } from "lucide-react";
+import { Clock, /* Lock, Unlock, */ Sparkles, Check } from "lucide-react";
 import type { Shot } from "@/types/script";
 
 interface ShotCardProps {
@@ -23,13 +23,11 @@ export default function ShotCard({
   onSelect,
   onClick,
   onTextChange,
-  onToggleLock,
   onResplitSingle,
 }: ShotCardProps) {
   const formatDuration = (sec: number) => {
-    const mins = Math.floor(sec / 60);
-    const secs = sec % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    const rounded = Number.isInteger(sec) ? sec : Number(sec.toFixed(1));
+    return `${rounded}s`;
   };
 
   return (
@@ -69,7 +67,7 @@ export default function ShotCard({
             alt={shot.code}
             className="w-full h-full object-cover group-hover/img:scale-105 transition-transform"
           />
-          {/* Lock Icon */}
+          {/* Tạm ẩn tính năng khóa ảnh (chưa cần thiết)
           <button
             type="button"
             onClick={(e) => {
@@ -85,6 +83,7 @@ export default function ShotCard({
           >
             {shot.isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
           </button>
+          */}
         </div>
 
         {/* Script Content */}
@@ -132,7 +131,7 @@ export default function ShotCard({
               }
             }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full text-xs text-foreground/90 bg-transparent resize-none outline-none leading-relaxed focus:bg-background focus:p-1.5 focus:border focus:rounded-md transition-all font-sans overflow-hidden block"
+            className="w-full text-xs text-foreground/90 bg-transparent resize-none outline-none border-none focus:outline-none focus:ring-0 leading-relaxed font-sans overflow-hidden block p-0"
             placeholder="Nội dung lời đọc của phân cảnh..."
           />
         </div>

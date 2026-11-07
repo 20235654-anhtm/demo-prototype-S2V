@@ -17,9 +17,8 @@ export default function DiffPreview({
   onCancel,
 }: DiffPreviewProps) {
   const formatDuration = (sec: number) => {
-    const mins = Math.floor(sec / 60);
-    const secs = sec % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    const rounded = Number.isInteger(sec) ? sec : Number(sec.toFixed(1));
+    return `${rounded}s`;
   };
 
   return (
@@ -73,7 +72,7 @@ export default function DiffPreview({
                 <span className="text-xs font-semibold text-foreground line-through">{shot.code}</span>
                 <span className="text-[10px] text-muted-foreground">{formatDuration(shot.duration)}</span>
               </div>
-              <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {shot.text}
               </p>
             </div>

@@ -36,9 +36,9 @@ export default function ResplitAllModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="sm:max-w-xl w-[90vw] p-0 overflow-hidden shadow-2xl">
+      <DialogContent showCloseButton={false} className="sm:max-w-xl w-[90vw] flex flex-col p-0 gap-0 overflow-hidden shadow-2xl">
         {/* Header */}
-        <DialogHeader className="px-6 py-4 border-b flex flex-row items-center justify-between space-y-0 bg-muted/20">
+        <DialogHeader className="px-6 py-4 border-b flex flex-row items-center justify-between space-y-0 shrink-0 bg-muted/20">
           <DialogTitle className="flex items-center gap-2 text-base font-semibold">
             <Sparkles className="w-5 h-5 text-yellow-500" />
             <span>Re-split all shots (Chia lại toàn bộ phân cảnh)</span>
@@ -217,7 +217,7 @@ export default function ResplitAllModal({
         </div>
 
         {/* Footer */}
-        <DialogFooter className="px-6 py-3.5 border-t bg-muted/10 flex justify-end gap-2">
+        <DialogFooter className="px-6 py-3.5 border-t bg-muted/10 flex justify-end gap-2 shrink-0">
           <Button variant="outline" size="sm" onClick={() => onOpenChange(false)} className="cursor-pointer">
             Hủy
           </Button>

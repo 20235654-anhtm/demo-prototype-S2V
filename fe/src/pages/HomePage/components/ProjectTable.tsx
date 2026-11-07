@@ -13,12 +13,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FileText, Image, MoreHorizontal } from "lucide-react";
+import { FileText, Image, MoreHorizontal, Info } from "lucide-react";
 import type { Project } from "@/types/project";
 
 interface ProjectTableProps {
   projects: Project[];
-  onProjectClick: (projectId: string) => void;
+  onProjectClick: (project: Project) => void;
 }
 
 export default function ProjectTable({
@@ -26,7 +26,7 @@ export default function ProjectTable({
   onProjectClick,
 }: ProjectTableProps) {
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="border rounded-lg overflow-hidden bg-white dark:bg-neutral-900 shadow-2xs">
       <Table>
         <TableHeader>
           <TableRow>
@@ -34,15 +34,15 @@ export default function ProjectTable({
             <TableHead>Created</TableHead>
             <TableHead>Created by</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="w-[80px]"></TableHead>
+            <TableHead className="w-[100px] text-right"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {projects.map((project) => (
             <TableRow
               key={project.id}
-              className="cursor-pointer hover:bg-muted/50"
-              onClick={() => onProjectClick(project.id)}
+              className="cursor-pointer hover:bg-muted/50 transition-colors"
+              onClick={() => onProjectClick(project)}
             >
               <TableCell>
                 <div className="flex items-center gap-3">
@@ -54,7 +54,7 @@ export default function ProjectTable({
                       <FileText className="w-4 h-4 text-muted-foreground" />
                     )}
                   </div>
-                  <span className="font-medium text-sm truncate">
+                  <span className="font-medium text-sm truncate hover:text-primary transition-colors">
                     {project.title}
                   </span>
                 </div>
@@ -68,16 +68,25 @@ export default function ProjectTable({
               <TableCell>
                 {project.status === "Creation draft" && (
                   <Badge variant="secondary" className="text-xs">
-                    <span className="w-2 h-2 rounded-full bg-green-500 mr-1.5 inline-block" />
+                    <span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 inline-block" />
                     {project.status}
                   </Badge>
                 )}
               </TableCell>
               <TableCell>
                 <div
-                  className="flex items-center gap-1"
+                  className="flex items-center justify-end gap-1"
                   onClick={(e) => e.stopPropagation()}
                 >
+                  {/* Nút (i) xem chi tiết thông số */}
+                  <button
+                    type="button"
+                    title="Thông tin chi tiết"
+                    className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  >
+                    <Info className="w-4 h-4" />
+                  </button>
+
                   <DropdownMenu>
                     <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                       <MoreHorizontal className="w-4 h-4" />

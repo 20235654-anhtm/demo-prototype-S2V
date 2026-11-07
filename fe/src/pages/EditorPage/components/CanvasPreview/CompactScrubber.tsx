@@ -5,7 +5,6 @@ import {
   Pause,
   RotateCcw,
   Volume2,
-  Maximize2,
   ChevronUp,
 } from "lucide-react";
 import type { Shot } from "@/types/script";
@@ -119,19 +118,8 @@ export default function CompactScrubber({
         </div>
       </div>
 
-      {/* Controls bên phải: Toàn màn hình & Mở rộng Timeline */}
+      {/* Controls bên phải: Mở rộng Timeline */}
       <div className="flex items-center gap-1 shrink-0">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground cursor-pointer"
-          title="Toàn màn hình"
-        >
-          <Maximize2 className="w-3.5 h-3.5" />
-        </Button>
-
-        <div className="h-4 w-[1px] bg-border mx-0.5" />
-
         <Button
           variant="ghost"
           size="icon"

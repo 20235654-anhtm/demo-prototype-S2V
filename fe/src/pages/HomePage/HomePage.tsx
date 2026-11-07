@@ -12,28 +12,50 @@ export default function HomePage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDraft, setSelectedDraft] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>(mockProjects);
 
-  // Filter projects by search query
+  // Lọc dự án theo từ khóa tìm kiếm
   const filteredProjects = projects.filter((p) =>
     p.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleProjectClick = (projectId: string) => {
-    navigate(`/editor/${projectId}`);
+  // Xử lý click thẻ / dòng:
+  // - Nếu có tag Creation draft -> mở lại Modal Story để chỉnh sửa tiếp
+  // - Nếu không có tag (để trống) -> mở thẳng vào Studio Editor
+  const handleProjectClick = (project: Project) => {
+    if (project.status === "Creation draft") {
+      setSelectedDraft(project);
+      setIsModalOpen(true);
+    } else {
+      navigate(`/editor/${project.id}`);
+    }
+  };
+
+  const handleOpenCreateNew = () => {
+    setSelectedDraft(null); // Tạo mới từ đầu
+    setIsModalOpen(true);
   };
 
   const handleCreateProject = (draft: StoryDraft) => {
     const newProject: Project = {
-      id: `proj-${Date.now()}`,
-      title: draft.file?.name || "Dự án không tên",
+      id: selectedDraft ? selectedDraft.id : `proj-${Date.now()}`,
+      title:
+        draft.file?.name?.replace(/\.[^/.]+$/, "") ||
+        selectedDraft?.title ||
+        "Dự án không tên",
       textPreview: draft.sampleText.slice(0, 120),
       createdAt: "Vừa xong",
       author: "Myanh",
-      status: "Creation draft",
+      // Dự án đã chốt tạo đưa vào Studio sẽ không gắn tag Creation draft nữa
     };
-    setProjects((prev) => [newProject, ...prev]);
+
+    setProjects((prev) => [
+      newProject,
+      ...prev.filter((p) => p.id !== newProject.id),
+    ]);
     setIsModalOpen(false);
+    setSelectedDraft(null);
     navigate(`/editor/${newProject.id}`);
   };
 
@@ -52,47 +74,51 @@ export default function HomePage() {
 
       <div className="max-w-6xl mx-auto p-6 w-full flex-1">
         {/* Toolbar */}
-      <ProjectToolbar
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onCreateClick={() => setIsModalOpen(true)}
-      />
+        <ProjectToolbar
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onCreateClick={handleOpenCreateNew}
+        />
 
-      {/* Project list */}
-      <div className="mt-6">
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredProjects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onClick={handleProjectClick}
-              />
-            ))}
-          </div>
-        ) : (
-          <ProjectTable
-            projects={filteredProjects}
-            onProjectClick={handleProjectClick}
-          />
-        )}
+        {/* Project list */}
+        <div className="mt-6">
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredProjects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  onClick={handleProjectClick}
+                />
+              ))}
+            </div>
+          ) : (
+            <ProjectTable
+              projects={filteredProjects}
+              onProjectClick={handleProjectClick}
+            />
+          )}
 
-        {filteredProjects.length === 0 && (
-          <div className="text-center py-16 text-muted-foreground">
-            <p className="text-lg">Không tìm thấy dự án nào</p>
-            <p className="text-sm mt-1">Thử thay đổi từ khóa tìm kiếm</p>
-          </div>
-        )}
-      </div>
+          {filteredProjects.length === 0 && (
+            <div className="text-center py-16 text-muted-foreground">
+              <p className="text-lg">Không tìm thấy dự án nào</p>
+              <p className="text-sm mt-1">Thử thay đổi từ khóa tìm kiếm</p>
+            </div>
+          )}
+        </div>
 
-      {/* Create Story Modal */}
-      <CreateStoryModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onCreateProject={handleCreateProject}
-      />
+        {/* Create Story Modal */}
+        <CreateStoryModal
+          open={isModalOpen}
+          onOpenChange={(open) => {
+            setIsModalOpen(open);
+            if (!open) setSelectedDraft(null);
+          }}
+          onCreateProject={handleCreateProject}
+          selectedDraft={selectedDraft}
+        />
       </div>
     </div>
   );

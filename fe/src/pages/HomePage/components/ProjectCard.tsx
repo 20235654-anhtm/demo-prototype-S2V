@@ -10,14 +10,14 @@ import type { Project } from "@/types/project";
 
 interface ProjectCardProps {
   project: Project;
-  onClick: (projectId: string) => void;
+  onClick: (project: Project) => void;
 }
 
 export default function ProjectCard({ project, onClick }: ProjectCardProps) {
   return (
     <div
       className="cursor-pointer group flex flex-col"
-      onClick={() => onClick(project.id)}
+      onClick={() => onClick(project)}
     >
       {/* Khung Thumbnail / Text Preview độc lập (có viền và bo góc) */}
       <div className="relative aspect-video rounded-xl overflow-hidden border border-neutral-200/80 dark:border-neutral-800 bg-stone-50/80 dark:bg-neutral-900 shadow-2xs">
@@ -57,16 +57,18 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
           </div>
         )}
 
-        {/* Badge trạng thái ở góc dưới bên trái */}
-        <div className="absolute bottom-2 left-2 z-10">
-          <Badge
-            variant="secondary"
-            className="text-xs bg-white/85 dark:bg-black/60 backdrop-blur-md shadow-2xs"
-          >
-            <span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 inline-block" />
-            {project.status}
-          </Badge>
-        </div>
+        {/* Badge trạng thái ở góc dưới bên trái (chỉ hiện khi là Creation draft) */}
+        {project.status === "Creation draft" && (
+          <div className="absolute bottom-2 left-2 z-10">
+            <Badge
+              variant="secondary"
+              className="text-xs bg-white/85 dark:bg-black/60 backdrop-blur-md shadow-2xs"
+            >
+              <span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 inline-block" />
+              {project.status}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {/* Thông tin Tiêu đề & Ngày tạo nằm BÊN NGOÀI khung hình */}

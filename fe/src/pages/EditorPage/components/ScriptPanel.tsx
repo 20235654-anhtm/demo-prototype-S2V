@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect, Fragment } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,8 +10,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import ShotCard from "./ShotCard";
-import ScriptSelectionToolbar from "./ScriptSelectionToolbar";
-import DiffPreview from "./DiffPreview";
+import ScriptSelectionToolbar from "./Resplit/ScriptSelectionToolbar";
+import DiffPreview from "./Resplit/DiffPreview";
+import ResplitPopover from "./Resplit/ResplitPopover";
 import type { Shot, DiffProposal } from "@/types/script";
 
 interface ScriptPanelProps {
@@ -26,6 +28,11 @@ interface ScriptPanelProps {
   onTextChange: (id: string, text: string) => void;
   onToggleLock: (id: string) => void;
   onOpenResplitModal: () => void;
+  onRequestResplitScoped: (
+    targetShotIds: string[],
+    prompt: string,
+    mode: "merge_resplit" | "split_each"
+  ) => void;
   proposal: DiffProposal | null;
   onApplyProposal: () => void;
   onCancelProposal: () => void;
@@ -45,11 +52,50 @@ export default function ScriptPanel({
   onTextChange,
   onToggleLock,
   onOpenResplitModal,
+  onRequestResplitScoped,
   proposal,
   onApplyProposal,
   onCancelProposal,
   onMergeShots,
 }: ScriptPanelProps) {
+  // Quản lý việc mở ResplitPopover cho 1 hoặc nhiều phân cảnh cụ thể
+  const [resplitTargetShotIds, setResplitTargetShotIds] = useState<string[] | null>(null);
+
+  const targetShotsForPopover = resplitTargetShotIds
+    ? shots.filter((s) => resplitTargetShotIds.includes(s.id))
+    : [];
+
+  // Xác định id của cảnh đầu tiên trong nhóm cần chia lại (để hiển thị Popover ngay trước cảnh đó)
+  const firstResplitTargetId = resplitTargetShotIds && resplitTargetShotIds.length > 0
+    ? shots.find((s) => resplitTargetShotIds.includes(s.id))?.id
+    : null;
+
+  // Xác định id của cảnh đầu tiên trong nhóm đang duyệt Diff (để hiển thị DiffPreview thay thế ngay tại vị trí đó)
+  const firstDiffTargetId = proposal && proposal.targetShotIds.length > 0
+    ? shots.find((s) => proposal.targetShotIds.includes(s.id))?.id
+    : null;
+
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const diffRef = useRef<HTMLDivElement>(null);
+
+  // Tự động cuộn đến Popover khi mở
+  useEffect(() => {
+    if (resplitTargetShotIds && resplitTargetShotIds.length > 0) {
+      setTimeout(() => {
+        popoverRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 50);
+    }
+  }, [resplitTargetShotIds]);
+
+  // Tự động cuộn đến DiffPreview khi có proposal
+  useEffect(() => {
+    if (proposal) {
+      setTimeout(() => {
+        diffRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 50);
+    }
+  }, [proposal]);
+
   // Kiểm tra các phân cảnh được chọn có liền kề nhau không (để cho phép gộp)
   const isAdjacent = (() => {
     if (selectedShotIds.length <= 1) return true;
@@ -137,41 +183,69 @@ export default function ScriptPanel({
         <ScriptSelectionToolbar
           selectedCount={selectedShotIds.length}
           isAdjacent={isAdjacent}
-          onOpenResplit={onOpenResplitModal}
+          onOpenResplit={() => setResplitTargetShotIds(selectedShotIds)}
           onMerge={onMergeShots}
-          onClearSelection={onClearSelection}
+          onClearSelection={() => {
+            onClearSelection();
+            setResplitTargetShotIds(null);
+          }}
         />
 
-        {/* Khung xem trước Diff Proposal khi chia lại */}
-        {proposal && (
-          <div className="mb-3">
-            <DiffPreview
-              proposal={proposal}
-              oldShots={oldShotsUnderDiff}
-              onApply={onApplyProposal}
-              onCancel={onCancelProposal}
-            />
-          </div>
-        )}
-
-        {/* Danh sách các ShotCard */}
+        {/* Danh sách các ShotCard kèm Popover và DiffPreview hiển thị Inline đúng vị trí cảnh */}
         <div className="space-y-2.5">
           {shots.map((shot) => {
+            const isFirstDiffTarget = proposal && shot.id === firstDiffTargetId;
             const isUnderDiff = proposal?.targetShotIds.includes(shot.id);
-            if (isUnderDiff) return null; // Ẩn cảnh cũ trong list vì đã hiển thị trong DiffPreview
+            const isFirstResplitTarget =
+              resplitTargetShotIds &&
+              targetShotsForPopover.length > 0 &&
+              shot.id === firstResplitTargetId;
 
             return (
-              <ShotCard
-                key={shot.id}
-                shot={shot}
-                isSelected={selectedShotIds.includes(shot.id)}
-                isActive={shot.id === activeShotId}
-                onSelect={(id, checked) => onToggleSelectShot(id, checked)}
-                onClick={(id) => onSelectShot(id)}
-                onTextChange={onTextChange}
-                onToggleLock={onToggleLock}
-                onResplitSingle={onOpenResplitModal}
-              />
+              <Fragment key={shot.id}>
+                {/* 1. Nếu đây là vị trí bắt đầu của Diff Preview, hiển thị DiffPreview inline thay thế trực tiếp */}
+                {isFirstDiffTarget && (
+                  <div ref={diffRef} className="animate-in fade-in duration-200">
+                    <DiffPreview
+                      proposal={proposal}
+                      oldShots={oldShotsUnderDiff}
+                      onApply={onApplyProposal}
+                      onCancel={onCancelProposal}
+                    />
+                  </div>
+                )}
+
+                {/* 2. Nếu cảnh nằm trong nhóm đang duyệt Diff thì ẩn đi vì đã nằm trong DiffPreview */}
+                {!isUnderDiff && (
+                  <>
+                    {/* Hiển thị ResplitPopover ngay trước cảnh đầu tiên trong nhóm được chọn chia lại */}
+                    {isFirstResplitTarget && (
+                      <div ref={popoverRef} className="animate-in fade-in slide-in-from-top-2 duration-150">
+                        <ResplitPopover
+                          isOpen={true}
+                          onClose={() => setResplitTargetShotIds(null)}
+                          targetShots={targetShotsForPopover}
+                          onSubmit={(prompt, mode) => {
+                            onRequestResplitScoped(resplitTargetShotIds, prompt, mode);
+                            setResplitTargetShotIds(null);
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    <ShotCard
+                      shot={shot}
+                      isSelected={selectedShotIds.includes(shot.id)}
+                      isActive={shot.id === activeShotId}
+                      onSelect={(id, checked) => onToggleSelectShot(id, checked)}
+                      onClick={(id) => onSelectShot(id)}
+                      onTextChange={onTextChange}
+                      onToggleLock={onToggleLock}
+                      onResplitSingle={(shotId) => setResplitTargetShotIds([shotId])}
+                    />
+                  </>
+                )}
+              </Fragment>
             );
           })}
         </div>

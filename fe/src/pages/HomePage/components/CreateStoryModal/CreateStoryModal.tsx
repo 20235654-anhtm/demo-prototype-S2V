@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,12 +12,13 @@ import { BookOpen, ArrowLeft, ArrowRight, X } from "lucide-react";
 import StepUpload from "./StepUpload";
 import StepVoiceSelect from "./StepVoiceSelect";
 import StepReview from "./StepReview";
-import type { StoryDraft } from "@/types/project";
+import type { Project, StoryDraft } from "@/types/project";
 
 interface CreateStoryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreateProject: (draft: StoryDraft) => void;
+  selectedDraft?: Project | null;
 }
 
 const STEPS = [
@@ -30,6 +31,7 @@ export default function CreateStoryModal({
   open,
   onOpenChange,
   onCreateProject,
+  selectedDraft,
 }: CreateStoryModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [draft, setDraft] = useState<StoryDraft>({
@@ -37,6 +39,31 @@ export default function CreateStoryModal({
     sampleText: "",
     selectedVoiceId: null,
   });
+
+  // Nạp dữ liệu bản thảo cũ nếu có selectedDraft, hoặc reset nếu tạo mới
+  useEffect(() => {
+    if (open) {
+      if (selectedDraft) {
+        setDraft({
+          file: {
+            name: selectedDraft.title.slice(0, 30) + ".docx",
+            size: "58 KB",
+            format: "DOCX",
+            charCount: 3930,
+            estimatedDuration: "00:04:24",
+          },
+          sampleText:
+            selectedDraft.textPreview ||
+            "Bà Nguyễn Thị Thược sinh năm 1940 tại một làng quê nghèo ven sông Đáy, tỉnh Hà Nam...",
+          selectedVoiceId: null,
+        });
+        setCurrentStep(1);
+      } else {
+        setDraft({ file: null, sampleText: "", selectedVoiceId: null });
+        setCurrentStep(1);
+      }
+    }
+  }, [open, selectedDraft]);
 
   const handleNext = () => {
     if (currentStep < 3) setCurrentStep((s) => s + 1);

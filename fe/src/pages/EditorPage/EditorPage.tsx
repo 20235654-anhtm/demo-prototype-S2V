@@ -6,7 +6,7 @@ import ScriptPanel from "./components/ScriptPanel";
 import StoryAssetsPanel from "./components/StoryAssetsPanel";
 import VisualsPanel from "./components/VisualsPanel";
 import CanvasPreview from "./components/CanvasPreview/CanvasPreview";
-import ResplitAllModal from "./components/ResplitAllModal";
+import ResplitAllModal from "./components/Resplit/ResplitAllModal";
 import { mockInitialShots } from "@/mocks/mockShots";
 import { mockProjects } from "@/mocks/mockProjects";
 import type { Shot, DiffProposal } from "@/types/script";
@@ -169,6 +169,97 @@ export default function EditorPage() {
     });
   };
 
+  const handleRequestResplitScoped = (
+    targetShotIds: string[],
+    _prompt: string,
+    mode: "merge_resplit" | "split_each"
+  ) => {
+    const targetShots = shots.filter((s) => targetShotIds.includes(s.id));
+    if (targetShots.length === 0) return;
+
+    const firstIndex = shots.findIndex((s) => s.id === targetShots[0].id);
+    const baseOrder = firstIndex !== -1 ? firstIndex + 1 : 1;
+
+    let newShots: { id: string; code: string; text: string; duration: number }[] = [];
+
+    if (targetShots.length === 1) {
+      // Trường hợp C: Chia đôi cảnh đơn
+      const originalText = targetShots[0].text;
+      const mid = Math.floor(originalText.length / 2);
+      const spaceIdx = originalText.indexOf(" ", mid);
+      const cut = spaceIdx !== -1 ? spaceIdx : mid;
+      const part1 = originalText.slice(0, cut).trim();
+      const part2 = originalText.slice(cut).trim();
+      const dur1 = Math.max(3, Math.round(targetShots[0].duration / 2));
+      const dur2 = Math.max(3, targetShots[0].duration - dur1);
+
+      newShots = [
+        {
+          id: `new-${Date.now()}-1`,
+          code: `Cảnh ${baseOrder}A (Đề xuất)`,
+          text: part1 || originalText,
+          duration: dur1,
+        },
+        {
+          id: `new-${Date.now()}-2`,
+          code: `Cảnh ${baseOrder}B (Đề xuất)`,
+          text: part2 || "Tiếp tục diễn biến phân cảnh...",
+          duration: dur2,
+        },
+      ];
+    } else if (mode === "merge_resplit") {
+      // Trường hợp A: Gom toàn bộ đoạn lại rồi chia
+      const combinedText = targetShots.map((s) => s.text).join(" ");
+      const totalDur = targetShots.reduce((acc, s) => acc + s.duration, 0);
+      const mid = Math.floor(combinedText.length / 2);
+      const spaceIdx = combinedText.indexOf(" ", mid);
+      const cut = spaceIdx !== -1 ? spaceIdx : mid;
+
+      newShots = [
+        {
+          id: `new-${Date.now()}-1`,
+          code: `Cảnh ${baseOrder}A (Đề xuất)`,
+          text: combinedText.slice(0, cut).trim(),
+          duration: Math.max(3, Math.round(totalDur / 2)),
+        },
+        {
+          id: `new-${Date.now()}-2`,
+          code: `Cảnh ${baseOrder}B (Đề xuất)`,
+          text: combinedText.slice(cut).trim(),
+          duration: Math.max(3, totalDur - Math.round(totalDur / 2)),
+        },
+      ];
+    } else {
+      // Trường hợp B hoặc chia nhỏ từng cảnh (split_each)
+      let counter = 1;
+      targetShots.forEach((s, idx) => {
+        const shotOrder = firstIndex !== -1 ? firstIndex + idx + 1 : idx + 1;
+        const text = s.text;
+        const mid = Math.floor(text.length / 2);
+        const spaceIdx = text.indexOf(" ", mid);
+        const cut = spaceIdx !== -1 ? spaceIdx : mid;
+
+        newShots.push({
+          id: `new-${Date.now()}-${counter++}`,
+          code: `Cảnh ${shotOrder}A (Đề xuất)`,
+          text: text.slice(0, cut).trim() || text,
+          duration: Math.max(3, Math.round(s.duration / 2)),
+        });
+        newShots.push({
+          id: `new-${Date.now()}-${counter++}`,
+          code: `Cảnh ${shotOrder}B (Đề xuất)`,
+          text: text.slice(cut).trim() || "Diễn biến tiếp theo...",
+          duration: Math.max(3, s.duration - Math.round(s.duration / 2)),
+        });
+      });
+    }
+
+    setProposal({
+      targetShotIds,
+      newShots,
+    });
+  };
+
   const handleApplyProposal = () => {
     if (!proposal) return;
     const firstTargetIndex = shots.findIndex((s) => s.id === proposal.targetShotIds[0]);
@@ -219,6 +310,7 @@ export default function EditorPage() {
             onTextChange={handleTextChange}
             onToggleLock={handleToggleLock}
             onOpenResplitModal={() => setIsResplitModalOpen(true)}
+            onRequestResplitScoped={handleRequestResplitScoped}
             proposal={proposal}
             onApplyProposal={handleApplyProposal}
             onCancelProposal={() => setProposal(null)}
@@ -256,6 +348,7 @@ export default function EditorPage() {
             onTextChange={handleTextChange}
             onToggleLock={handleToggleLock}
             onOpenResplitModal={() => setIsResplitModalOpen(true)}
+            onRequestResplitScoped={handleRequestResplitScoped}
             proposal={proposal}
             onApplyProposal={handleApplyProposal}
             onCancelProposal={() => setProposal(null)}

@@ -6,7 +6,6 @@ import {
   Pause,
   RotateCcw,
   Volume2,
-  Maximize2,
   ChevronDown,
   ZoomIn,
   ZoomOut,
@@ -178,14 +177,6 @@ export default function ExpandedTimeline({
           <span className="text-xs font-mono font-medium text-foreground ml-1 tabular-nums">
             {formatTime(currentTime)} / {formatTime(duration)}
           </span>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer ml-1"
-          >
-            <Maximize2 className="w-3 h-3" />
-          </Button>
         </div>
 
         {/* Nhóm Zoom Timeline & Fit */}

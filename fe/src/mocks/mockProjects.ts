@@ -24,7 +24,7 @@ export const mockProjects: Project[] = [
       "Introduction:\nXin chào tất cả mọi người, hôm nay chúng ta sẽ cùng nhau tìm hiểu về một câu chuyện đặc biệt...",
     createdAt: "2 days ago",
     author: "Myanh",
-    status: "Creation draft",
+    // Dự án này không có tag status -> click sẽ vào thẳng Studio
   },
   {
     id: "proj-4",
@@ -33,7 +33,6 @@ export const mockProjects: Project[] = [
       "Chương 1: Tuổi thơ\nBà Nguyễn Thị Thược sinh ra trong một gia đình nông dân nghèo ở vùng quê Bắc Bộ...",
     createdAt: "5 days ago",
     author: "Myanh",
-    status: "Completed",
+    // Dự án này không có tag status -> click sẽ vào thẳng Studio
   },
 ];
-
