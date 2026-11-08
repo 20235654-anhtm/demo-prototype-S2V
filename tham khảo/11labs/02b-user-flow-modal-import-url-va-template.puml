@@ -1,0 +1,74 @@
+@startuml ElevenLabs_Modal_Flow_URL_Template
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header ElevenLabs Audiobooks - Modal Khởi Tạo & Import
+title Sơ Đồ 2B: Luồng Nhập Từ URL Web & Mẫu Kịch Bản (URL & Template Flow)
+
+start
+
+:Người dùng ở Modal Khởi Tạo Sách Nói;
+
+if (Người dùng chọn tab nào?) then (Tab: Nhập từ URL Web)
+  partition "Luồng Nhập Từ URL Web" {
+    :Người dùng dán đường dẫn bài viết/sách online\n(Ví dụ: https://elevenlabs.io/blog/sample-story);
+
+    :Client kiểm tra định dạng URL regex hợp lệ;
+    if (URL hợp lệ?) then (Hợp lệ)
+      :Người dùng nhấn nút **[Import URL]**;
+      
+      :Gửi yêu cầu cào dữ liệu lên backend:\n**POST /v1/studio/parse-script** `{ url }`;
+      
+      :Server cào nội dung, lọc bỏ quảng cáo & menu rác,\ntrích xuất tiêu đề bài viết và nội dung thân bài;
+      
+      :Đổ văn bản cào được vào bản thảo kịch bản;
+    else (URL trống hoặc sai định dạng)
+      :Bắn Toast lỗi: "Please add a valid url.";
+      stop
+    endif
+  }
+
+elseif (Tab: Mẫu Kịch Bản Có Sẵn - Template) then (Chọn Mẫu)
+  partition "Luồng Chọn Template Mẫu" {
+    :Người dùng xem danh sách thẻ mẫu (Template Cards):\n- **Narrate a story**: Truyện thiếu nhi / cổ tích\n- **Direct a dramatic scene**: Kịch bản phim gay cấn\n- **Record an advertisement**: Kịch bản quảng cáo\n- **Speak in different languages**: Mẫu đa ngôn ngữ;
+
+    :Người dùng bấm chọn 1 thẻ kịch bản;
+    
+    :Client tự động nạp đoạn văn bản mẫu\nvà các thiết lập ngữ điệu tương ứng;
+  }
+
+else (Tab: Trang Trắng - Blank Project)
+  partition "Luồng Tạo Trang Trắng" {
+    :Người dùng nhập tiêu đề dự án tùy ý;
+    :Bỏ qua bước nạp văn bản tự động;
+  }
+endif
+
+partition "Cấu hình chung & Tạo dự án" {
+  :Chọn Giọng đọc người dẫn chuyện mặc định (Default Voice);
+  :Chọn Mô hình AI TTS (Multilingual v2);
+  :Chọn Chất lượng âm thanh (Standard / High);
+  
+  :Người dùng nhấn nút **[✨ Khởi Tạo Sách Nói]**;
+
+  :Gửi lệnh tạo Project lên server:\n**POST /v1/studio/projects**;
+  
+  :Server tạo bản ghi dự án mới và cấp **projectId**;
+
+  :Chuyển hướng vào Studio Editor:\n**router.push('/app/audiobooks/' + projectId)**;
+}
+
+:Người dùng bắt đầu biên soạn hoặc tinh chỉnh nội dung trong Studio;
+
+stop
+
+@enduml

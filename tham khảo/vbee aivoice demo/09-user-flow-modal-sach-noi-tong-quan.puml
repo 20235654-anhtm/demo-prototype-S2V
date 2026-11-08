@@ -1,0 +1,58 @@
+@startuml Vbee_Modal_Audiobook_Overview
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header Vbee AIVoice Studio - Quy Trình Sách Nói & Tài Liệu Dài
+title Sơ Đồ Tổng Quan: Quy Trình Modal 3 Bước (Tải lên -> Chọn giọng -> Kiểm tra)
+
+start
+
+:Người dùng ở trang Quản lý Dự án\n(**https://vbee-aivoice-demo.vercel.app/projects**);
+
+:Người dùng nhấn vào thẻ **[Tạo dự án: Sách nói & Tài liệu dài]**;
+
+:Hệ thống mở Modal Wizard 3 bước;
+
+partition "Bước 1: Tải Lên Văn Bản (Upload & Segmentation)" {
+  :Người dùng chọn tải file (.txt, .docx, .pdf, .epub) hoặc dán text;
+  :Hệ thống kiểm tra định dạng và dung lượng (Tối đa 50MB, 200k ký tự);
+  :Hệ thống bóc tách văn bản thô thành các khối câu/đoạn (Blocks);
+  :Người dùng nhấn **[Tiếp tục: Chọn giọng ->]**;
+}
+
+partition "Bước 2: Chọn Giọng Đọc (Voice Selection & Tuning)" {
+  :Người dùng lọc giọng AI Vbee theo Vùng miền, Giới tính, Thể loại truyện;
+  :Nghe thử mẫu giọng đọc trực quan [▶ Play sample];
+  :Chọn 1 giọng diễn viên chính (ví dụ: Mai Phương - Nữ Bắc);
+  :Điều chỉnh tốc độ (Speed: 1.0x), cao độ (Pitch), độ trễ ngắt nghỉ (500ms);
+  :Người dùng nhấn **[Tiếp tục: Kiểm tra ->]**;
+}
+
+partition "Bước 3: Kiểm Tra & Xác Nhận (Review & Create Project)" {
+  :Kiểm tra bảng thống kê: Tổng ký tự, số khối, thời lượng ước tính (~16 ký tự/giây);
+  :Rà soát và sửa phiên âm các từ viết tắt / từ mượn nước ngoài;
+  :Kiểm tra số dư ký tự tài khoản (Account credit balance check);
+  :Người dùng kiểm tra bản thảo các khối xem trước (Preview segments);
+  :Người dùng nhấn nút **[✨ Khởi Tạo Dự Án ->]**;
+}
+
+partition "Backend Khởi Tạo & Điều Hướng" {
+  :Gửi toàn bộ cấu hình và mảng blocks lên server:\n**POST /api/projects**;
+  :Server tạo bản ghi dự án sách nói và cấp **projectId**;
+  :Client nhận kết quả thành công và điều hướng:\n**navigate('/project/' + projectId)**;
+}
+
+:Mở màn hình Studio biên tập đa cột với toàn bộ khối kịch bản đã nạp sẵn;
+
+stop
+
+@enduml

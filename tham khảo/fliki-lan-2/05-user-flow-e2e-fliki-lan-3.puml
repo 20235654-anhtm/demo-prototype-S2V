@@ -1,0 +1,94 @@
+@startuml Fliki_User_Flow_E2E_Complete
+!theme plain
+skinparam defaultFontName "Segoe UI"
+skinparam ArrowColor #E65100
+skinparam activity {
+    BackgroundColor #FFFFFF
+    BorderColor #EF6C00
+    DiamondBackgroundColor #FFF8E1
+    DiamondBorderColor #FFA000
+    StartColor #2E7D32
+    EndColor #C62828
+}
+skinparam partition {
+    BorderColor #FFB74D
+    FontStyle bold
+    BackgroundColor #FFFDF9
+}
+
+title SƠ ĐỒ USER FLOW TỔNG THỂ TOÀN DIỆN (FLIKI E2E WORKSPACE)\nKết hợp đồng thời: Khởi tạo -> Cột trái (Scenes & Layers) -> Canvas giữa -> Timeline đáy (4 Track) -> Xuất video
+
+start
+
+' ========================================================
+' GIAI ĐOẠN 1: KHỞI TẠO DỰ ÁN
+' ========================================================
+partition "**GIAI ĐOẠN 1: KHỞI TẠO FILE & CẤU HÌNH BAN ĐẦU**" {
+    :Đăng nhập và bấm **[+ New File]**;
+    :Nhập tiêu đề video và chọn tỷ lệ khung hình (16:9 / 9:16 / 1:1);
+    :Chọn phương thức: **Script to Video** (dán truyện) hoặc **Idea to Video**;
+    :Chọn Giọng đọc mặc định & Phong cách hình ảnh ban đầu;
+    :Bấm **[Submit]**;
+    :Hệ thống AI tự động phân chia văn bản thành các Scene và sinh bản nháp;
+}
+
+' ========================================================
+' GIAI ĐOẠN 2: LÀM VIỆC TẬP TRUNG TẠI STUDIO 4 VÙNG
+' ========================================================
+partition "**GIAI ĐOẠN 2: LÀM VIỆC TẠI STUDIO (4 PHÂN KHU TÍCH HỢP)**" {
+    :Màn hình Studio mở ra với đầy đủ 4 khu vực:
+    - **Cực trái:** Thanh Navigation Rail (Scenes, Media, Brand Kit)
+    - **Cột trái:** Danh sách Scene Cards & Hệ thống Layers (Voice, Media, Text)
+    - **Cột giữa:** Màn hình Live Canvas Player (Remotion Engine)
+    - **Cột phải:** Bảng Inspector chi tiết thuộc tính
+    - **Đáy màn hình:** Thanh Timeline Pro Đa Track (Media, Voice, Subs, Music);
+
+    repeat
+        :Người dùng luân chuyển linh hoạt giữa 3 góc nhìn:;
+
+        if (Người dùng muốn tương tác ở đâu?) then (Tương tác ở Cột bên trái)
+            :Đọc kịch bản từng Scene Card;
+            :Bấm [▶] nghe thử giọng đọc câu đó;
+            :Bấm nút **[⚡ AI Auto-pick]** để đổi ảnh;
+            :Bấm **[+ Add Layer]** để chèn thêm chữ hoặc avatar;
+            :Bấm **[⧫]** giữa 2 card để đổi chuyển cảnh;
+
+        elseif (Người dùng muốn tương tác ở đâu?) then (Tương tác trên Thanh Timeline đáy)
+            :Bấm **[🔲 DockOpen]** mở rộng Timeline Pro 4 Track;
+            :Kéo con trỏ Playhead Scrubber (vạch đỏ) lướt qua video;
+            :Dùng thanh trượt **[🔍 Zoom Slider]** phóng to gợn sóng âm;
+            :Bấm **[✂️ Split]** cắt đôi Scene tại vị trí con trỏ;
+            :Bấm vào khối Scene kéo mép (Trim) chỉnh độ dài;
+            :Kéo chỉnh âm lượng và bật **Auto-Ducking** cho nhạc nền;
+
+        else (Tương tác ở Cột phải Inspector)
+            :Chỉnh tốc độ nói (Speed 0.8x - 1.5x);
+            :Chỉnh hiệu ứng chuyển động ảnh Ken Burns (Zoom in / Pan);
+            :Đổi kiểu dáng font chữ và màu sắc phụ đề;
+        endif
+
+        :Quan sát sự thay đổi phản chiếu ngay lập tức trên Live Canvas ở giữa;
+        :Bấm nút **[▶ Play]** trên thanh timeline để duyệt toàn bộ video;
+
+    repeat while (Người dùng tiếp tục tinh chỉnh?) is (Tiếp tục sửa) not (Đã hoàn toàn ưng ý)
+}
+
+' ========================================================
+' GIAI ĐOẠN 3: XUẤT BẢN & TẢI VỀ
+' ========================================================
+partition "**GIAI ĐOẠN 3: XUẤT VIDEO VÀ TẢI VỀ (Export & Download)**" {
+    :Bấm nút **[🎬 Export]** ở góc trên cùng bên phải;
+    :Chọn độ phân giải xuất: 720p HD hoặc 1080p Full HD;
+    :Bấm **[Start Export]**;
+    :Máy chủ Render Worker chạy tiến trình ghép đa track ngầm;
+    :Thanh tiến trình hiển thị từ 0% đến 100%;
+    
+    :Hộp thoại hoàn tất xuất hiện:
+    - Bấm **[⬇ Download MP4 Video]** để tải file video hoàn chỉnh
+    - Bấm **[⬇ Download Subtitles (.srt)]** để tải file phụ đề
+    - Bấm **[⬇ Download Audio (.mp3)]** để tải file âm thanh gộp;
+}
+
+stop
+
+@enduml

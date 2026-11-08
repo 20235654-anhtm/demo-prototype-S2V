@@ -1,0 +1,91 @@
+@startuml Fliki_User_Flow_Bottom_Timeline
+!theme plain
+skinparam defaultFontName "Segoe UI"
+skinparam ArrowColor #1565C0
+skinparam activity {
+    BackgroundColor #FFFFFF
+    BorderColor #1976D2
+    DiamondBackgroundColor #FFF8E1
+    DiamondBorderColor #FFA000
+    StartColor #2E7D32
+    EndColor #C62828
+}
+skinparam partition {
+    BorderColor #90CAF9
+    FontStyle bold
+    BackgroundColor #F6FAFE
+}
+
+title SƠ ĐỒ CHI TIẾT USER FLOW THANH TIMELINE PHÍA DƯỚI (FLIKI BOTTOM DOCK)\nChế độ Timeline Pro Đa Track (Media, Voiceover Waveform, Subtitles, Background Music)
+
+start
+
+:Người dùng nhìn xuống thanh điều khiển ở đáy màn hình;
+
+partition "1. Kích hoạt Chế độ Timeline Pro" {
+    if (Thanh Timeline đang ở trạng thái nào?) then (Đang thu gọn - Rail Mode)
+        :Bấm nút **[🔲 Mở rộng Timeline]** (DockOpen);
+        :Thanh timeline mở rộng chiều cao lên 220px;
+        :Chuyển sang chế độ **Pro Mode** hiển thị đầy đủ 4 Track;
+    else (Đã mở sẵn)
+    endif
+}
+
+partition "2. Điều khiển Trục thời gian & Thu phóng (Zoom / Scrubber)" {
+    :Người dùng rê chuột vào thanh Playhead Scrubber (Vạch đỏ);
+    :Kéo vạch đỏ sang trái/phải dọc theo timeline;
+    :Canvas ở giữa nhảy tức thời đến đúng khung hình tại giây đó (Seek 60fps);
+
+    if (Muốn điều chỉnh góc nhìn trục thời gian?) then (Phóng to để sửa chi tiết)
+        :Kéo thanh trượt **[🔍 Zoom Slider]** sang phải (hoặc bấm Zoom In);
+        :Các khối Scene giãn dài ra theo chiều ngang;
+        :Hiển thị chi tiết từng gợn sóng âm (Waveform) và từng từ phụ đề;
+    else if (Muốn điều chỉnh?) then (Thu nhỏ để nhìn toàn cảnh)
+        :Kéo thanh trượt Zoom sang trái (hoặc bấm Zoom Out);
+        :Toàn bộ video 1-5 phút co gọn lại trong tầm mắt;
+    else (Căn vừa màn hình)
+        :Bấm nút **[⤢ Fit to Screen]**;
+        :Timeline tự động co giãn vừa khít chiều rộng trình duyệt;
+    endif
+}
+
+partition "3. Thao tác Cắt ghép & Tinh chỉnh trên các Track" {
+    if (Thao tác trên Track nào?) then (Track 1: Media / Visual Track)
+        if (Cắt đôi Scene?) then (Cắt đôi)
+            :Di chuyển vạch đỏ Playhead đến vị trí cần cắt;
+            :Bấm nút **[✂️ Split]** trên thanh công cụ timeline;
+            :Scene bị tách làm 2 khối độc lập;
+        else if (Chỉnh thời lượng Scene?) then (Kéo dài / Thu ngắn)
+            :Nắm mép cạnh của khối Scene (Trim Handle) kéo sang trái/phải;
+            :Thời lượng ảnh/video thay đổi theo;
+        else (Đổi hiệu ứng chuyển cảnh)
+            :Bấm vào biểu tượng quả trám **[⧫]** nằm giữa 2 khối Scene;
+            :Chọn hiệu ứng chuyển cảnh: Ken Burns, Tilt Zoom, Swipe Slam;
+        endif
+
+    else if (Thao tác trên Track nào?) then (Track 2: Voiceover Track)
+        :Quan sát biểu đồ sóng âm (Waveform);
+        :Phát hiện các khoảng ngắt nghỉ (khoảng lặng) giữa các câu;
+        :Nhấp đúp vào khối âm thanh để nghe thử riêng đoạn đó;
+
+    else if (Thao tác trên Track nào?) then (Track 3: Subtitles Track)
+        :Quan sát các khối từ phụ đề chạy theo nhịp đọc;
+        :Kéo chỉnh mốc thời gian xuất hiện của từng từ nếu muốn;
+
+    else (Track 4: Background Music Track)
+        :Bấm vào icon nốt nhạc ♫ ở đầu Track;
+        :Kéo slider chỉnh âm lượng tổng của nhạc nền (ví dụ: 20%);
+        :Bật tính năng **Auto-Ducking** (Tự động hạ nhỏ nhạc nền khi có tiếng người nói);
+    endif
+}
+
+partition "4. Phát thử nghiệm thu" {
+    :Bấm nút **[▶ Play]** trên thanh timeline;
+    :Vạch đỏ Playhead trôi mượt mà từ trái sang phải;
+    :Vừa quan sát video trên Canvas, vừa theo dõi nhịp âm thanh trên 4 track;
+    :Bấm **[⏸ Pause]** khi cần dừng lại để chỉnh sửa tiếp;
+}
+
+stop
+
+@enduml

@@ -5,7 +5,8 @@ import ProjectCard from "./components/ProjectCard";
 import ProjectTable from "./components/ProjectTable";
 import CreateStoryModal from "./components/CreateStoryModal/CreateStoryModal";
 import { mockProjects } from "@/mocks/mockProjects";
-import type { Project, StoryDraft } from "@/types/project";
+import type { Project } from "@/types/project";
+import type { CreateStoryFormData } from "./components/CreateStoryModal/types";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -37,14 +38,15 @@ export default function HomePage() {
     setIsModalOpen(true);
   };
 
-  const handleCreateProject = (draft: StoryDraft) => {
+  const handleCreateProject = (formData: CreateStoryFormData) => {
     const newProject: Project = {
       id: selectedDraft ? selectedDraft.id : `proj-${Date.now()}`,
       title:
-        draft.file?.name?.replace(/\.[^/.]+$/, "") ||
+        formData.file?.name?.replace(/\.[^/.]+$/, "") ||
         selectedDraft?.title ||
         "Dự án không tên",
-      textPreview: draft.sampleText.slice(0, 120),
+      thumbnail: formData.coverImage || undefined,
+      textPreview: formData.sampleText ? formData.sampleText.slice(0, 120) : "Chưa có trích đoạn kịch bản...",
       createdAt: "Vừa xong",
       author: "Myanh",
       // Dự án đã chốt tạo đưa vào Studio sẽ không gắn tag Creation draft nữa

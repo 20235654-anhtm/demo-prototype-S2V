@@ -1,0 +1,80 @@
+@startuml Vbee_Step3_Review_Create_Flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header Vbee AIVoice Studio - Modal Bước 3
+title Sơ Đồ Chi Tiết Bước 3: Kiểm Tra, Rà Soát & Khởi Tạo Dự Án (Review & Creation Flow)
+
+start
+
+:Người dùng chuyển sang Bước 3 của Modal;
+
+partition "Kiểm Tra Thống Kê & Dự Toán Tài Nguyên" {
+  :Người dùng kiểm tra / chỉnh sửa Tiêu đề tác phẩm;
+  
+  :Hệ thống hiển thị bảng thống kê chi tiết:
+  - Tổng số ký tự (Characters): 48,250
+  - Tổng số từ (Words): 9,650
+  - Tổng số khối phân đoạn (Blocks): 120 khối
+  - Thời lượng âm thanh ước tính: **~48 phút**\n(Áp dụng công thức: Tổng ký tự / 16 / speed);
+  
+  :Kiểm tra hạn mức tài khoản người dùng:
+  - Số dư ký tự hiện có: 250,000 ký tự
+  - Số ký tự tiêu tốn: 48,250 ký tự;
+
+  if (Tài khoản đủ số dư ký tự?) then (Đủ điều kiện ✓)
+    :Hiển thị nhãn xanh: **Sẵn sàng khởi tạo**;
+  else (Thiếu credit ⚠️)
+    :Báo lỗi: "Số dư ký tự không đủ. Vui lòng nâng cấp gói.";
+    :Hiển thị nút **[Mua thêm gói cước]**;
+    stop
+  endif
+}
+
+partition "Rà Soát & Xử Lý Từ Vựng Đặc Biệt (Pronunciation Review)" {
+  :AI tự động quét và liệt kê các từ khó / từ viết tắt trong sách:\n(Ví dụ: "D-com 3G", "UNESCO", "TP.HCM");
+
+  if (Người dùng muốn sửa quy tắc đọc từ nào?) then (Có sửa phiên âm)
+    :Người dùng gõ phiên âm thay thế trực tiếp vào bảng\n(Ví dụ: "UNESCO" -> "U-nét-xcô");
+    :Lưu vào mảng `pronunciationRules[]`;
+  else (Đồng ý phiên âm AI)
+    :Giữ nguyên phiên âm AI đề xuất;
+  endif
+}
+
+partition "Xem Trước Phân Đoạn & Xác Nhận Cuối" {
+  :Người dùng cuộn xem qua danh sách các khối bản thảo\n(Kiểm tra xem câu từ có bị ngắt gãy vụn không);
+
+  :Người dùng nhấn nút **[✨ Khởi Tạo Dự Án]**;
+  
+  :Nút chuyển sang trạng thái Loading: **[Đang xử lý...]**;
+  
+  :Gửi toàn bộ cấu hình dự án lên server:\n**POST /api/projects**;
+  note right
+    Payload gồm:
+    - name, type: "audiobook"
+    - totalCharacters, estimatedDurationSeconds
+    - voiceConfig (voiceId, speed, pitch, pause)
+    - pronunciationRules[]
+    - blocks[]: mảng 120 khối đã phân đoạn
+  end note
+
+  :Server tạo bản ghi trong Database và trả về **projectId**;
+}
+
+:Client chuyển hướng sang giao diện Studio Biên tập chi tiết:\n**navigate('/project/' + projectId)**;
+
+:Tải giao diện Studio với 120 khối văn bản sẵn sàng để chuyển đổi TTS;
+
+stop
+
+@enduml

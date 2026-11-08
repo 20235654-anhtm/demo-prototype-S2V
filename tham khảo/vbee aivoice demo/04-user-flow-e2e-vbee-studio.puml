@@ -1,0 +1,76 @@
+@startuml Vbee_Studio_E2E_User_Flow
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundCorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #1E164E
+skinparam ActivityBorderThickness 1.5
+skinparam ArrowColor #1E164E
+skinparam ArrowThickness 1.2
+
+title **Vbee AIVoice Studio — Toàn Trình Người Dùng (End-to-End User Flow)**
+
+start
+
+:Người dùng truy cập Dashboard (/);
+:Xem danh sách dự án gần đây hoặc bấm **[Lồng tiếng video]**;
+
+if (Hành động người dùng?) then (Mở dự án cũ)
+  :Chọn 1 dòng dự án trong danh sách;
+  :Gọi **GET /api/projects/{id}** để tải dữ liệu đã lưu;
+else (Tạo dự án mới)
+  :Mở hộp thoại **VideoUploadModal**;
+  :Kéo thả hoặc duyệt chọn file video (.mp4/.mov <= 200MB);
+  :Trình duyệt kiểm tra độ dài và tính hợp lệ của video;
+  :Gửi **POST /api/upload** để tải video lên máy chủ;
+  :Tạo dự án mới qua **POST /api/projects**;
+  :Điều hướng sang trang Studio **/project/{id}**;
+  :Hệ thống tự động kích hoạt **POST /api/transcribe**;
+  :Mô hình **sherpa-onnx** bóc tách lời thoại thành các câu kèm mốc thời gian;
+  :Tự động nạp các câu bóc tách được vào danh sách Voiceover Blocks;
+endif
+
+:Trang Studio sẵn sàng với 3 phân khu:
+- Cột trái: Danh sách thẻ thoại (Voiceover Blocks) & Kiểu phụ đề
+- Cột giữa: Trình phát Live Canvas Player & Tỉ lệ khung hình
+- Cột dưới: Thanh Timeline 3 rãnh (Thoại, Video, Nhạc nền);
+
+repeat
+  :Người dùng thao tác biên tập trong Studio:;
+  if (Thao tác trên Cột trái?) then (Sửa kịch bản / Đổi giọng)
+    :Sửa văn bản trong thẻ thoại (đếm ký tự /500);
+    :Chọn giọng đọc Vbee (Bắc, Trung, Nam, Giới tính);
+    :Bấm nghe thử TTS inline [▶];
+    :Hệ thống gọi **POST /api/tts** tạo audio mới;
+  elseif (Thao tác trên Timeline?) then (Cắt ghép & Căn chỉnh)
+    :Kéo Playhead đỏ để rà soát dòng thời gian;
+    :Dùng công cụ Kéo cắt để chia đôi phân đoạn;
+    :Kéo dãn mép block để căn chỉnh thời lượng;
+    :Thêm nhạc nền BGM từ Audio Library Modal;
+    :Chỉnh âm lượng độc lập từng rãnh âm thanh;
+  else (Thao tác trên Preview Canvas?) then (Đổi tỉ lệ & Phụ đề)
+    :Chọn tỉ lệ khung hình (16:9, 9:16, 1:1, 4:5);
+    :Chọn màu nền canvas khi video không khớp tỉ lệ;
+    :Chuyển sang Tab Phụ đề để chỉnh Font, Màu chữ, Highlight Karaoke;
+  endif
+  :Cơ chế **useAutoSave** tự động lưu ngầm dự án sau 1.5s (**PUT /api/projects/{id}**);
+backward:Tiếp tục hoàn thiện kịch bản;
+repeat while (Đã ưng ý với bản xem trước?) is (Chưa) not (Đã sẵn sàng)
+
+:Người dùng nhấn nút **[Xuất video]** trên Header;
+:Mở hộp thoại **ExportModal**;
+
+if (Kiểm tra Vbee Desktop Plugin qua loopback?) then (Có cài đặt Plugin)
+  :Chuyển lệnh render cho Desktop Agent qua **vbeestudio://**;
+  :Render video cục bộ tận dụng GPU người dùng;
+else (Không có Plugin / Render Cloud)
+  :Gửi toàn bộ ExportPayload lên máy chủ qua **POST /api/export**;
+  :Máy chủ xếp hàng tác vụ render bằng ffmpeg + canvas CLI;
+  :Client hiển thị thanh tiến độ %, đếm ngược thời gian còn lại (ETA);
+endif
+
+:Tác vụ kết xuất hoàn thành 100%;
+:Người dùng tải video MP4 thành phẩm hoặc mở file trực tiếp;
+
+stop
+@enduml

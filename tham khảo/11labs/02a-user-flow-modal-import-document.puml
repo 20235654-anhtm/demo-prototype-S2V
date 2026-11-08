@@ -1,0 +1,88 @@
+@startuml ElevenLabs_Modal_Flow_Document
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header ElevenLabs Audiobooks - Modal Khởi Tạo & Import
+title Sơ Đồ 2A: Luồng Nhập Sách Từ File Tài Liệu (Document Upload Flow)
+
+start
+
+:Người dùng ở trang Dashboard Audiobooks\n(**https://elevenlabs.io/app/audiobooks**);
+
+:Nhấn nút **[+ Create new book]**;
+
+:Hiển thị Modal Khởi Tạo & Import Sách\n(Mặc định mở Tab: **Tải file tài liệu - Document**);
+
+partition "Tải file sách & Xác thực phía Client" {
+  :Người dùng kéo thả file hoặc bấm chọn file\n(.epub, .pdf, .txt, .docx, .html);
+
+  if (File hợp lệ?) then (Hợp lệ: <= 25MB và đúng định dạng)
+    :Hiển thị tên file và dung lượng: **[📄 tieng-thu.epub (1.8MB)]**;
+    :Kích hoạt trạng thái xử lý: **m({ type: "processing" })**;
+  else (Không hợp lệ: > 25MB hoặc sai định dạng)
+    :Bắn Toast lỗi: "File exceeds 25MB limit or invalid format";
+    :Yêu cầu người dùng chọn lại file;
+    stop
+  endif
+}
+
+partition "Phân tích ngữ nghĩa & Bóc tách sách (AI Parsing)" {
+  :Gửi file lên API phân tích cấu trúc:\n**POST /v1/studio/parse-script (FormData)**;
+  
+  :AI Engine phân tích toàn bộ tài liệu:
+  1. Trích xuất Mục lục (TOC) & Tách các Chương (Chapters)
+  2. Bóc tách tiêu đề từng chương và đếm số từ
+  3. Quét nhận diện các Nhân vật thoại (Detected Characters);
+
+  :Server trả về kết quả cấu trúc sách:\n`{ title, total_words, chapters[], detected_characters[] }`;
+
+  :Giao diện Modal tự động cập nhật:
+  - Tự điền Tiêu đề sách lấy từ metadata
+  - Hiển thị danh sách các chương nhận diện được
+  - Hiển thị danh sách nhân vật thoại phát hiện được;
+}
+
+partition "Cấu hình dự án & Phân vai" {
+  :Người dùng kiểm tra / chỉnh sửa Tiêu đề sách;
+  
+  :Chọn Giọng đọc mặc định cho Người dẫn chuyện\n(Default Narrator - ví dụ: Adam);
+  
+  :Chọn Chất lượng âm thanh (Quality Preset):\n[ (•) High: 192kbps MP3 ]  [ ( ) Standard: 128kbps ];
+  
+  :Chọn Mô hình AI: Eleven Multilingual v2;
+
+  if (Người dùng muốn chỉnh sửa phân vai nhân vật?) then (Có - Tùy chỉnh Cast)
+    :Người dùng đổi giọng cho từng nhân vật phát hiện được\n(Ví dụ: Gán Lan -> Rachel, Minh -> Antoni);
+  else (Để AI tự động phân vai)
+    :AI giữ nguyên phân vai đề xuất ban đầu;
+  endif
+}
+
+:Người dùng nhấn nút **[✨ Khởi Tạo Sách Nói ->]**;
+
+partition "Tiến trình Lưu trữ & Phân mảnh trên Server" {
+  :1. Gửi lệnh tạo Project tổng:\n**POST /v1/studio/projects**;\nServer tạo bản ghi và trả về **projectId**;
+
+  :2. Tự động đổ từng chương vào dự án:\n**POST .../chapters/{chapterId}/file-manager-import**;\nServer phân nhỏ văn bản thành các **Blocks (câu/đoạn)**;
+
+  :3. Lưu danh sách phân vai vào dự án:\n**POST /v1/projects/{projectId}/used-voices**;
+
+  :4. Bắn sự kiện Telemetry: **project_created**;
+}
+
+:Client tự động chuyển hướng vào Studio Editor:\n**router.push('/app/audiobooks/' + projectId)**;
+
+:Tải giao diện Studio 3 cột với đầy đủ kịch bản phân đoạn;
+
+stop
+
+@enduml

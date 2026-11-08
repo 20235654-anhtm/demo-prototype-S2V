@@ -1,0 +1,121 @@
+@startuml UserFlow_TachRoi_CacTinhNang
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam roundcorner 10
+skinparam ActivityBorderColor #1E164E
+skinparam ActivityBackgroundColor #F8F9FD
+skinparam ActivityDiamondBackgroundColor #FFF8E1
+skinparam ActivityDiamondBorderColor #FFB300
+
+title TẬP HỢP CÁC SƠ ĐỒ USER FLOW TƯƠNG TÁC TÁCH RỜI TRONG STUDIO TTS
+
+' ==============================================================================
+' 1. USER FLOW: ĐỔI NHÂN VẬT CHO MỘT CÂU THOẠI
+' ==============================================================================
+partition "User Flow 1: Đổi Nhân Vật Cho Câu Thoại" {
+  (*) --> "Người dùng đang xem danh sách câu thoại"
+  --> "Bấm vào Tên nhân vật hoặc Avatar trên Khối X"
+  --> "Hộp thoại [Chọn giọng đọc / Nhân vật] mở lên"
+  --> "Người dùng xem danh sách, lọc theo vùng miền hoặc nghe thử giọng mẫu [▶]"
+  --> "Bấm chọn nhân vật mới (ví dụ: Triệu Dương)"
+  --> "Hộp thoại tự động đóng lại"
+  --> "Trên Khối X đổi sang tên nhân vật mới"
+  --> "Âm thanh cũ của Khối X bị xóa bỏ (trạng thái Dirty Block)"
+  --> "Dự án tự động lưu ngầm cấu hình mới sau 2 giây"
+  --> (*)
+}
+
+' ==============================================================================
+' 2. USER FLOW: NGHE THỬ RIÊNG CÂU THOẠI VỪA ĐỔI GIỌNG
+' ==============================================================================
+partition "User Flow 2: Nghe Thử Riêng Câu Thoại (Tạo Lại Audio Riêng Đoạn)" {
+  (*) --> "Khối X vừa được đổi nhân vật mới"
+  --> "Người dùng bấm nút Play [▶] nhỏ trên chính Khối X"
+  --> "Nút Play Khối X lập tức biến thành icon xoay tròn (Spinner loading)"
+  --> "Hệ thống chuẩn bị âm thanh mới cho câu thoại (1-2 giây)"
+  --> "Icon xoay tròn biến mất, đổi thành icon Tạm dừng [⏸]"
+  --> "Loa phát duy nhất câu thoại của Khối X bằng giọng nhân vật mới"
+  --> "Khi đọc xong câu thoại, nút tự động chuyển về lại icon [▶]"
+  --> (*)
+}
+
+' ==============================================================================
+' 3. USER FLOW: SOẠN THẢO VĂN BẢN CÂU THOẠI
+' ==============================================================================
+partition "User Flow 3: Soạn Thảo Văn Bản Câu Thoại" {
+  (*) --> "Người dùng click chuột vào đoạn văn bản của Khối X"
+  --> "Đoạn văn bản chuyển thành khung soạn thảo Textarea tự dãn nở chiều cao"
+  --> "Người dùng gõ chỉnh sửa nội dung thoại"
+  --> "Bộ đếm ký tự góc dưới tự động nhảy số theo thời gian thực (X/500)"
+  --> "Người dùng click chuột ra ngoài (Blur)"
+  --> "Khung soạn thảo lưu nội dung mới"
+  --> "Âm thanh cũ của Khối X bị xóa bỏ để chuẩn bị tạo lại theo chữ mới"
+  --> (*)
+}
+
+' ==============================================================================
+' 4. USER FLOW: PHÁT TOÀN BỘ KỊCH BẢN (MASTER PLAY)
+' ==============================================================================
+partition "User Flow 4: Phát Toàn Bộ Kịch Bản Từ Thanh Player Dưới Đáy" {
+  (*) --> "Người dùng nhìn xuống thanh Player cố định dưới đáy màn hình"
+  --> "Bấm Nút Play tròn màu vàng to [▶]"
+  if "Có câu thoại nào chưa có âm thanh?" then
+    -->[Có] "Thanh player hiển thị trạng thái chuẩn bị âm thanh cho các câu còn thiếu"
+    --> "Tất cả các câu thoại thiếu âm thanh được tạo xong"
+    --> "Bắt đầu phát tuần tự từ Khối 1 đến khối cuối cùng"
+  else
+    -->[Đủ rồi] "Bắt đầu phát tuần tự từ Khối 1 đến khối cuối cùng"
+  endif
+  --> "Khối thoại nào đang được đọc thì tự động sáng viền tím và màn hình tự cuộn đến đó"
+  --> "Người dùng có thể bấm nút vàng [⏸] để tạm dừng bất cứ lúc nào"
+  --> (*)
+}
+
+' ==============================================================================
+' 5. USER FLOW: QUẢN LÝ CẤU TRÚC KHỐI THOẠI (THÊM / GỘP / XÓA)
+' ==============================================================================
+partition "User Flow 5: Thao Tác Cấu Trúc Khối Kịch Bản" {
+  (*) --> "Người dùng muốn thay đổi cấu trúc các câu thoại"
+  if "Chọn thao tác nào?" then
+    -->[Thêm câu mới ở cuối] "Cuộn xuống cuối trang, bấm nút [+ Thêm khối mới]"
+    --> "Khối thoại mới xuất hiện ở cuối, tự động focus con trỏ để gõ chữ"
+    --> (*)
+  else
+    if "Chèn câu ở giữa" then
+      -->[Chèn ở giữa] "Rê chuột vào vách ngăn giữa 2 khối, bấm nút tròn [+]"
+      --> "Một khối thoại rỗng xuất hiện ngay giữa 2 khối đó"
+      --> (*)
+    else
+      if "Hợp nhất 2 câu" then
+        -->[Hợp nhất] "Rê chuột vào vách ngăn giữa 2 khối, bấm nút tròn [☍ Hợp nhất]"
+        --> "Nội dung câu dưới được gộp vào đuôi câu trên, câu dưới biến mất"
+        --> (*)
+      else
+        -->[Xóa câu] "Click nút Menu 3 chấm [⋮] trên khối"
+        --> "Chọn [Xóa block] hoặc [Xóa từ đây trở về sau]"
+        --> "Khối bị xóa khỏi kịch bản, các khối sau tự động đánh số lại thứ tự"
+        --> (*)
+      endif
+    endif
+  endif
+}
+
+' ==============================================================================
+' 6. USER FLOW: XUẤT FILE HOÀN CHỈNH
+' ==============================================================================
+partition "User Flow 6: Xuất Bản Tác Phẩm" {
+  (*) --> "Người dùng bấm nút [⬇ Tải xuống] màu vàng trên thanh Header"
+  --> "Menu xổ xuống gồm 2 lựa chọn xuất bản"
+  if "Chọn định dạng nào?" then
+    -->[Tải video MP4] "Bấm 'Tải video'"
+    --> "Hộp thoại ExportModal xuất hiện để chọn độ phân giải 1080p / 720p"
+    --> "Bấm 'Bắt đầu xuất' và chờ hệ thống tạo video sóng âm hoàn tất để tải về"
+    --> (*)
+  else
+    -->[Tải phụ đề SRT] "Bấm 'Tải SRT'"
+    --> "Trình duyệt tự động tải ngay file phụ đề .srt về máy tính trong 1 giây"
+    --> (*)
+  endif
+}
+
+@enduml

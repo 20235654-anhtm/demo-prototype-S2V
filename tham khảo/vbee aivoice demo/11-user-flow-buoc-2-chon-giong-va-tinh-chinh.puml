@@ -1,0 +1,60 @@
+@startuml Vbee_Step2_Voice_Selection_Flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header Vbee AIVoice Studio - Modal Bước 2
+title Sơ Đồ Chi Tiết Bước 2: Chọn Giọng Đọc & Tinh Chỉnh Âm Thanh (Voice Tuning Flow)
+
+start
+
+:Người dùng chuyển sang Bước 2 của Modal;
+
+:Hệ thống nạp danh sách thư viện giọng đọc Vbee AIVoice;
+
+partition "Lọc & Tìm kiếm Giọng Đọc Phù Hợp" {
+  :Người dùng chọn bộ lọc:
+  - Vùng miền: [Tất cả] [Bắc] [Trung] [Nam]
+  - Giới tính: [Tất cả] [Nam] [Nữ]
+  - Thể loại tối ưu: [Sách nói / Đọc truyện / Báo chí];
+
+  :Danh sách hiển thị các diễn viên giọng đọc tương ứng;
+
+  repeat
+    :Người dùng nhấn nút **[▶ Nghe thử]** bên cạnh giọng đọc;
+    :Gửi yêu cầu sinh mẫu âm thanh ngắn:\n**POST /api/tts/preview** `{ voiceId, sampleText }`;
+    :Phát âm thanh câu chào thử nghiệm qua Web Audio API;
+  repeat while (Người dùng muốn nghe thử giọng khác?) is (Nghe giọng khác);
+
+  :Người dùng bấm chọn 1 giọng ưng ý nhất\n(Ví dụ: Mai Phương - Nữ Miền Bắc);
+  
+  :Đổi nhãn trạng thái thẻ giọng sang **[Đã chọn]**;
+}
+
+partition "Tinh Chỉnh Tham Số Đọc Toàn Cục (Global Voice Parameters)" {
+  :Điều chỉnh thanh trượt **Tốc độ đọc (Speed)**:\n- Dải từ 0.5x đến 2.0x (Mặc định: 1.0x - Chuẩn nhịp đọc sách văn học);
+
+  :Điều chỉnh thanh trượt **Độ cao giọng (Pitch)**:\n- Dải từ -10Hz đến +10Hz (Mặc định: 0.0 - Giữ âm sắc tự nhiên);
+
+  :Chọn **Khoảng nghỉ giữa các đoạn (Break pause)**:\n- Các mức: [200ms] [300ms] [500ms] [1000ms] (Mặc định: 500ms);
+}
+
+:Lưu cấu hình giọng đọc vào store tạm thời:\n`voiceConfig = { voiceId, speed, pitch, breakPauseMs }`;
+
+:Nút **[Tiếp tục: Kiểm tra ->]** chuyển sang màu vàng kích hoạt;
+
+:Người dùng nhấn **[Tiếp tục: Kiểm tra ->]**;
+
+:Chuyển Stepper sang Bước 3 (Step = 3);
+
+stop
+
+@enduml

@@ -1,0 +1,98 @@
+@startuml Vbee_Voiceover_And_TTS_Flow
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundCorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #1E164E
+skinparam ActivityBorderThickness 1.5
+skinparam ArrowColor #1E164E
+skinparam ArrowThickness 1.2
+
+title **Vbee Studio — Luồng Chi Tiết Khối Thoại & Xử Lý TTS (Voiceover & TTS Flow)**
+
+start
+
+:Người dùng chọn một thẻ Voiceover Block trên cột trái;
+
+if (Hành động của người dùng trên Block?) then (Sửa nội dung văn bản)
+  :Click vào vùng văn bản (textarea kích hoạt auto-focus);
+  :Gõ hoặc chỉnh sửa câu thoại;
+  :Trình duyệt tự động đo scrollHeight để co giãn chiều cao ô nhập;
+  :Cập nhật số ký tự thời gian thực (ví dụ: 145/500 ký tự);
+  if (Số ký tự > 500?) then (Vượt giới hạn)
+    :Báo đỏ cảnh báo người dùng cần rút gọn câu;
+  else (Hợp lệ)
+    :Người dùng bấm ra ngoài (onBlur);
+    :Đánh dấu âm thanh TTS hiện tại của block là cũ (stale);
+    :Kích hoạt **useAutoSave** (debounce 1.5s gửi PUT /api/projects/{id});
+  endif
+
+elseif (Đổi giọng đọc riêng cho Block) then (Chọn giọng Vbee)
+  :Bấm vào tên người đọc hiện tại (Speaker Badge);
+  :Mở hộp thoại **VoiceSelectionModal**;
+  :Người dùng lọc giọng theo vùng miền: Bắc / Trung / Nam / Cộng đồng;
+  :Bấm icon [▶] để nghe thử demo giọng nói (phát trực tiếp từ S3);
+  :Chọn 1 giọng ưng ý (ví dụ: Mạnh Dũng - Miền Bắc);
+  :Cập nhật voice.id cho block;
+  :Đánh dấu cần sinh lại TTS;
+
+elseif (Chỉnh tốc độ đọc) then (Đổi Speed)
+  :Bấm vào nhãn tốc độ (mặc định 1.0x);
+  :Mở popover **SpeedPicker**;
+  :Chọn tốc độ trong khoảng từ 0.5x đến 2.0x;
+  :Cập nhật speed cho block;
+
+elseif (Nghe thử giọng đọc [▶]) then (Phát âm thanh)
+  :Người dùng bấm nút Play tròn bên cạnh block;
+  if (Đã có audioUrl và chưa bị stale?) then (Đã có sẵn)
+    :Phát ngay lập tức file .mp3 qua thẻ audio độc lập;
+    :Hiển thị icon Pause [⏸] và thanh tiến trình chạy;
+  else (Chưa có / Đã bị sửa text)
+    :Hiển thị biểu tượng quay vòng (Loader2 animate-spin);
+    :Gọi hàm **generateTTS(content, voiceId, speed)**;
+    :Gửi request đến **POST /api/tts**;
+    
+    partition "Xử lý Backend & Vbee Cloud" {
+      if (Tồn tại trong Server Audio Cache?) then (Đã cache)
+        :Trả về ngay URL /api/uploads/audios/{hash}.mp3;
+      else (Chưa cache)
+        :Gửi request sang Vbee API (https://dev.vbee.vn/api/v1/tts);
+        :Kích hoạt cơ chế Đua đồng thời (Race Condition):
+        - Nhánh 1: Chờ Webhook Callback (/api/tts/callback)
+        - Nhánh 2: Polling GET /api/v1/tts/{id} mỗi 1s;
+        :Nhánh nào có kết quả trước -> Tải file từ S3 về máy chủ;
+        :Lưu vào cache đĩa cứng data/uploads/audios/;
+        :Trả về đường dẫn URL file .mp3;
+      endif
+    }
+    
+    :Cập nhật audioUrl vào block và tính lại thời lượng (duration);
+    :Phát âm thanh ra loa;
+    :Cập nhật độ dài block tương ứng trên thanh Timeline bên dưới;
+  endif
+
+elseif (Tách hoặc gộp Block) then (Cấu trúc lại)
+  if (Thao tác?) then (Hợp nhất khối - Merge)
+    :Bấm icon Merge trên thanh phân cách (Divider row);
+    :Nối chuỗi văn bản của block hiện tại vào cuối block trước;
+    :Xóa block hiện tại;
+    :Ghi nhận lịch sử vào Undo Stack;
+  else (Chèn khối mới - Insert)
+    :Bấm icon Plus [+] trên thanh phân cách;
+    :Chèn 1 block mới rỗng vào giữa;
+    :Tự động cuộn đến và chuyển sang chế độ soạn thảo (autoEdit);
+  endif
+
+else (Xóa khối thoại) then (Menu 3 chấm)
+  :Bấm menu MoreVertical;
+  if (Chọn tác vụ?) then (Xóa block này)
+    :Loại bỏ block khỏi mảng blocks;
+    :Xóa block audio tương ứng trên timeline;
+  else (Xóa từ đây về sau)
+    :Xác nhận hành động;
+    :Cắt bỏ toàn bộ các block từ vị trí index hiện tại đến cuối;
+  endif
+endif
+
+stop
+@enduml

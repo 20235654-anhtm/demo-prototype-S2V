@@ -1,0 +1,96 @@
+@startuml UserFlow_TongQuan_AudioStudio
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam roundcorner 10
+skinparam ActivityBorderColor #1E164E
+skinparam ActivityBackgroundColor #F8F9FD
+skinparam ActivityDiamondBackgroundColor #FFF8E1
+skinparam ActivityDiamondBorderColor #FFB300
+
+title SƠ ĐỒ USER FLOW TỔNG QUAN TƯƠNG TÁC NGƯỜI DÙNG TRONG STUDIO TTS
+
+start
+
+:Người dùng truy cập màn hình Studio;
+:Giao diện hiển thị danh sách các khối kịch bản thoại (Block 1, Block 2...)\nvà thanh Audio Player cố định dưới đáy;
+
+repeat
+  :Người dùng duyệt qua danh sách các câu thoại;
+
+  if (Người dùng muốn làm gì?) then (Chỉnh sửa nội dung thoại)
+    :Click chuột vào ô văn bản câu thoại;
+    :Ô chữ chuyển thành khung soạn thảo Textarea;
+    :Người dùng gõ nhập văn bản mới;
+    :Click chuột ra ngoài (Blur);
+    :Giao diện cập nhật lại số ký tự (/500)\nvà ghi nhận câu thoại cần tạo lại âm thanh;
+
+  else if (Đổi nhân vật / giọng đọc cho câu thoại)
+    :Click vào Tên nhân vật hoặc Avatar trên câu thoại đó;
+    :Hộp thoại [Chọn giọng đọc / Nhân vật] mở lên;
+    :Người dùng tìm kiếm, lọc theo vùng miền hoặc bấm [ ▶ ] nghe thử giọng mẫu;
+    :Người dùng bấm chọn giọng đọc mong muốn;
+    :Hộp thoại tự động đóng lại;
+    :Trên câu thoại lập tức đổi tên nhân vật mới;
+    note right
+      Lúc này âm thanh cũ bị hủy bỏ.
+      Câu thoại sẵn sàng để nghe thử giọng mới.
+    end note
+
+  else if (Nghe thử RIÊNG câu thoại vừa sửa)
+    :Người dùng bấm nút Play [ ▶ ] nhỏ trên chính khối thoại đó;
+    :Nút Play chuyển sang biểu tượng vòng xoay đang tải (Spinner loading);
+    :Sau 1-2 giây, vòng xoay biến mất, nút chuyển thành icon Tạm dừng [ ⏸ ];
+    :Loa phát duy nhất câu thoại của nhân vật vừa chọn;
+    :Khi đọc xong hết câu, nút tự động chuyển lại về icon [ ▶ ];
+
+  else if (Nghe thử TOÀN BỘ kịch bản)
+    :Người dùng bấm nút tròn màu vàng [ ▶ ] ở thanh Player dưới đáy;
+    if (Có câu thoại nào chưa tạo âm thanh?) then (Có)
+      :Thanh Player hiển thị trạng thái đang chuẩn bị âm thanh;
+      :Tất cả các câu thoại thiếu âm thanh được xử lý xong;
+    else (Đã đủ âm thanh)
+    endif
+    :Trình phát bắt đầu đọc tuần tự từ câu đầu đến câu cuối;
+    :Câu thoại nào đang được đọc sẽ tự động sáng viền tím\nvà màn hình tự cuộn đến câu đó;
+    :Người dùng có thể bấm [ ⏸ ] ở thanh đáy để tạm dừng bất cứ lúc nào;
+
+  else if (Thay đổi tốc độ đọc)
+    :Click vào nút [⏱ 1.0x] trên câu thoại;
+    :Menu chọn tốc độ mở ra (0.8x, 1.0x, 1.2x...);
+    :Người dùng chọn tốc độ mong muốn;
+    :Menu đóng, nhãn tốc độ trên câu thoại được cập nhật;
+
+  else if (Thao tác cấu trúc kịch bản)
+    if (Chọn thao tác?) then (Chèn thêm câu mới)
+      :Rê chuột vào vách ngăn giữa 2 câu hoặc bấm nút [+ Thêm khối] ở cuối;
+      :Một câu thoại rỗng mới xuất hiện;
+      :Người dùng nhập văn bản cho câu mới;
+    else if (Hợp nhất câu)
+      :Rê chuột vào vách ngăn, bấm nút tròn [☍ Hợp nhất];
+      :Nội dung câu dưới được gộp vào đuôi câu trên;
+    else (Xóa câu thoại)
+      :Click nút Menu 3 chấm [⋮] trên câu thoại;
+      :Chọn [Xóa block] hoặc [Xóa từ đây trở về sau];
+      :Câu thoại bị xóa khỏi danh sách, các câu sau tự đánh số lại;
+    endif
+
+  else (Xuất file kịch bản)
+    :Người dùng bấm nút [⬇ Tải xuống] trên thanh Header;
+    if (Chọn định dạng?) then (Tải video sóng âm MP4)
+      :Hộp thoại cấu hình xuất hiện (chọn độ phân giải 1080p, tỷ lệ khung hình);
+      :Bấm [Bắt đầu xuất] và chờ file tải về;
+    else (Tải phụ đề SRT)
+      :Trình duyệt tự động tải ngay file phụ đề .srt về máy;
+    endif
+    stop
+  endif
+
+repeat while (Người dùng tiếp tục biên soạn?) is (Tiếp tục)
+
+:Người dùng bấm nút [← Quay lại] ở góc trên bên trái;
+:Kịch bản được tự động lưu lại toàn bộ;
+:Chuyển hướng về trang chủ Dashboard;
+
+stop
+
+@enduml

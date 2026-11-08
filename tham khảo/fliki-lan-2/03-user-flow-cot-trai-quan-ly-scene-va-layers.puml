@@ -1,0 +1,79 @@
+@startuml Fliki_User_Flow_Left_Column
+!theme plain
+skinparam defaultFontName "Segoe UI"
+skinparam ArrowColor #2E7D32
+skinparam activity {
+    BackgroundColor #FFFFFF
+    BorderColor #388E3C
+    DiamondBackgroundColor #FFF8E1
+    DiamondBorderColor #FFA000
+    StartColor #2E7D32
+    EndColor #C62828
+}
+skinparam partition {
+    BorderColor #81C784
+    FontStyle bold
+    BackgroundColor #F1F8E9
+}
+
+title SƠ ĐỒ CHI TIẾT USER FLOW TẠI CỘT BÊN TRÁI (FLIKI LEFT DOCK)\nQuản lý Phân cảnh (Scenes) & Hệ thống Đa lớp (Layers: Voiceover, Media, Text, Avatar)
+
+start
+
+:Người dùng nhìn vào **Cột bên trái** (Left Column);
+
+partition "1. Thao tác trên Navigation Rail (Thanh icon cực trái)" {
+    if (Người dùng bấm vào icon nào?) then (Scenes 📜)
+        :Hiển thị danh sách toàn bộ các Scene kịch bản;
+    else if (Người dùng bấm vào icon nào?) then (Media Library 📁)
+        :Mở thư viện kho ảnh Stock & file cá nhân tải lên;
+    else if (Người dùng bấm vào icon nào?) then (Brand Kits 🎨)
+        :Mở bảng cài đặt màu sắc thương hiệu và logo watermark;
+    else (Templates 📑)
+        :Mở danh sách các mẫu video dựng sẵn;
+    endif
+}
+
+partition "2. Thao tác trên Danh sách Scene (Scene Feed)" {
+    :Cuộn chuột xem các Scene Cards xếp theo thứ tự dọc;
+
+    if (Thao tác trên Scene?) then (Thêm Scene mới)
+        :Bấm nút **[+ Add Scene]** ở cuối hoặc nút [+] giữa 2 card;
+        :Chèn một Scene rỗng mới vào vị trí tương ứng;
+    else if (Thao tác trên Scene?) then (Nhân đôi hoặc Xóa Scene)
+        :Mở menu 3 chấm trên góc Scene;
+        :Chọn **[Duplicate]** để nhân đôi hoặc **[Delete]** để xóa;
+    else if (Thao tác trên Scene?) then (Đổi Chuyển cảnh giữa 2 Scene)
+        :Bấm vào biểu tượng hình quả trám **[⧫ Transition]** giữa 2 Scene;
+        :Chọn hiệu ứng chuyển cảnh: Fade, Zoom, Slide, Wipe;
+    else (Chỉnh sửa nội dung các Layer trong Scene)
+    endif
+}
+
+partition "3. Thao tác chi tiết trên Hệ thống Layer của 1 Scene" {
+    :Người dùng quan sát các Layer bên trong Scene card:
+    - Layer 1: **Voiceover Layer** (Giọng đọc)
+    - Layer 2: **Media Layer** (Hình ảnh / Video)
+    - Layer 3: **Text Layer** (Chữ tiêu đề / Ghi chú)
+    - Layer 4: **Avatar Layer** (Người ảo nói);
+
+    if (Thao tác trên Layer nào?) then (Voiceover Layer)
+        :Bấm nút [▶] nghe thử âm thanh của riêng câu này;
+        :Bấm vào avatar đổi người lồng tiếng khác;
+        :Gõ sửa câu thoại (hệ thống tự động tính lại số giây thời lượng);
+    else if (Thao tác trên Layer nào?) then (Media Layer)
+        :Bấm nút **[⚡ AI Auto-pick]** để AI tự vẽ lại ảnh mới;
+        :Hoặc bấm vào thumbnail để chọn ảnh từ Stock/Tải lên;
+    else if (Thao tác trên Layer nào?) then (Thêm Layer mới)
+        :Bấm nút **[+ Add Layer]** trong Scene;
+        :Chọn thêm Text Layer (chèn chữ) hoặc Avatar Layer (chèn người ảo);
+    else (Sắp xếp thứ tự Layer)
+        :Dùng chuột nắm thanh kéo (⠿) kéo thả Layer lên/xuống;
+        :Hoặc bấm **[Group Layers]** để gom nhóm các layer lại;
+    endif
+}
+
+:Nội dung trên Canvas ở giữa tự động cập nhật phản chiếu theo;
+stop
+
+@enduml

@@ -1,0 +1,87 @@
+@startuml Vbee_Export_And_Desktop_Agent_Flow
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundCorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #1E164E
+skinparam ActivityBorderThickness 1.5
+skinparam ArrowColor #1E164E
+skinparam ArrowThickness 1.2
+
+title **Vbee Studio — Luồng Xuất Video & Kết Nối Desktop Companion Plugin (Export Flow)**
+
+start
+
+:Người dùng nhấn nút **[Xuất video]** trên Header;
+:Bắn sự kiện đo lường PostHog **analytics.exportCtaClicked()**;
+:Mở hộp thoại **ExportModal**;
+:Thu thập dữ liệu toàn vẹn của dự án qua hàm **getPayload()**:
+- Danh sách voiceBlocks (mốc thời gian, file audio)
+- Danh sách mediaBlocks (video gốc, ảnh chèn)
+- Danh sách musicBlocks (nhạc nền, âm lượng)
+- Cấu hình phụ đề (font, màu, highlight, vị trí)
+- Thiết lập khung hình: width, height, fps, bgColor;
+
+:Kiểm tra sự tồn tại của **Vbee Desktop Plugin** bằng **pingAgent()**;
+note right
+  Gửi HTTP GET đến loopback
+  http://127.0.0.1:PORT
+  (Vbee Studio Electron Companion App)
+end note
+
+if (Desktop Agent có phản hồi không?) then (Có hoạt động)
+  partition "Chế độ Render Local (GPU Companion App)" {
+    :Khởi tạo tiến trình render cục bộ qua hàm **exportViaAgent()**;
+    :Mở liên kết giao thức sâu **vbeestudio://** nếu cần;
+    :Desktop Agent nạp render-cli và render trực tiếp trên máy người dùng;
+    
+    repeat
+      :Nhận gói tiến trình định kỳ (onProgress callback):
+      - Cập nhật % thanh tiến độ (0% - 100%)
+      - Tính toán thời gian còn lại (formatCountdown ETA);
+      :Hiển thị trạng thái: "Đang nạp dữ liệu..." -> "Đang render video..." -> "Đang đóng gói file...";
+    repeat while (Tiến độ < 100%?) is (Đang chạy) not (Xong)
+    
+    :Nhận kết quả outputPath đường dẫn file trên máy tính;
+    :Bắn sự kiện **analytics.exportCompleted(desktop-agent)**;
+    :Hiển thị giao diện xuất thành công;
+    :Cung cấp 2 nút tương tác nhanh:
+    - **[Mở video]** (agentOpenFile - mở bằng trình phát mặc định của máy)
+    - **[Mở thư mục]** (agentRevealFile - mở thư mục chứa trong File Explorer);
+  }
+
+else (Không phát hiện Desktop Agent)
+  :Hiển thị hộp thoại gợi ý:
+  - Tùy chọn A: Cài đặt Vbee Studio Plugin để render không giới hạn
+  - Tùy chọn B: Tiếp tục render trên đám mây (Cloud Render);
+
+  if (Người dùng chọn?) then (Render trên Cloud)
+    partition "Chế độ Render Cloud (FastAPI Server)" {
+      :Gửi **POST /api/export** kèm ExportPayload lên server;
+      :Server tạo một tác vụ mới, trả về **job_id**;
+      :Server bắt đầu gọi @vbee-holding/video-renderer CLI qua ffmpeg;
+      
+      repeat
+        :Client kích hoạt vòng lặp Polling mỗi 1.0 giây;
+        :Gửi **GET /api/export/{job_id}**;
+        :Nhận về status, progress (%) và stage xử lý;
+        :Cập nhật thanh tiến độ và ETA đếm ngược trên Modal;
+      repeat while (status == 'processing' hoặc 'queued'?) is (Đang render) not (Hoàn thành hoặc Lỗi)
+      
+      if (status == 'done'?) then (Thành công)
+        :Bắn sự kiện **analytics.exportCompleted(cloud-server)**;
+        :Hiển thị icon tích xanh CheckCircle2;
+        :Cung cấp nút **[Tải video về máy]** (link /api/exports/{fileName}.mp4);
+      else (Lỗi máy chủ)
+        :Bắn sự kiện **analytics.exportFailed()**;
+        :Hiển thị thông báo lỗi chi tiết và nút [Thử lại];
+      endif
+    }
+  else (Cài đặt Plugin)
+    :Tải bộ cài đặt Vbee Studio Plugin (.dmg / .exe);
+    :Sau khi cài xong, bấm [Thử kết nối lại];
+  endif
+endif
+
+stop
+@enduml

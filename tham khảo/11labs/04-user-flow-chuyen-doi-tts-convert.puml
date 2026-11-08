@@ -1,0 +1,68 @@
+@startuml ElevenLabs_User_Flow_Conversion
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header ElevenLabs Audiobooks Workflow
+title Quy Trình 3: Chuyển Đổi TTS (Convert Chapter & Project Pipeline)
+
+start
+
+:Người dùng ở giao diện Studio biên tập sách nói;
+
+:Kiểm tra các khối văn bản (Blocks):\nCác khối có trạng thái **Chưa chuyển đổi (Unconverted)**\nhoặc **Đã sửa text (Stale)**;
+
+if (Phạm vi chuyển đổi người dùng mong muốn?) then (Chỉ chuyển đổi Chương hiện tại)
+  :Người dùng nhấn nút **[⚡ Convert Chapter]** trên Header;
+  
+  :Gửi yêu cầu chuyển đổi cấp chương:\n**POST /v1/studio/projects/{projectId}/chapters/{chapterId}/convert**;
+else (Chuyển đổi toàn bộ tác phẩm)
+  :Người dùng nhấn menu **[⚡ Convert All Chapters]**;
+  
+  :Gửi yêu cầu chuyển đổi toàn bộ sách:\n**POST /v1/studio/projects/{projectId}/convert**;
+endif
+
+partition "Tiến trình Xử lý Hàng đợi TTS trên Backend" {
+  :Server tiếp nhận yêu cầu, đưa các blocks vào hàng đợi xử lý;
+  
+  :Server duyệt qua các Block chưa có audio hoặc bị stale:\n1. Bỏ qua các block không thay đổi (tiết kiệm credit)\n2. Áp dụng quy tắc từ điển phát âm (Pronunciation Rules)\n3. Gọi mô hình Eleven Multilingual v2 sinh âm thanh theo đúng giọng nhân vật;
+  
+  :Cập nhật tiến độ % và trạng thái từng block trong database;
+}
+
+partition "Đồng bộ Tiến độ Phía Client (Polling Loop)" {
+  repeat
+    :Client định kỳ gửi yêu cầu thăm dò trạng thái:\n**GET /v1/projects/{projectId}/conversion-status**;
+    
+    :Cập nhật thanh tiến độ % (0% -> 100%) trên thanh công cụ;
+    
+    :Cập nhật visual các blocks đang xử lý (Hiệu ứng sóng âm động);
+    
+    :Chờ 1.5 giây;
+  repeat while (Tiến độ < 100% và Đang xử lý?) is (Đang chạy)
+  -> (Đã hoàn tất 100%);
+}
+
+if (Có lỗi xảy ra ở block nào không?) then (Có lỗi - Timeout / Credit hết)
+  :Hiển thị thông báo lỗi trên block cụ thể;\nCho phép người dùng bấm **[Retry]** riêng block lỗi;
+else (Thành công toàn bộ)
+  :Gỡ bỏ toàn bộ nhãn cảnh báo **Stale** trên các block;
+  
+  :Sidebar cập nhật icon check xanh **[✓ Đã chuyển đổi]**;
+  
+  :Kích hoạt **Thanh phát âm thanh toàn cục (Global Audio Player)** ở đáy màn hình;
+  
+  :Người dùng có thể bấm **[▶ Play All]** để nghe liền mạch toàn bộ chương;
+endif
+
+stop
+
+@enduml

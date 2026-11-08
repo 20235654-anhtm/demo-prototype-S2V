@@ -1,0 +1,89 @@
+@startuml Fliki_User_Flow_Script_To_Video
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header Quy trình Fliki: Script to Video Workflow
+title Luồng Người Dùng & Dữ Liệu: Tạo Video Từ Kịch Bản (Script to Video)
+
+start
+
+:Người dùng truy cập URL\n**https://app.fliki.ai/?workflow=script&format=video**;
+
+:Next.js Router nhận diện Query Params:\n- **workflow = 'script'**\n- **format = 'video'**;
+
+:Bắn Telemetry sự kiện **workflow_started**;
+
+:Hiển thị giao diện Modal/Drawer **"Script to Video"**\ntrên nền Dashboard (/);
+
+partition "Người dùng điền Form cấu hình" {
+  :Nhập tiêu đề video (Mặc định: "Untitled video");
+  
+  :Chọn Ngôn ngữ & Giọng đọc AI mặc định\n(Ví dụ: Vietnamese - Hoài My);
+  
+  :Chọn tỉ lệ khung hình (Aspect Ratio):\n- 16:9 Landscape (2048x1152)\n- 9:16 Portrait (1152x2048)\n- 1:1 Square (1600x1600);
+
+  :Nhập nội dung văn bản kịch bản vào Textarea\n(Hoặc kéo thả file .txt / .pdf <= 5MB);
+
+  if (Người dùng muốn tối ưu kịch bản?) then (Có - Click ✨ Enhance)
+    :Gọi tRPC: **workflow.generatePrompt.query**;
+    :AI trau chuốt lại câu chữ và ngắt câu trong textarea;
+  else (Không)
+  endif
+
+  :Chọn Quy tắc phân cảnh (Scene Breakdown Rule):
+  - **Auto (AI based)**: Gemini Flash 3.8 / GPT-5.6 Luna
+  - **Line breaks**: Ngắt phân cảnh theo mỗi dấu xuống dòng
+  - **Sentences**: Ngắt phân cảnh theo từng câu kết thúc;
+
+  :Chọn Nguồn Media (Media Source):
+  - **AI Media**: Tự động sinh ảnh/video bằng Runware AI
+  - **Stock Library**: Tự trích từ khóa & lấy media từ Unsplash/Storyblocks
+  - **Blank**: Chỉ tạo cảnh nền màu đơn sắc;
+}
+
+:Người dùng nhấn nút **[✨ Generate Video]**;
+
+:Bắn Telemetry sự kiện **workflow_submitted**;
+
+partition "Xử lý Backend & Đột phá Phân Cảnh (tRPC)" {
+  :Gọi tRPC Mutation: **workflow.create.mutate(...)**;
+  note right
+    Payload gồm:
+    - title, script, format: 'video'
+    - settings: { aspectRatio, language, voiceId,
+      sceneBreakdown, mediaSource, ... }
+  end note
+
+  :Backend tạo bản ghi **driveId** và **workflowId**;
+
+  :Gọi tRPC Mutation: **workflow.execute.mutate({ workflowId })**;
+
+  fork
+    :Backend chạy tiến trình phân cảnh ngầm:
+    1. **segmentScript**: Tách text thô theo quy tắc
+    2. **sceneBreakdown.ai**: Sinh prompt ảnh + ước lượng nhịp đọc (2.5 từ/s)
+    3. **playback.sceneGenerate**: Tạo các cảnh trong Playback Engine;
+  fork again
+    :Client mở kết nối WebSocket **common.updates.subscribe**;
+    :Nhận sự kiện realtime và cập nhật thanh tiến độ % (0% -> 100%);
+  end fork
+}
+
+:Tiến trình sinh cảnh hoàn tất (Progress = 100%);
+
+:Client tự động chuyển hướng sang giao diện Editor Studio:\n**router.replace('/editor/' + driveId)**;
+
+:Tải giao diện Editor 3 cột với đầy đủ kịch bản phân cảnh đã chia;
+
+stop
+
+@enduml

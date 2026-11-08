@@ -1,0 +1,85 @@
+@startuml ElevenLabs_User_Flow_Export
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header ElevenLabs Audiobooks Workflow
+title Quy Trình 4: Xuất Bản & Phân Phối Sách Nói (Export & Distribution Flow)
+
+start
+
+:Người dùng ở giao diện Studio sau khi đã Convert xong các chương;
+
+:Nhấn nút **[🎬 Export]** trên Header;
+
+:Hệ thống mở Hộp thoại Xuất Bản (Export Audiobook Modal);
+
+partition "Lựa chọn cấu hình xuất bản" {
+  :Chọn Định dạng Âm thanh (Audio Format):
+  - **MP3** (192kbps / 44.1kHz - Phù hợp phát sóng, Spotify, Audible)
+  - **M4B** (Định dạng sách nói chuyên dụng kèm Chapter Markers)
+  - **FLAC** (Lossless Studio Master Quality);
+
+  :Chọn Cấu trúc File xuất ra:
+  - **Single File**: Nối toàn bộ các chương thành 1 file duy nhất kèm mục lục
+  - **Separate Files**: Tách riêng từng file theo từng chương (Chương 01.mp3, ...);
+
+  if (Người dùng muốn sinh Video Sóng Âm (Visualizer)?) then (Có tích chọn)
+    :Hệ thống đánh dấu tùy chọn tạo Video Preview cho YouTube / Shorts;
+  else (Không)
+  endif
+
+  if (Người dùng muốn phân phối trực tiếp?) then (Có - Spotify / InAudio)
+    :Bật tùy chọn kết nối phân phối đối tác;
+  else (Tải về máy tính)
+  endif
+}
+
+:Người dùng nhấn nút **[🎬 Tạo Lệnh Xuất (Start Export)]**;
+
+partition "Tiến trình Nối File & Đóng gói Metadata trên Server" {
+  :Gửi lệnh xuất lên backend:\n**POST /v1/projects/{projectId}/exports**;
+  note right
+    Payload gồm:
+    - format_type: "mp3_44100_192"
+    - single_file: true
+  end note
+
+  :Server tiếp nhận và trả về **exportId**;
+
+  :Backend kích hoạt job xử lý ffmpeg:
+  1. Nối (concat) âm thanh các blocks và chapters
+  2. Chèn thẻ ID3 Metadata và Chapter Markers
+  3. Ghép ảnh bìa tạo file hoàn chỉnh;
+
+  if (Có tùy chọn sinh Video?) then (Có)
+    :Gọi API sinh video sóng âm:\n**POST .../generate-video**;
+  else (Không)
+  endif
+
+  repeat
+    :Client thăm dò tiến độ xuất:\n**GET /v1/projects/{projectId}/exports**;
+    :Chờ tiến trình render;
+  repeat while (Trạng thái export == "in_progress"?) is (Đang render)
+  -> (Hoàn thành "completed");
+}
+
+partition "Tải về & Phân phối" {
+  :Client gọi API lấy link tải có chữ ký bảo mật S3:\n**GET /v1/projects/{projectId}/exports/{exportId}/signed-url**;
+  
+  :Hiển thị nút **[⬇ Tải Sách Nói Về Máy (Download)]**;
+  
+  :Người dùng nhấn tải file âm thanh (.mp3 / .m4b) hoàn chỉnh;
+}
+
+stop
+
+@enduml

@@ -1,0 +1,82 @@
+@startuml ElevenLabs_User_Flow_Block_Editing
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header ElevenLabs Audiobooks Workflow
+title Quy Trình 2: Biên Tập Phân Đoạn (Block Editor) & Gán Giọng Nhân Vật
+
+start
+
+:Người dùng ở giao diện Studio 3 cột:\n**https://elevenlabs.io/app/audiobooks/{projectId}**;
+
+:Chọn một Chương (Chapter) ở Cột trái sidebar;
+
+:Hệ thống tải dữ liệu chương:\n**GET /v1/studio/projects/{projectId}/chapters/{chapterId}/extended**;
+
+:Hiển thị danh sách các **Blocks văn bản** ở Cột giữa,\nmỗi block có Voice Badge, nút Play, nút Regenerate, nút Pause;
+
+partition "Tương tác & Biên tập nội dung từng Block" {
+  if (Hành động của người dùng là gì?) then (Chỉnh sửa câu chữ trong Block)
+    :Người dùng gõ sửa text trực tiếp trong editor block;
+    
+    :Frontend tự động gắn cờ **is_stale = true** (Viền vàng);\nÂm thanh cũ của block bị đánh dấu lỗi thời;
+    
+    :Gửi cập nhật văn bản lên server:\n**PATCH /v1/projects/{projectId}/chapters/{chapterId}/blocks/{blockId}**;
+
+  elseif (Tách thoại & Gán giọng nhân vật) then (Bôi đen đoạn thoại)
+    :Người dùng bôi đen câu thoại trong đoạn văn;
+    
+    :Bấm vào tên Diễn viên trong bảng Cast ở Cột phải\n(Hoặc bấm nút **[+ Assign Voice to Selection]**);
+    
+    :Hệ thống tự động tách câu thoại thành 1 Block riêng độc lập:\n**POST .../duplicate-nodes** & **PATCH .../blocks/{blockId}**;
+    
+    :Đổi Voice Badge của block sang màu của nhân vật;
+
+  elseif (Chèn khoảng dừng ngắt nghỉ) then (Click nút chèn Pause)
+    :Người dùng đặt con trỏ sau dấu câu và chọn **[⏸ +500ms]**;
+    
+    :Chèn token ngắt nghỉ trực quan vào văn bản: **[Pause 0.5s]**;
+    
+    :Lưu khoảng dừng vào cấu trúc Block:\n`{ type: "pause", duration: 0.5 }`;
+
+  elseif (Dạy AI phát âm từ khó / Tên riêng) then (Thêm từ điển phát âm)
+    :Người dùng mở tab **Pronunciation Dictionary** ở Cột phải;
+    
+    :Nhấn **[+ Add Pronunciation Rule]**;
+    
+    :Nhập từ gốc (ví dụ: "Kowalski") và phiên âm đọc (ví dụ: "Ko-vahl-ski");
+    
+    :Gửi quy tắc lên server:\n**POST /v1/studio/projects/{projectId}/pronunciation-dictionaries**;
+    
+    :Quy tắc tự động áp dụng cho toàn bộ các chương trong sách;
+
+  elseif (Nghe thử riêng câu đọc này) then (Click nút Play [▶])
+    :Gọi API phát audio stream của block:\n**GET .../blocks/{blockId}/nodes/{nodeId}/audio**;
+    
+    :Phát âm thanh câu đọc độc lập mà không cần chờ cả chương;
+
+  else (Sinh lại ngữ điệu mới cho đoạn)
+    :Nhấn nút xoay tròn **[🔄 Regenerate Block]**;
+    
+    :Gửi yêu cầu render riêng block này:\n**POST .../blocks/{blockId}/snapshots**;
+    
+    :AI sinh lại âm thanh mới với biến thể ngữ điệu khác;
+    
+    :Hệ thống lưu các bản đọc cũ vào danh sách **Takes (Take 1, Take 2)**;\nNgười dùng có thể bấm Restore bản đọc cũ bất kỳ lúc nào;
+  endif
+}
+
+:Trạng thái chương hiển thị các khối đã sẵn sàng hoặc cần cập nhật (Stale);
+
+stop
+
+@enduml

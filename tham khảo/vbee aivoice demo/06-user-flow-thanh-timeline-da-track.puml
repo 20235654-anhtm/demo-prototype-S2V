@@ -1,0 +1,99 @@
+@startuml Vbee_Timeline_MultiTrack_Flow
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundCorner 10
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #1E164E
+skinparam ActivityBorderThickness 1.5
+skinparam ArrowColor #1E164E
+skinparam ArrowThickness 1.2
+
+title **Vbee Studio — Luồng Tương Tác Thanh Timeline Đa Track (Multi-track Timeline Flow)**
+
+start
+
+:Người dùng tương tác với Thanh Timeline ở nửa dưới màn hình;
+
+if (Loại tương tác trên Timeline?) then (Phát / Dừng xem trước)
+  :Nhấn nút [Play/Pause] hoặc phím Spacebar;
+  if (Trạng thái hiện tại?) then (Đang dừng)
+    :Đồng hồ chủ (Master Clock - usePlaybackEngine) bắt đầu đếm thời gian;
+    :Kích hoạt phát video HTML5 qua thẻ <video>;
+    :Đồng thời kích hoạt các GainNode âm thanh TTS và Nhạc nền;
+    :Vòng lặp requestAnimationFrame liên tục vẽ phụ đề khớp từng frame;
+    :Thanh con trỏ đỏ (Playhead) di chuyển đều theo thời gian;
+  else (Đang phát)
+    :Dừng video và toàn bộ các luồng âm thanh;
+    :Giữ nguyên vị trí Playhead tại thời điểm dừng;
+  endif
+
+elseif (Tua nhanh / Kéo Playhead) then (Seek Time)
+  :Người dùng click hoặc drag con trỏ đỏ trên thước đo thời gian;
+  :Tính toán thời gian đích: currentTime = (clientX - offsetX) / pxPerSecond;
+  :Định dạng mã thời gian (Timecode) hiển thị dạng MM:SS.S;
+  :Đồng bộ vị trí video.currentTime tương ứng;
+  :Cập nhật lại highlight của block thoại tương ứng ở cột trái;
+
+elseif (Phóng to / Thu nhỏ Timeline) then (Zoom)
+  :Nhấn nút Zoom In [+] hoặc Zoom Out [-];
+  :Điều chỉnh hệ số pxPerSecond trong dải từ 5px/s đến 120px/s;
+  :Tính toán lại chiều rộng trực quan của tất cả các block trên cả 3 track;
+  :Cập nhật vạch chia giây (Time Ruler Marks) tương ứng;
+
+elseif (Cắt đoạn bằng Kéo - Scissors) then (Split Block)
+  :Di chuyển Playhead đến điểm muốn cắt trên rãnh Video hoặc Voice;
+  :Chọn block cần cắt;
+  :Bấm nút Kéo cắt (Scissors);
+  :Hệ thống chia block làm 2 phần:
+  - Block 1: Giữ nguyên startTime, duration = thời điểm Playhead - startTime
+  - Block 2: startTime mới = thời điểm Playhead, duration = phần thời lượng còn lại;
+  :Đẩy trạng thái vào Undo Stack;
+
+elseif (Căn chỉnh biên - Trim Handles) then (Cắt đầu / Cắt đuôi)
+  :Di chuột vào mép trái hoặc mép phải của block trên track;
+  :Kéo mép trái để đổi trimStart (bỏ qua đoạn mở đầu của video/nhạc);
+  :Kéo mép phải để thu hẹp hoặc kéo dài thời lượng hiển thị (duration);
+  :Giới hạn an toàn: duration không được vượt quá độ dài file gốc (naturalDuration);
+
+elseif (Kéo di chuyển vị trí - Drag & Drop) then (Dịch chuyển thời gian)
+  :Giữ chuột vào thân block và kéo dọc theo rãnh;
+  :Tính toán lại startTime mới của block;
+  :Kiểm tra va chạm (Collision Detection) với các block liền trước và liền sau;
+  :Thả chuột để chốt thời điểm bắt đầu phát mới;
+
+elseif (Thêm Nhạc nền / Media mới) then (Insert Track Block)
+  if (Thêm Nhạc nền?) then (Audio Library)
+    :Bấm [+ Nhạc nền] trên rãnh Music;
+    :Mở **AudioLibraryModal** (tab Nhạc, tab Hiệu ứng SFX, tab Tải lên);
+    :Nghe thử các bài nhạc stock (Elderflower, Crescent...);
+    :Bấm [Chèn vào dự án];
+    :Tạo 1 **MusicBlock** mới trên rãnh Music;
+  else (Thêm Video / Ảnh)
+    :Bấm [+ Video/Ảnh] trên rãnh Media;
+    :Mở **MediaLibraryModal** (kho stock Pixabay/Pexels);
+    :Bấm [Thêm vào dự án];
+    :Tạo 1 **MediaBlock** mới nối tiếp trên rãnh Video;
+  endif
+
+elseif (Điều chỉnh Âm lượng đa rãnh) then (Gain Control)
+  :Bấm biểu tượng loa [Volume2] trên thanh điều khiển;
+  :Mở popover điều chỉnh âm lượng riêng biệt:
+  - Rãnh Lồng tiếng (Voiceover Gain): 0% - 100%
+  - Rãnh Video gốc (Original Media Gain): 0% - 100%
+  - Rãnh Nhạc nền (Music Gain): 0% - 100%;
+  :Cập nhật trực tiếp giá trị vào Web Audio GainNodes:
+  gainNode.gain.setValueAtTime(volumeLevel, audioCtx.currentTime);
+  :Lưu thiết lập âm lượng vào state volumes của dự án;
+
+else (Thu gọn / Mở rộng Timeline) then (Toggle Height)
+  :Bấm nút mũi tên Up/Down góc phải timeline;
+  if (Đang mở rộng?) then (Thu gọn)
+    :Giảm chiều cao timeline về 52px;
+    :Mở rộng tối đa không gian cho Live Canvas Player ở trên;
+  else (Mở rộng)
+    :Tăng chiều cao timeline lên 232px để hiển thị đầy đủ 3 track;
+  endif
+endif
+
+stop
+@enduml

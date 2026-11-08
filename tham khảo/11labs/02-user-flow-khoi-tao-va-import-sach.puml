@@ -1,0 +1,91 @@
+@startuml ElevenLabs_User_Flow_Import_Book
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header ElevenLabs Audiobooks Workflow
+title Quy Trình 1: Khởi Tạo & Nhập Sách Tự Động (Create & Import Book Flow)
+
+start
+
+:Người dùng truy cập Dashboard Sách Nói\n**https://elevenlabs.io/app/audiobooks**;
+
+:Hệ thống gọi API lấy danh sách sách hiện có:\n**GET /v1/projects/search?page_size=25**;
+
+:Hiển thị danh sách các tác phẩm (Grid/Table view)\nkèm tiến độ chuyển đổi (Conversion status);
+
+:Người dùng nhấn nút **[+ Create new book]**;
+
+:Hiển thị Hộp thoại Tạo Mới (Creation & Import Modal);
+
+partition "Lựa chọn nguồn sách & Nhập bản thảo" {
+  if (Người dùng chọn phương thức nào?) then (Tải file tài liệu ePub/PDF/Docx/Txt)
+    :Người dùng kéo thả file sách (Tối đa 25MB);\nValidate định dạng MIME và dung lượng file;
+    
+    :Gửi file lên server phân tích ngữ nghĩa:\n**POST /v1/studio/parse-script (FormData)**;
+    
+    :AI tự động xử lý tài liệu:
+    1. Trích xuất mục lục & chia các Chương (Chapters)
+    2. Nhận diện tiêu đề từng chương
+    3. Quét phát hiện các Nhân vật thoại (Detected Characters);
+    
+    :Hiển thị bảng xem trước (Preview):
+    - Danh sách các chương nhận diện được
+    - Danh sách nhân vật xuất hiện trong truyện;
+  elseif (Chọn URL Web) then (Nhập Link)
+    :Cào văn bản từ URL bài viết/sách online;
+  else (Tạo trang trắng)
+    :Tạo bản thảo rỗng để tự gõ văn bản;
+  endif
+}
+
+partition "Thiết lập cấu hình dự án sách nói" {
+  :Nhập/Kiểm tra Tiêu đề sách (Book title);
+  
+  :Chọn Giọng đọc người dẫn chuyện mặc định\n(Default Voice for Narrator - ví dụ: Adam);
+  
+  :Chọn Chất lượng âm thanh xuất (Quality Preset):\n- High (192kbps MP3 / Lossless)\n- Standard (128kbps MP3);
+  
+  :Chọn Mô hình chuyển đổi TTS:\n- Eleven Multilingual v2\n- Eleven Turbo v2.5;
+
+  if (Bật tùy chọn Tự động phân vai?) then (Có)
+    :AI tự động ghép giọng phù hợp cho từng nhân vật:\n- Nam già -> Giọng trầm trung niên\n- Nữ trẻ -> Giọng thanh thiếu nữ;
+  else (Không)
+    :Mặc định toàn bộ sách dùng giọng Người dẫn chuyện;
+  endif
+}
+
+:Người dùng nhấn nút **[✨ Tạo Sách Nói (Create Project)]**;
+
+partition "Khởi tạo dữ liệu trên Backend" {
+  :Gửi yêu cầu tạo Project:\n**POST /v1/studio/projects**;
+  note right
+    Payload gồm:
+    - name: Tiêu đề sách
+    - default_paragraph_voice_id
+    - quality_preset: "high"
+    - default_model_id: "eleven_multilingual_v2"
+  end note
+
+  :Server tạo bản ghi và trả về **projectId**;
+
+  :Gửi các chương đã bóc tách lên server:\n**POST /v1/studio/projects/{projectId}/chapters**;
+
+  :Server phân nhỏ từng chương thành các **Blocks văn bản**;
+}
+
+:Client nhận kết quả thành công và điều hướng vào Studio:\n**router.push('/app/audiobooks/' + projectId)**;
+
+:Tải giao diện Studio 3 cột với đầy đủ Mục lục và Nội dung sách;
+
+stop
+
+@enduml

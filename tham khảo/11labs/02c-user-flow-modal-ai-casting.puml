@@ -1,0 +1,74 @@
+@startuml ElevenLabs_Modal_Flow_AI_Casting
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header ElevenLabs Audiobooks - AI Character Voice Assignment
+title Sơ Đồ 2C: Luồng AI Tự Động Nhận Diện Nhân Vật & Phân Vai Lồng Tiếng (AI Casting Flow)
+
+start
+
+:Tài liệu sách vừa được tải lên Modal Khởi Tạo;
+
+partition "Tiến trình AI Phân tích Lời thoại (Script Parsing)" {
+  :AI Engine quét toàn bộ nội dung văn bản sách:
+  1. Nhận diện các câu hội thoại nằm trong ngoặc kép ("..."),\ndấu gạch đầu dòng (— ...), hoặc định dạng kịch bản;
+  2. Phân tích các từ định danh nhân vật đứng trước hoặc sau lời thoại\n(Ví dụ: "Lan khẽ nói: ...", "Minh đáp lại: ...");
+  3. Trích xuất thuộc tính nhân vật từ ngữ cảnh truyện:\n- **Giới tính (Gender)**: Nam / Nữ / Phi giới tính\n- **Độ tuổi (Age group)**: Thiếu nhi, Thanh niên, Trung niên, Lão niên\n- **Tính cách / Cảm xúc**: Trầm ấm, Quyết liệt, Dịu dàng;
+}
+
+partition "Thuật toán Ghép Giọng AI (Voice Matching Algorithm)" {
+  :Truy vấn thư viện giọng đọc của ElevenLabs (**Voice Library**);
+  
+  :Ghép cặp giọng đọc tối ưu theo thuộc tính:
+  - Người dẫn chuyện -> Giọng kể chuyện trung tính, truyền cảm (Adam)
+  - Nhân vật Nữ trẻ (Lan) -> Giọng nữ nhẹ nhàng, trong trẻo (Rachel)
+  - Nhân vật Nam trẻ (Minh) -> Giọng nam thanh niên dứt khoát (Antoni)
+  - Nhân vật Lão niên -> Giọng trầm đục, có độ rung (Fin);
+
+  :Tạo mảng phân vai đề xuất:\n`detected_characters: [{ name, gender, suggested_voice_id }]`;
+}
+
+partition "Bảng Duyệt Phân Vai Trên Giao Diện Modal (Casting Table Preview)" {
+  :Hiển thị danh sách nhân vật và diễn viên được ghép cặp tương ứng;
+  
+  :Cho phép người dùng bấm nghe thử giọng mẫu 5 giây bên cạnh từng nhân vật;
+
+  if (Người dùng có hài lòng với phân vai của AI?) then (Có - Đồng ý)
+    :Giữ nguyên danh sách phân vai tự động;
+  else (Không - Muốn thay đổi diễn viên)
+    :Người dùng bấm vào Dropdown giọng đọc của nhân vật đó;
+    :Chọn một diễn viên khác trong thư viện Voice Library;
+    :Cập nhật lại giọng đọc được gán cho nhân vật;
+  endif
+}
+
+:Người dùng bấm **[✨ Khởi Tạo Sách Nói]**;
+
+partition "Lưu trữ Phân vai vào Hệ thống" {
+  :Gửi mảng phân vai lên API quản lý diễn viên dự án:\n**POST /v1/projects/{projectId}/used-voices**;
+  note right
+    Payload gồm:
+    - projectId
+    - voices: [
+        { character: "Lan", voice_id: "Rachel" },
+        { character: "Minh", voice_id: "Antoni" }
+      ]
+  end note
+
+  :Hệ thống tự động liên kết tất cả các câu thoại của nhân vật đó\ntrong các chương sách với đúng Voice ID đã chọn;
+}
+
+:Khi mở Studio, các câu thoại của từng nhân vật đã được gắn sẵn Voice Badge riêng biệt;
+
+stop
+
+@enduml

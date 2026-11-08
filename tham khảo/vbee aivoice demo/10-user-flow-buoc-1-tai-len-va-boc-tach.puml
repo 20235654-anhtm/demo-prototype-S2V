@@ -1,0 +1,66 @@
+@startuml Vbee_Step1_Upload_Flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ActivityBackgroundColor #F8FAFC
+skinparam ActivityBorderColor #64748B
+skinparam ActivityFontSize 12
+skinparam ArrowColor #475569
+skinparam ArrowFontSize 11
+
+header Vbee AIVoice Studio - Modal Bước 1
+title Sơ Đồ Chi Tiết Bước 1: Tải Lên Văn Bản & Bóc Tách Phân Đoạn (Upload & Segmentation)
+
+start
+
+:Người dùng ở Bước 1 của Modal;
+
+if (Phương thức nhập bản thảo?) then (Tải file tài liệu từ máy)
+  :Người dùng kéo thả file hoặc nhấn chọn file\n(.txt, .docx, .pdf, .epub);
+
+  if (Xác thực file phía Client) then (Hợp lệ: <= 50MB & đúng định dạng)
+    :Hiển thị tên file và dung lượng: **[📄 de-men.epub (2.4MB)]**;
+    :Hiển thị thanh tiến trình đọc file (Reading loader);
+  else (Lỗi: > 50MB hoặc sai định dạng)
+    :Bắn Toast cảnh báo lỗi;\nYêu cầu người dùng chọn lại file;
+    stop
+  endif
+
+  :Gửi file lên server phân tích văn bản:\n**POST /api/upload/document (FormData)**;
+  :Server trích xuất nội dung văn bản thuần (Plain text);
+
+else (Dán văn bản trực tiếp)
+  :Người dùng dán nội dung văn bản vào khung Textarea;
+  :Validate độ dài: Tối thiểu 10 ký tự, tối đa 200,000 ký tự;
+endif
+
+partition "Cấu hình thuật toán Phân đoạn (Segmentation Configuration)" {
+  :Người dùng chọn quy tắc ngắt khối văn bản:
+  - **Theo dấu chấm câu**: Tách theo dấu câu kết thúc (. ! ? ...)
+  - **Theo dấu xuống dòng**: Tách theo từng đoạn văn (Paragraphs)
+  - **Theo độ dài cố định**: Chia khối 300 - 500 ký tự an toàn;
+
+  :Tùy chọn tự động dọn dẹp văn bản:
+  - [x] Lọc bỏ tiêu đề đầu trang và số trang (Header / Footer)
+  - [x] Loại bỏ các chú thích chân trang (Footnotes)
+  - [x] Xóa bỏ các ký tự đặc biệt vô nghĩa;
+
+  :Thuật toán thực thi bóc tách văn bản thành danh sách các **Blocks**;
+  
+  :Tính toán tổng số ký tự và số từ đã bóc tách được;
+}
+
+:Hiển thị tóm tắt: Đã đọc thành công X ký tự, chia thành Y khối;
+
+:Nút **[Tiếp tục: Chọn giọng ->]** chuyển sang trạng thái kích hoạt (Active);
+
+:Người dùng nhấn **[Tiếp tục: Chọn giọng ->]**;
+
+:Chuyển Stepper sang Bước 2 (Step = 2);
+
+stop
+
+@enduml
