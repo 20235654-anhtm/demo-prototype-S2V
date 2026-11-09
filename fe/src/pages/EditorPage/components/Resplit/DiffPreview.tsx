@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Sparkles, Clock } from "lucide-react";
+import { Check, X, Sparkles } from "lucide-react";
 import type { Shot, DiffProposal } from "@/types/script";
 
 interface DiffPreviewProps {
@@ -52,8 +52,8 @@ export default function DiffPreview({
         </div>
       </div>
 
-      {/* 1. Old shots (Faded 45%, bọc trong bố cục card mới) */}
-      <div className="space-y-2 opacity-45 pointer-events-none select-none">
+      {/* 1. Old shots (Faded 45%, dạng hàng liền mạch seamless) */}
+      <div className="space-y-1.5 opacity-45 pointer-events-none select-none">
         <div className="flex items-center gap-2 px-1">
           <Badge variant="outline" className="text-[10px] text-muted-foreground bg-muted">
             Bản cũ ({oldShots.length} phân cảnh bị thay thế)
@@ -62,36 +62,29 @@ export default function DiffPreview({
         {oldShots.map((shot) => (
           <div
             key={shot.id}
-            className="rounded-xl border border-border/80 bg-muted/30 overflow-hidden"
+            className="flex items-start gap-3 py-2 px-2.5 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
           >
-            {/* Header row chạy toàn bộ chiều ngang card từ mép này sang mép kia (Edge-to-edge divider) */}
-            <div className="flex items-center justify-between px-3.5 py-2 border-b border-border/60 bg-muted/40 select-none">
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className="font-semibold text-xs text-muted-foreground bg-background/60 px-2 py-0.5"
-                >
-                  {shot.code}
-                </Badge>
-                <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-mono">
-                  <Clock className="w-3 h-3 text-muted-foreground/70" />
-                  <span>{formatDuration(shot.duration)}</span>
-                </div>
-              </div>
+            <div className="shrink-0 flex items-center gap-1.5 pt-0.5">
+              <Badge
+                variant="outline"
+                className="font-semibold text-xs text-muted-foreground bg-background/60 px-2 py-0.5"
+              >
+                {shot.code}
+              </Badge>
+              <span className="text-[11px] text-muted-foreground/70 font-mono">
+                {formatDuration(shot.duration)}
+              </span>
             </div>
 
-            {/* Thân card: Toàn bộ chiều ngang dành cho lời thoại */}
-            <div className="p-3.5 pt-2.5">
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {shot.text}
-              </p>
-            </div>
+            <p className="flex-1 min-w-0 text-sm text-muted-foreground leading-relaxed pt-0.5">
+              {shot.text}
+            </p>
           </div>
         ))}
       </div>
 
-      {/* 2. New proposed shots (Bố cục đồng bộ chuẩn với ShotCard mới, full-width script) */}
-      <div className="space-y-2.5">
+      {/* 2. New proposed shots (Bố cục hàng liền mạch đồng bộ chuẩn với ShotCard mới) */}
+      <div className="space-y-2">
         <div className="flex items-center gap-2 px-1">
           <Badge className="text-[10px] font-semibold bg-emerald-600 text-white">
             <Sparkles className="w-2.5 h-2.5 mr-1" />
@@ -105,31 +98,23 @@ export default function DiffPreview({
         {proposal.newShots.map((shot) => (
           <div
             key={shot.id}
-            className="rounded-xl border-2 border-dashed border-emerald-500/80 bg-card overflow-hidden shadow-xs"
+            className="flex items-start gap-3 py-2.5 px-3 rounded-lg border border-dashed border-emerald-400/80 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-2xs"
           >
-            {/* Header row chạy toàn bộ chiều ngang card từ mép này sang mép kia (Edge-to-edge divider) */}
-            <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-emerald-200 dark:border-emerald-800/60 select-none bg-emerald-50/70 dark:bg-emerald-950/30">
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className="font-bold text-xs text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 bg-emerald-100/70 dark:bg-emerald-900/40 px-2 py-0.5"
-                >
-                  {shot.code.replace(/\s*\(Đề xuất\)/gi, "")}
-                </Badge>
-
-                <div className="flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-400 font-mono">
-                  <Clock className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                  <span>{formatDuration(shot.duration)}</span>
-                </div>
-              </div>
+            <div className="shrink-0 flex items-center gap-1.5 pt-0.5">
+              <Badge
+                variant="outline"
+                className="font-bold text-xs text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 bg-emerald-100/70 dark:bg-emerald-900/40 px-2 py-0.5"
+              >
+                {shot.code.replace(/\s*\(Đề xuất\)/gi, "")}
+              </Badge>
+              <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-mono">
+                {formatDuration(shot.duration)}
+              </span>
             </div>
 
-            {/* Thân phân cảnh: Toàn bộ chiều ngang dành cho lời đọc kịch bản, tận dụng tối đa khoảng trống */}
-            <div className="p-3.5 pt-2.5 space-y-2">
-              <p className="text-xs text-foreground font-medium leading-relaxed">
-                {shot.text}
-              </p>
-            </div>
+            <p className="flex-1 min-w-0 text-sm text-foreground font-medium leading-relaxed pt-0.5">
+              {shot.text}
+            </p>
           </div>
         ))}
       </div>

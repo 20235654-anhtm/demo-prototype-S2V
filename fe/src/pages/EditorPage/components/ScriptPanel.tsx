@@ -46,6 +46,7 @@ interface ScriptPanelProps {
   onEditCharacter?: (characterId: string) => void;
   onSeekWord?: (timeSec: number) => void;
   onAddNewCharacter?: () => void;
+  currentTime?: number;
 }
 
 export default function ScriptPanel({
@@ -71,6 +72,7 @@ export default function ScriptPanel({
   onEditCharacter = () => {},
   onSeekWord,
   onAddNewCharacter,
+  currentTime,
 }: ScriptPanelProps) {
   // Quản lý việc mở ResplitPopover cho 1 hoặc nhiều phân cảnh cụ thể
   const [resplitTargetShotIds, setResplitTargetShotIds] = useState<string[] | null>(null);
@@ -192,7 +194,7 @@ export default function ScriptPanel({
       </div>
 
       {/* 2. Body: Cuộn danh sách phân cảnh */}
-      <ScrollArea className="flex-1 min-h-0 p-3">
+      <ScrollArea className="flex-1 min-h-0 px-2 py-2">
         {/* Thanh công cụ khi tick chọn phân cảnh */}
         <ScriptSelectionToolbar
           selectedCount={selectedShotIds.length}
@@ -206,7 +208,7 @@ export default function ScriptPanel({
         />
 
         {/* Danh sách các ShotCard kèm Popover và DiffPreview hiển thị Inline đúng vị trí cảnh */}
-        <div className="space-y-2.5">
+        <div className="space-y-1.5">
           {shots.map((shot) => {
             const isFirstDiffTarget = proposal && shot.id === firstDiffTargetId;
             const isUnderDiff = proposal?.targetShotIds.includes(shot.id);
@@ -250,7 +252,9 @@ export default function ScriptPanel({
                     <ShotCard
                       shot={shot}
                       isSelected={selectedShotIds.includes(shot.id)}
+                      hasAnySelection={selectedShotIds.length > 0}
                       isActive={shot.id === activeShotId}
+                      currentTime={currentTime}
                       characters={characters}
                       onSelect={(id, checked) => onToggleSelectShot(id, checked)}
                       onClick={(id) => onSelectShot(id)}

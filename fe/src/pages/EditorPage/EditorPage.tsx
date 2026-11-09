@@ -421,6 +421,7 @@ export default function EditorPage() {
             onEditCharacter={handleEditCharacter}
             onSeekWord={(t) => setCurrentTime(t)}
             onAddNewCharacter={() => handleEditCharacter("new")}
+            currentTime={currentTime}
           />
         )}
 
