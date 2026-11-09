@@ -10,8 +10,8 @@ export interface StoryAsset {
 
 export const STORY_ASSET_KIND_LABEL: Record<StoryAssetKind, string> = {
   character: "Nhân vật",
-  location: "Bối cảnh",
-  prop: "Đạo cụ",
+  location: "Địa điểm",
+  prop: "Vật phẩm",
 };
 
 export const mockStoryAssets: StoryAsset[] = [
@@ -61,7 +61,7 @@ export const mockStoryAssets: StoryAsset[] = [
     kind: "location",
     description:
       "Nơi diễn ra lễ trắc nghiệm đấu khí hằng năm, tập trung đông đảo tộc nhân.",
-    tags: ["Bối cảnh chính"],
+    tags: ["Địa điểm chính"],
   },
   {
     id: "asset-o-than-thanh",
@@ -77,7 +77,7 @@ export const mockStoryAssets: StoryAsset[] = [
     kind: "prop",
     description:
       "Bia đá đen dùng để đo đấu khí; kết quả hiện thành những chữ phát sáng.",
-    tags: ["Đạo cụ trắc nghiệm"],
+    tags: ["Vật phẩm trắc nghiệm"],
   },
   {
     id: "asset-hac-kim-tu-tu",

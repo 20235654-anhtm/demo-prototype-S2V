@@ -16,10 +16,10 @@ export default function StepUpload({ formData, onFormDataChange }: StepUploadPro
       ...prev,
       file: {
         name: "Đấu Phá Thương Khung.docx",
-        size: "24 KB",
+        size: "56 KB",
         format: "DOCX",
-        charCount: 8258,
-        estimatedDuration: "00:09:10",
+        charCount: MOCK_BOOK_SAMPLE_TEXT.length,
+        estimatedDuration: "00:21:38",
       },
       sampleText: prev.sampleText || MOCK_BOOK_SAMPLE_TEXT,
     }));

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import EditorHeader from "./components/EditorHeader";
 import FarRightSidebar from "./components/FarRightSidebar";
 import ScriptPanel from "./components/ScriptPanel";
@@ -14,6 +14,10 @@ import type { Shot, DiffProposal } from "@/types/script";
 
 export default function EditorPage() {
   const { projectId } = useParams<{ projectId: string }>();
+  const [searchParams] = useSearchParams();
+  const chapterParam = Number(searchParams.get("chapter"));
+  const selectedChapter =
+    Number.isFinite(chapterParam) && chapterParam > 0 ? chapterParam : undefined;
 
   // Tìm tên dự án từ kho dự án (localStorage + mock data)
   const currentProject = projectId ? getProject(projectId) : undefined;
@@ -291,7 +295,7 @@ export default function EditorPage() {
       {/* 1. Header riêng của Studio */}
       <EditorHeader
         title={projectTitle}
-        visibility={currentProject?.visibility}
+        chapter={selectedChapter}
         onExport={() => alert("Đang chuẩn bị xuất file video MP4 chất lượng cao...")}
       />
 

@@ -15,7 +15,7 @@ import {
   type StoryAssetKind,
 } from "@/mocks/mockStoryDetails";
 
-type AssetFilter = "all" | StoryAssetKind;
+type AssetFilter = StoryAssetKind;
 
 interface KindStyle {
   icon: LucideIcon;
@@ -41,11 +41,10 @@ const KIND_STYLE: Record<StoryAssetKind, KindStyle> = {
   },
 };
 
-const FILTER_OPTIONS: Array<{ id: AssetFilter; label: string }> = [
-  { id: "all", label: "Tất cả" },
-  { id: "character", label: "Nhân vật" },
-  { id: "location", label: "Bối cảnh" },
-  { id: "prop", label: "Đạo cụ" },
+const FILTER_OPTIONS: Array<{ id: StoryAssetKind; label: string }> = [
+  { id: "character", label: STORY_ASSET_KIND_LABEL.character },
+  { id: "location", label: STORY_ASSET_KIND_LABEL.location },
+  { id: "prop", label: STORY_ASSET_KIND_LABEL.prop },
 ];
 
 /** Lấy chữ cái đầu của từ cuối trong tên (tên gọi chính). */
@@ -59,23 +58,14 @@ const countByKind = (kind: StoryAssetKind) =>
   mockStoryAssets.filter((asset) => asset.kind === kind).length;
 
 export default function StoryAssetsView() {
-  const [filter, setFilter] = useState<AssetFilter>("all");
+  const [filter, setFilter] = useState<AssetFilter>("character");
   const [query, setQuery] = useState("");
-
-  const stats = useMemo(
-    () => [
-      { label: "Nhân vật", value: countByKind("character") },
-      { label: "Bối cảnh", value: countByKind("location") },
-      { label: "Đạo cụ", value: countByKind("prop") },
-    ],
-    []
-  );
 
   const filteredAssets = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
     return mockStoryAssets.filter((asset) => {
-      const matchesFilter = filter === "all" || asset.kind === filter;
+      const matchesFilter = asset.kind === filter;
       const matchesQuery =
         !normalizedQuery ||
         asset.name.toLowerCase().includes(normalizedQuery) ||
@@ -88,29 +78,11 @@ export default function StoryAssetsView() {
 
   return (
     <div className="space-y-5">
-      {/* Thống kê nhanh */}
-      <div className="grid grid-cols-3 gap-3">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border bg-card px-4 py-3 shadow-2xs"
-          >
-            <p className="text-2xl font-bold leading-none">{stat.value}</p>
-            <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              {stat.label}
-            </p>
-          </div>
-        ))}
-      </div>
-
       {/* Bộ lọc + tìm kiếm */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap gap-1.5">
           {FILTER_OPTIONS.map((option) => {
-            const count =
-              option.id === "all"
-                ? mockStoryAssets.length
-                : countByKind(option.id);
+            const count = countByKind(option.id);
             const isActive = filter === option.id;
 
             return (

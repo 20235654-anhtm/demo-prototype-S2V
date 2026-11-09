@@ -1,1 +1,5 @@
-export type OverviewSection = "assets" | "relationships" | "timeline";
+export type OverviewSection =
+  | "chapters"
+  | "assets"
+  | "relationships"
+  | "timeline";

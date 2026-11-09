@@ -1,4 +1,4 @@
-import { History, Network, Users, type LucideIcon } from "lucide-react";
+import { BookOpen, History, Network, Users, type LucideIcon } from "lucide-react";
 import type { OverviewSection } from "./types";
 
 export interface OverviewSectionMeta {
@@ -14,6 +14,12 @@ export const OVERVIEW_SECTIONS: OverviewSectionMeta[] = [
     label: "Tài sản truyện",
     description: "Nhân vật, bối cảnh & đạo cụ",
     icon: Users,
+  },
+  {
+    id: "chapters",
+    label: "Chương truyện",
+    description: "Danh sách chương trong truyện",
+    icon: BookOpen,
   },
   {
     id: "relationships",

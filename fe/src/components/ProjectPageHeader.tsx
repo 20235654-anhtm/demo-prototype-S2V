@@ -5,6 +5,8 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 
 interface ProjectPageHeaderProps {
   title: string;
+  titleTo?: string;
+  trailing?: string;
   backTo?: string;
   backTitle?: string;
   children?: ReactNode;
@@ -12,6 +14,8 @@ interface ProjectPageHeaderProps {
 
 export default function ProjectPageHeader({
   title,
+  titleTo,
+  trailing,
   backTo = "/",
   backTitle = "Quay lại trang chủ",
   children,
@@ -42,9 +46,27 @@ export default function ProjectPageHeader({
             Dự án
           </button>
           <ChevronRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground/60" />
-          <h1 className="text-sm font-semibold truncate max-w-[220px] sm:max-w-md">
-            {title}
-          </h1>
+          {titleTo ? (
+            <button
+              type="button"
+              onClick={() => navigate(titleTo)}
+              className="truncate text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer max-w-[160px] sm:max-w-xs"
+            >
+              {title}
+            </button>
+          ) : (
+            <h1 className="text-sm font-semibold truncate max-w-[220px] sm:max-w-md">
+              {title}
+            </h1>
+          )}
+          {trailing ? (
+            <>
+              <ChevronRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground/60" />
+              <span className="truncate text-sm font-semibold text-foreground max-w-[140px]">
+                {trailing}
+              </span>
+            </>
+          ) : null}
         </nav>
       </div>
 
