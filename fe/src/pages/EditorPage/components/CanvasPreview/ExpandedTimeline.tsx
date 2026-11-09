@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -14,13 +14,15 @@ import {
   Mic,
   Eye,
 } from "lucide-react";
-import type { Shot } from "@/types/script";
+import type { Shot, CharacterAsset } from "@/types/script";
+import { mockCharacters } from "@/mocks/mockCharacters";
 
 interface ExpandedTimelineProps {
   currentTime: number;
   duration: number;
   isPlaying: boolean;
   shots: Shot[];
+  characters?: CharacterAsset[];
   activeShotId: string | null;
   onTogglePlay: () => void;
   onSeek: (time: number) => void;
@@ -38,6 +40,7 @@ export default function ExpandedTimeline({
   duration,
   isPlaying,
   shots,
+  characters = mockCharacters,
   activeShotId,
   onTogglePlay,
   onSeek,
@@ -51,6 +54,68 @@ export default function ExpandedTimeline({
   const isDraggingPlayhead = useRef(false);
 
   const [containerWidth, setContainerWidth] = useState(0);
+
+  // Tổng hợp các Audio Clips trên Track 2 từ các blocks của từng phân cảnh
+  const audioClips = useMemo(() => {
+    const clips: Array<{
+      id: string;
+      shotId: string;
+      characterId: string;
+      startTime: number;
+      duration: number;
+      status: "ready" | "generating" | "not_generated" | "stale";
+      characterName: string;
+      characterAvatar?: string;
+      text: string;
+    }> = [];
+
+    let currentOffset = 0;
+    shots.forEach((shot) => {
+      const blocks =
+        shot.blocks && shot.blocks.length > 0
+          ? shot.blocks
+          : [
+              {
+                id: `block-${shot.id}`,
+                shotId: shot.id,
+                characterId: "char-narrator",
+                status: "ready" as const,
+                totalDuration: shot.duration,
+                lines: [
+                  {
+                    id: `line-${shot.id}`,
+                    text: shot.text,
+                    duration: shot.duration,
+                  },
+                ],
+              },
+            ];
+
+      blocks.forEach((block) => {
+        const char = characters.find((c) => c.id === block.characterId);
+        const blockDur =
+          block.totalDuration ||
+          block.lines.reduce((s, l) => s + (l.duration || 3), 0);
+        const firstLineText = block.lines[0]?.text || shot.text;
+
+        clips.push({
+          id: block.id,
+          shotId: shot.id,
+          characterId: block.characterId,
+          startTime: Number(currentOffset.toFixed(1)),
+          duration: Number(blockDur.toFixed(1)),
+          status: block.status || "ready",
+          characterName: char?.name || "Người dẫn chuyện",
+          characterAvatar: char?.avatar,
+          text: firstLineText,
+        });
+
+        currentOffset += blockDur;
+      });
+    });
+
+    return clips;
+  }, [shots, characters]);
 
   // Theo dõi kích thước container cuộn
   useEffect(() => {
@@ -409,22 +474,80 @@ export default function ExpandedTimeline({
               })}
             </div>
 
-            {/* TRACK 2: Voice Audio (Giọng đọc) */}
+            {/* TRACK 2: Voice Audio Clips (Phân đoạn giọng đọc thông minh) */}
             <div
-              className="h-10 border-b flex items-center px-1 bg-neutral-50/50 dark:bg-neutral-900/20 cursor-pointer"
+              className="relative h-10 border-b flex items-center bg-neutral-50/50 dark:bg-neutral-900/20 cursor-pointer overflow-hidden"
               onClick={(e) => seekFromX(e.clientX)}
             >
-              <div
-                className="h-7 rounded bg-green-50 dark:bg-green-950/70 border border-green-300 dark:border-green-700/60 flex items-center px-2.5 gap-2 text-green-800 dark:text-green-300 text-xs truncate shadow-2xs"
-                style={{
-                  width: `${Math.min(totalWidth - 20, duration * pixelsPerSec)}px`,
-                }}
-              >
-                <Mic className="w-3 h-3 shrink-0 text-green-600 dark:text-green-400" />
-                <span className="truncate font-mono text-[11px] font-medium">
-                  🎵 Shady Guise · Giọng chuẩn truyền cảm (3930 ký tự)
-                </span>
-              </div>
+              {audioClips.map((clip) => {
+                const clipLeft = clip.startTime * pixelsPerSec;
+                const clipWidth = Math.max(36, clip.duration * pixelsPerSec - 2);
+
+                const isReady = clip.status === "ready";
+                const isGenerating = clip.status === "generating";
+
+                return (
+                  <div
+                    key={clip.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSeek(clip.startTime);
+                    }}
+                    style={{
+                      left: `${clipLeft}px`,
+                      width: `${clipWidth}px`,
+                      ...(isReady || isGenerating
+                        ? {}
+                        : {
+                            backgroundImage:
+                              "repeating-linear-gradient(45deg, rgba(148, 163, 184, 0.25), rgba(148, 163, 184, 0.25) 5px, transparent 5px, transparent 10px)",
+                          }),
+                    }}
+                    className={`absolute top-1.5 h-7 rounded-md flex items-center px-1.5 gap-1.5 text-xs truncate cursor-pointer transition-all select-none group/clip ${
+                      isReady
+                        ? "bg-emerald-500/15 border border-emerald-500/50 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-500/25 shadow-2xs"
+                        : isGenerating
+                        ? "animate-pulse bg-amber-400/30 border border-amber-400 text-amber-800 dark:text-amber-200"
+                        : "border border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-400"
+                    }`}
+                    title={
+                      isReady
+                        ? `Đã gen audio: ${clip.characterName} (${clip.duration}s)`
+                        : isGenerating
+                        ? `Đang gen audio ngầm (Look-ahead): ${clip.characterName}`
+                        : `Chưa tạo audio: ${clip.characterName} - Sẽ tự động tạo khi phát đến`
+                    }
+                  >
+                    {/* Avatar thu nhỏ của nhân vật */}
+                    <div className="w-4 h-4 rounded-full overflow-hidden bg-background/80 border border-current shrink-0 flex items-center justify-center text-[9px] font-bold">
+                      {clip.characterAvatar ? (
+                        <img
+                          src={clip.characterAvatar}
+                          alt={clip.characterName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        clip.characterName[0]
+                      )}
+                    </div>
+
+                    {/* Tên nhân vật & Mini-waveform */}
+                    <span className="truncate font-mono text-[10px] font-medium">
+                      {clip.characterName} · {clip.duration}s
+                    </span>
+
+                    {/* Vạch sóng âm mini cho clip ready */}
+                    {isReady && clipWidth > 80 && (
+                      <div className="hidden sm:flex items-center gap-0.5 ml-auto opacity-60 shrink-0">
+                        <span className="w-0.5 h-2 bg-emerald-600 dark:bg-emerald-400 rounded-full" />
+                        <span className="w-0.5 h-3 bg-emerald-600 dark:bg-emerald-400 rounded-full" />
+                        <span className="w-0.5 h-1.5 bg-emerald-600 dark:bg-emerald-400 rounded-full" />
+                        <span className="w-0.5 h-2.5 bg-emerald-600 dark:bg-emerald-400 rounded-full" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* TRACK 3: Background Music (Nhạc nền) */}

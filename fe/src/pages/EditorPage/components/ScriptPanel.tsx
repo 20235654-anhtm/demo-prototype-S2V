@@ -13,7 +13,8 @@ import ShotCard from "./ShotCard";
 import ScriptSelectionToolbar from "./Resplit/ScriptSelectionToolbar";
 import DiffPreview from "./Resplit/DiffPreview";
 import ResplitPopover from "./Resplit/ResplitPopover";
-import type { Shot, DiffProposal } from "@/types/script";
+import type { Shot, DiffProposal, DialogueBlock, CharacterAsset } from "@/types/script";
+import { mockCharacters } from "@/mocks/mockCharacters";
 
 interface ScriptPanelProps {
   isPinned: boolean;
@@ -22,10 +23,15 @@ interface ScriptPanelProps {
   shots: Shot[];
   activeShotId: string | null;
   selectedShotIds: string[];
+  characters?: CharacterAsset[];
   onSelectShot: (id: string) => void;
   onToggleSelectShot: (id: string, selected: boolean) => void;
   onClearSelection: () => void;
-  onTextChange: (id: string, text: string) => void;
+  onTextChange?: (id: string, text: string) => void;
+  onShotUpdate?: (
+    shotId: string,
+    updated: { blocks: DialogueBlock[]; text: string; duration: number }
+  ) => void;
   onToggleLock: (id: string) => void;
   onOpenResplitModal: () => void;
   onRequestResplitScoped: (
@@ -37,6 +43,9 @@ interface ScriptPanelProps {
   onApplyProposal: () => void;
   onCancelProposal: () => void;
   onMergeShots: () => void;
+  onEditCharacter?: (characterId: string) => void;
+  onSeekWord?: (timeSec: number) => void;
+  onAddNewCharacter?: () => void;
 }
 
 export default function ScriptPanel({
@@ -46,10 +55,12 @@ export default function ScriptPanel({
   shots,
   activeShotId,
   selectedShotIds,
+  characters = mockCharacters,
   onSelectShot,
   onToggleSelectShot,
   onClearSelection,
   onTextChange,
+  onShotUpdate,
   onToggleLock,
   onOpenResplitModal,
   onRequestResplitScoped,
@@ -57,6 +68,9 @@ export default function ScriptPanel({
   onApplyProposal,
   onCancelProposal,
   onMergeShots,
+  onEditCharacter = () => {},
+  onSeekWord,
+  onAddNewCharacter,
 }: ScriptPanelProps) {
   // Quản lý việc mở ResplitPopover cho 1 hoặc nhiều phân cảnh cụ thể
   const [resplitTargetShotIds, setResplitTargetShotIds] = useState<string[] | null>(null);
@@ -237,11 +251,21 @@ export default function ScriptPanel({
                       shot={shot}
                       isSelected={selectedShotIds.includes(shot.id)}
                       isActive={shot.id === activeShotId}
+                      characters={characters}
                       onSelect={(id, checked) => onToggleSelectShot(id, checked)}
                       onClick={(id) => onSelectShot(id)}
-                      onTextChange={onTextChange}
+                      onShotUpdate={(shotId, updated) => {
+                        if (onShotUpdate) {
+                          onShotUpdate(shotId, updated);
+                        } else if (onTextChange) {
+                          onTextChange(shotId, updated.text);
+                        }
+                      }}
                       onToggleLock={onToggleLock}
                       onResplitSingle={(shotId) => setResplitTargetShotIds([shotId])}
+                      onEditCharacter={onEditCharacter}
+                      onSeekWord={onSeekWord}
+                      onAddNewCharacter={onAddNewCharacter}
                     />
                   </>
                 )}

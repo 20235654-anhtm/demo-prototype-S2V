@@ -2,13 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import CompactScrubber from "./CompactScrubber";
 import ExpandedTimeline from "./ExpandedTimeline";
 import ControlsPill, { ASPECT_RATIOS } from "./ControlsPill";
-import type { Shot } from "@/types/script";
+import type { Shot, CharacterAsset } from "@/types/script";
 
 interface CanvasPreviewProps {
   timelineMode: "compact" | "expanded";
   onTimelineModeChange: (mode: "compact" | "expanded") => void;
   activeShot: Shot | null;
   shots: Shot[];
+  characters?: CharacterAsset[];
   currentTime: number;
   duration: number;
   isPlaying: boolean;
@@ -23,6 +24,7 @@ export default function CanvasPreview({
   onTimelineModeChange,
   activeShot,
   shots,
+  characters,
   currentTime,
   duration,
   isPlaying,
@@ -140,6 +142,7 @@ export default function CanvasPreview({
           duration={duration}
           isPlaying={isPlaying}
           shots={shots}
+          characters={characters}
           activeShotId={currentShot?.id || null}
           onTogglePlay={onTogglePlay}
           onSeek={onSeek}

@@ -8,9 +8,10 @@ import VisualsPanel from "./components/VisualsPanel";
 import CanvasPreview from "./components/CanvasPreview/CanvasPreview";
 import ResplitAllModal from "./components/Resplit/ResplitAllModal";
 import { mockInitialShots } from "@/mocks/mockShots";
+import { mockCharacters } from "@/mocks/mockCharacters";
 import { getProject } from "@/lib/projectStore";
 import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
-import type { Shot, DiffProposal } from "@/types/script";
+import type { Shot, DiffProposal, CharacterAsset, DialogueBlock } from "@/types/script";
 
 export default function EditorPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -24,6 +25,10 @@ export default function EditorPage() {
   const [isScriptPinned, setIsScriptPinned] = useState<boolean>(true); // Đã Pin sang Cột Trái
   const [isScriptOpen, setIsScriptOpen] = useState<boolean>(true); // Cột Trái đang mở/đóng
   const [activeRightTab, setActiveRightTab] = useState<RightTabType>(null); // Tab mở ở Panel Phải
+
+  // 1.1 Quản lý danh sách nhân vật & điều hướng chọn nhân vật
+  const [characters, setCharacters] = useState<CharacterAsset[]>(mockCharacters);
+  const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
 
   // 2. Quản lý 2 chế độ thanh tua
   const [timelineMode, setTimelineMode] = useState<"compact" | "expanded">("compact");
@@ -41,6 +46,44 @@ export default function EditorPage() {
   const duration = shots.reduce((acc, s) => acc + s.duration, 0) || 44.0;
 
   const activeShot = shots.find((s) => s.id === activeShotId) || shots[0];
+
+  // Callback khi người dùng bấm [✏] ở bất kỳ đâu để mở Story Assets và điều hướng đúng nhân vật
+  const handleEditCharacter = (characterId: string) => {
+    setSelectedCharacterId(characterId);
+    setActiveRightTab("assets");
+  };
+
+  // Cập nhật phân cảnh khi có thay đổi khối thoại/tách câu/sửa chữ
+  const handleShotUpdate = (
+    shotId: string,
+    updated: { blocks: DialogueBlock[]; text: string; duration: number }
+  ) => {
+    setShots((prev) =>
+      prev.map((s) =>
+        s.id === shotId
+          ? {
+              ...s,
+              blocks: updated.blocks,
+              text: updated.text,
+              duration: updated.duration,
+            }
+          : s
+      )
+    );
+  };
+
+  // Khi chọn một phân cảnh (click ShotCard hoặc Scene trên Timeline):
+  // Chuyển activeShotId VÀ chuyển con trỏ thời gian timeline về mốc bắt đầu của phân cảnh đó
+  const handleSelectShot = (id: string) => {
+    setActiveShotId(id);
+
+    let startTime = 0;
+    for (const s of shots) {
+      if (s.id === id) break;
+      startTime += s.duration;
+    }
+    setCurrentTime(Number(startTime.toFixed(1)));
+  };
 
   // Giả lập phát video thời gian thực
   useEffect(() => {
@@ -70,6 +113,53 @@ export default function EditorPage() {
       }
     }
   }, [currentTime, shots]);
+
+  // Hiệu ứng Gối đầu (Look-ahead Pre-generation) khi nghe thử toàn bộ:
+  // Tự động sinh ngầm audio cho khối thoại kế tiếp khi kim chạy đến gần
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    let accumulatedTime = 0;
+    for (const shot of shots) {
+      if (!shot.blocks) continue;
+      for (const block of shot.blocks) {
+        const blockDur = block.totalDuration || 3;
+        const blockStart = accumulatedTime;
+        accumulatedTime += blockDur;
+
+        // Nếu kim sắp chạm tới block này (trong khoảng 3.5s trước) mà block chưa sẵn sàng
+        if (
+          currentTime + 3.5 >= blockStart &&
+          currentTime <= blockStart + blockDur &&
+          (block.status === "stale" || block.status === "not_generated")
+        ) {
+          // Chuyển sang generating (nhấp nháy vàng cam)
+          setShots((prev) =>
+            prev.map((s) => ({
+              ...s,
+              blocks: s.blocks?.map((b) =>
+                b.id === block.id ? { ...b, status: "generating" as const } : b
+              ),
+            }))
+          );
+
+          // Sau 1.2s chuyển thành ready (xanh ngọc sẵn sàng)
+          const timer = setTimeout(() => {
+            setShots((prev) =>
+              prev.map((s) => ({
+                ...s,
+                blocks: s.blocks?.map((b) =>
+                  b.id === block.id ? { ...b, status: "ready" as const } : b
+                ),
+              }))
+            );
+          }, 1200);
+
+          return () => clearTimeout(timer);
+        }
+      }
+    }
+  }, [isPlaying, currentTime, shots]);
 
   // Logic Sidebar & Pin kịch bản
   const handleToggleScriptTab = () => {
@@ -304,12 +394,14 @@ export default function EditorPage() {
             onTogglePin={handleUnpinScript}
             onClose={() => setIsScriptOpen(false)}
             shots={shots}
+            characters={characters}
             activeShotId={activeShotId}
             selectedShotIds={selectedShotIds}
-            onSelectShot={setActiveShotId}
+            onSelectShot={handleSelectShot}
             onToggleSelectShot={handleToggleSelectShot}
             onClearSelection={() => setSelectedShotIds([])}
             onTextChange={handleTextChange}
+            onShotUpdate={handleShotUpdate}
             onToggleLock={handleToggleLock}
             onOpenResplitModal={() => setIsResplitModalOpen(true)}
             onRequestResplitScoped={handleRequestResplitScoped}
@@ -317,6 +409,9 @@ export default function EditorPage() {
             onApplyProposal={handleApplyProposal}
             onCancelProposal={() => setProposal(null)}
             onMergeShots={handleMergeShots}
+            onEditCharacter={handleEditCharacter}
+            onSeekWord={(t) => setCurrentTime(t)}
+            onAddNewCharacter={() => handleEditCharacter("new")}
           />
         )}
 
@@ -326,13 +421,14 @@ export default function EditorPage() {
           onTimelineModeChange={setTimelineMode}
           activeShot={activeShot}
           shots={shots}
+          characters={characters}
           currentTime={currentTime}
           duration={duration}
           isPlaying={isPlaying}
           onTogglePlay={() => setIsPlaying(!isPlaying)}
           onSeek={(t) => setCurrentTime(t)}
           onRewind={(s) => setCurrentTime((t) => Math.max(0, t - s))}
-          onSelectShot={setActiveShotId}
+          onSelectShot={handleSelectShot}
         />
 
         {/* (3) PANEL PHẢI (Khi mở Script ở dạng chưa Pin) */}
@@ -342,12 +438,14 @@ export default function EditorPage() {
             onTogglePin={handlePinScript}
             onClose={() => setActiveRightTab(null)}
             shots={shots}
+            characters={characters}
             activeShotId={activeShotId}
             selectedShotIds={selectedShotIds}
-            onSelectShot={setActiveShotId}
+            onSelectShot={handleSelectShot}
             onToggleSelectShot={handleToggleSelectShot}
             onClearSelection={() => setSelectedShotIds([])}
             onTextChange={handleTextChange}
+            onShotUpdate={handleShotUpdate}
             onToggleLock={handleToggleLock}
             onOpenResplitModal={() => setIsResplitModalOpen(true)}
             onRequestResplitScoped={handleRequestResplitScoped}
@@ -355,12 +453,21 @@ export default function EditorPage() {
             onApplyProposal={handleApplyProposal}
             onCancelProposal={() => setProposal(null)}
             onMergeShots={handleMergeShots}
+            onEditCharacter={handleEditCharacter}
+            onSeekWord={(t) => setCurrentTime(t)}
+            onAddNewCharacter={() => handleEditCharacter("new")}
           />
         )}
 
         {/* (3) PANEL PHẢI (Khi mở Story Assets) */}
         {activeRightTab === "assets" && (
-          <StoryAssetsPanel onClose={() => setActiveRightTab(null)} />
+          <StoryAssetsPanel
+            onClose={() => setActiveRightTab(null)}
+            characters={characters}
+            onCharactersChange={setCharacters}
+            selectedCharacterId={selectedCharacterId}
+            onSelectCharacterId={setSelectedCharacterId}
+          />
         )}
 
         {/* (3) PANEL PHẢI (Khi mở Visuals) */}

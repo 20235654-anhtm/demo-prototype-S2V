@@ -1,18 +1,33 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, /* Lock, Unlock, */ Sparkles, Check } from "lucide-react";
-import type { Shot } from "@/types/script";
+import { Clock, Sparkles, Check } from "lucide-react";
+import DialogueBlockCard from "./DialogueScript/DialogueBlockCard";
+import {
+  splitBlockWithLine,
+  updateBlockCharacter,
+  updateLineTextInBlocks,
+  calculateShotTextAndDuration,
+} from "./DialogueScript/dialogueSplitUtils";
+import { generateWordTimestamps } from "@/mocks/mockShots";
+import type { Shot, DialogueBlock, CharacterAsset } from "@/types/script";
 
 interface ShotCardProps {
   shot: Shot;
   isSelected: boolean;
   isActive: boolean;
   isDisabled?: boolean;
+  characters: CharacterAsset[];
   onSelect: (id: string, selected: boolean) => void;
   onClick: (id: string) => void;
-  onTextChange: (id: string, text: string) => void;
-  onToggleLock: (id: string) => void;
+  onShotUpdate: (
+    shotId: string,
+    updated: { blocks: DialogueBlock[]; text: string; duration: number }
+  ) => void;
+  onToggleLock?: (id: string) => void;
   onResplitSingle: (id: string) => void;
+  onEditCharacter: (characterId: string) => void;
+  onSeekWord?: (timeSec: number) => void;
+  onAddNewCharacter?: () => void;
 }
 
 export default function ShotCard({
@@ -20,123 +35,154 @@ export default function ShotCard({
   isSelected,
   isActive,
   isDisabled = false,
+  characters,
   onSelect,
   onClick,
-  onTextChange,
+  onShotUpdate,
   onResplitSingle,
+  onEditCharacter,
+  onSeekWord,
+  onAddNewCharacter,
 }: ShotCardProps) {
   const formatDuration = (sec: number) => {
     const rounded = Number.isInteger(sec) ? sec : Number(sec.toFixed(1));
     return `${rounded}s`;
   };
 
+  // Đảm bảo shot luôn có ít nhất 1 block hợp lệ
+  const currentBlocks: DialogueBlock[] =
+    shot.blocks && shot.blocks.length > 0
+      ? shot.blocks
+      : [
+          {
+            id: `block-${shot.id}-default`,
+            shotId: shot.id,
+            characterId: "char-narrator",
+            status: "ready",
+            totalDuration: shot.duration,
+            lines: [
+              {
+                id: `line-${shot.id}-default`,
+                text: shot.text,
+                duration: shot.duration,
+                words: generateWordTimestamps(shot.text, 0, shot.duration),
+              },
+            ],
+          },
+        ];
+
+  const handleApplyBlocksChange = (nextBlocks: DialogueBlock[]) => {
+    const { text, duration } = calculateShotTextAndDuration(nextBlocks);
+    onShotUpdate(shot.id, {
+      blocks: nextBlocks,
+      text,
+      duration,
+    });
+  };
+
+  const handleChangeBlockCharacter = (blockId: string, newCharacterId: string) => {
+    const nextBlocks = updateBlockCharacter(currentBlocks, blockId, newCharacterId);
+    handleApplyBlocksChange(nextBlocks);
+  };
+
+  const handleChangeLineCharacter = (lineId: string, newCharacterId: string) => {
+    const targetBlock = currentBlocks.find((b) =>
+      b.lines.some((l) => l.id === lineId)
+    );
+    if (!targetBlock) return;
+
+    const nextBlocks = splitBlockWithLine(
+      currentBlocks,
+      targetBlock.id,
+      lineId,
+      newCharacterId,
+      shot.id
+    );
+    handleApplyBlocksChange(nextBlocks);
+  };
+
+  const handleLineTextChange = (lineId: string, newText: string) => {
+    const nextBlocks = updateLineTextInBlocks(currentBlocks, lineId, newText);
+    handleApplyBlocksChange(nextBlocks);
+  };
+
   return (
     <div
       onClick={() => !isDisabled && onClick(shot.id)}
-      className={`group relative rounded-xl border p-3.5 transition-all cursor-pointer ${
+      className={`group relative rounded-xl border transition-all cursor-pointer overflow-hidden ${
         isDisabled
           ? "opacity-40 pointer-events-none bg-muted/30"
           : isSelected
-            ? "border-primary bg-primary/5 shadow-xs ring-2 ring-primary/20"
-            : isActive
-              ? "border-brand bg-brand/5 shadow-xs ring-2 ring-brand/30"
-              : "border-border bg-card hover:border-border/80 hover:shadow-xs"
+          ? "border-primary bg-primary/5 shadow-xs ring-2 ring-primary/20"
+          : isActive
+          ? "border-brand bg-brand/5 shadow-xs ring-2 ring-brand/30"
+          : "border-border bg-card hover:border-border/80 hover:shadow-xs"
       }`}
     >
-      <div className="flex items-start gap-3.5">
-        {/* Custom Checkbox */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelect(shot.id, !isSelected);
-          }}
-          className={`w-5 h-5 rounded-md border flex items-center justify-center mt-1 transition-colors cursor-pointer shrink-0 ${
-            isSelected
-              ? "bg-primary text-primary-foreground border-primary"
-              : "border-muted-foreground/40 hover:border-primary bg-background"
-          }`}
-        >
-          {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-        </button>
-
-        {/* Thumbnail Image */}
-        <div className="relative w-28 aspect-video rounded-lg overflow-hidden bg-muted border shrink-0 group/img">
-          <img
-            src={shot.image}
-            alt={shot.code}
-            className="w-full h-full object-cover group-hover/img:scale-105 transition-transform"
-          />
-          {/* Tạm ẩn tính năng khóa ảnh (chưa cần thiết)
+      {/* 1. Header row chạy toàn bộ chiều ngang card từ mép này sang mép kia (Edge-to-edge divider) */}
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-border/70 select-none bg-muted/15">
+        <div className="flex items-center gap-2">
+          {/* Custom Checkbox */}
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onToggleLock(shot.id);
+              onSelect(shot.id, !isSelected);
             }}
-            className={`absolute bottom-1 right-1 p-1 rounded-md text-[10px] backdrop-blur-xs transition-opacity cursor-pointer ${
-              shot.isLocked
-                ? "bg-black/70 text-brand opacity-100"
-                : "bg-black/50 text-white opacity-0 group-hover/img:opacity-100 hover:bg-black/80"
+            className={`w-4 h-4 rounded border flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
+              isSelected
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-muted-foreground/40 hover:border-primary bg-background"
             }`}
-            title={shot.isLocked ? "Đã khóa hình ảnh" : "Khóa hình ảnh này"}
           >
-            {shot.isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+            {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
           </button>
-          */}
-        </div>
 
-        {/* Script Content */}
-        <div className="flex-1 min-w-0 space-y-1.5">
-          {/* Header row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="font-semibold text-xs text-foreground bg-muted/40">
-                {shot.code}
-              </Badge>
-              <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-mono">
-                <Clock className="w-3 h-3 text-muted-foreground/70" />
-                <span>{formatDuration(shot.duration)}</span>
-              </div>
-            </div>
+          <Badge
+            variant="outline"
+            className="font-semibold text-xs text-foreground bg-muted/40 px-2 py-0.5"
+          >
+            {shot.code}
+          </Badge>
 
-            {/* Quick Resplit ✦ button on card */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onResplitSingle(shot.id);
-              }}
-              className="h-6 px-1.5 text-[11px] text-muted-foreground hover:text-brand-strong dark:hover:text-brand hover:bg-brand/10 cursor-pointer opacity-70 group-hover:opacity-100"
-              title="Chia lại cảnh này"
-            >
-              <Sparkles className="w-3 h-3 mr-1 text-brand" />
-              <span>Chia lại</span>
-            </Button>
+          <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-mono">
+            <Clock className="w-3 h-3 text-muted-foreground/70" />
+            <span>{formatDuration(shot.duration)}</span>
           </div>
-
-          {/* Textarea tự động dãn chiều cao theo nội dung, không có thanh cuộn trong */}
-          <textarea
-            value={shot.text}
-            onChange={(e) => {
-              onTextChange(shot.id, e.target.value);
-              e.target.style.height = "auto";
-              e.target.style.height = `${e.target.scrollHeight}px`;
-            }}
-            ref={(el) => {
-              if (el) {
-                el.style.height = "auto";
-                el.style.height = `${el.scrollHeight}px`;
-              }
-            }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full text-xs text-foreground/90 bg-transparent resize-none outline-none border-none focus:outline-none focus:ring-0 leading-relaxed font-sans overflow-hidden block p-0"
-            placeholder="Nội dung lời đọc của phân cảnh..."
-          />
         </div>
+
+        {/* Quick Resplit ✦ button on card */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onResplitSingle(shot.id);
+          }}
+          className="h-6 px-1.5 text-[11px] text-muted-foreground hover:text-brand-strong dark:hover:text-brand hover:bg-brand/10 cursor-pointer opacity-75 group-hover:opacity-100"
+          title="Chia lại cảnh này"
+        >
+          <Sparkles className="w-3 h-3 mr-1 text-brand" />
+          <span>Chia lại</span>
+        </Button>
+      </div>
+
+      {/* 2. Thân phân cảnh: Toàn bộ chiều ngang dành cho lời đọc & nhân vật */}
+      <div className="p-3.5 pt-2.5 space-y-2">
+        {currentBlocks.map((block) => (
+          <DialogueBlockCard
+            key={block.id}
+            block={block}
+            characters={characters}
+            onChangeBlockCharacter={handleChangeBlockCharacter}
+            onChangeLineCharacter={handleChangeLineCharacter}
+            onLineTextChange={handleLineTextChange}
+            onEditCharacter={onEditCharacter}
+            onSeekWord={onSeekWord}
+            onAddNewCharacter={onAddNewCharacter}
+          />
+        ))}
       </div>
     </div>
   );
 }
-
