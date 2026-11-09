@@ -1,9 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { parseStoryChapters, getStoryText, type StoryChapter } from "@/lib/storyChapters";
 import { getProject } from "@/lib/projectStore";
+import { MOCK_BOOK_SAMPLE_TEXT } from "@/pages/HomePage/components/CreateStoryModal/mockData";
 import ProjectOverviewHeader from "./components/ProjectOverviewHeader";
 import OverviewSidebar from "./components/OverviewSidebar";
 import OverviewSectionPanel from "./components/OverviewSectionPanel";
+import ChapterPickerDialog from "./components/ChapterPickerDialog";
 import StoryTextView from "./components/StoryTextView";
 import type { OverviewSection } from "./types";
 
@@ -12,6 +15,24 @@ export default function ProjectOverviewPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const [activeSection, setActiveSection] =
     useState<OverviewSection | null>(null);
+  const [activeChapterId, setActiveChapterId] = useState<string | null>(
+    "chapter-1"
+  );
+  const [chapterJumpNonce, setChapterJumpNonce] = useState(0);
+  const [isChapterPickerOpen, setIsChapterPickerOpen] = useState(false);
+
+  const chapters = useMemo(
+    () => parseStoryChapters(getStoryText(projectId, MOCK_BOOK_SAMPLE_TEXT)),
+    [projectId]
+  );
+
+  useEffect(() => {
+    if (!activeChapterId) return;
+
+    document
+      .getElementById(activeChapterId)
+      ?.scrollIntoView({ behavior: "auto", block: "start" });
+  }, [activeChapterId, chapterJumpNonce]);
 
   const project = useMemo(
     () => (projectId ? getProject(projectId) : undefined),
@@ -23,11 +44,21 @@ export default function ProjectOverviewPage() {
   }
 
   const handleEnterStudio = () => {
-    navigate(`/editor/${project.id}`);
+    setIsChapterPickerOpen(true);
+  };
+
+  const handleSelectChapterForStudio = (chapter: StoryChapter) => {
+    setIsChapterPickerOpen(false);
+    navigate(`/editor/${project.id}?chapter=${chapter.number}`);
   };
 
   const handleSectionSelect = (section: OverviewSection) => {
     setActiveSection((current) => (current === section ? null : section));
+  };
+
+  const handleSelectChapter = (chapter: StoryChapter) => {
+    setActiveChapterId(chapter.id);
+    setChapterJumpNonce((nonce) => nonce + 1);
   };
 
   return (
@@ -46,6 +77,9 @@ export default function ProjectOverviewPage() {
         {activeSection && (
           <OverviewSectionPanel
             section={activeSection}
+            chapters={chapters}
+            activeChapterId={activeChapterId}
+            onSelectChapter={handleSelectChapter}
             onClose={() => setActiveSection(null)}
           />
         )}
@@ -56,6 +90,13 @@ export default function ProjectOverviewPage() {
           </div>
         </main>
       </div>
+
+      <ChapterPickerDialog
+        open={isChapterPickerOpen}
+        onOpenChange={setIsChapterPickerOpen}
+        chapters={chapters}
+        onSelectChapter={handleSelectChapterForStudio}
+      />
     </div>
   );
 }

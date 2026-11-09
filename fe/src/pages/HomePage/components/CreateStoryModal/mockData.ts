@@ -1,6 +1,7 @@
 import type { VoiceOption, CharacterItem } from "./types";
 import { mockArtStyles } from "@/mocks/mockArtStyles";
 import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
+import { CHAPTER_2_TEXT } from "@/mocks/mockChapter2";
 
 export const MOCK_ART_STYLES = mockArtStyles;
 
@@ -111,7 +112,7 @@ export const MOCK_INITIAL_CHARACTERS: CharacterItem[] = [
   },
 ];
 
-export const MOCK_BOOK_SAMPLE_TEXT = `“Đấu chi lực, tam đoạn”
+const MOCK_CHAPTER_1_TEXT = `“Đấu chi lực, tam đoạn”
 
 Nhìn trắc nghiệm ma thạch có chút chói mắt năm chữ, thiếu niên mặt không chút thay đổi, thần sắc tự giễu, nắm chặt tay, bởi vì dùng lực quá mạnh làm móng tay đâm thật sâu vào trong lòng bàn tay, mang đến một trận đau đớn
 
@@ -220,6 +221,14 @@ Nhìn trên thạch bia tin tức, bên cạnh trung niên trắc nghiệm viên
 Đứng tại chỗ nhìn thiếu niên cô độc bóng lưng, Tiêu Huân Nhi suy nghĩ một hồi, tại phía sau vang lên một hồi ghen tị sói tru vang lên, bước nhanh theo, cùng thiếu niên sóng vai đi…
 
 “A a…” Đối với thiếu nữ thẳng thắn lời nói, thiếu niên xấu hổ cười một tiếng, nhưng lại không nói gì, nhân không phong lưu uổng thiếu niên, nhưng hắn hiện nay thực sự không có tư cách cùng tâm tình này, lạc mịch xoay người, chậm rãi đi ra khỏi quảng trường…`;
+
+export const MOCK_BOOK_SAMPLE_TEXT = `Chương 1
+
+${MOCK_CHAPTER_1_TEXT}
+
+Chương 2
+
+${CHAPTER_2_TEXT}`;
 
 // Demo Audio Player
 class DemoAudioSynthesizer {
