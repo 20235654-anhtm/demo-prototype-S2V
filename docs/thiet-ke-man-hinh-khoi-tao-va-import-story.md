@@ -14,7 +14,7 @@ Tài liệu đặc tả kiến trúc giao diện, luồng tương tác và kế 
 * **Header trang chủ (`HomeHeader`):**
   * Nằm riêng trên đầu trang chủ `HomePage` (không ghim cứng vào `MainLayout` để tránh làm vướng trang Studio).
   * Bên trái: Logo + Tiêu đề thương hiệu **`Story2Video`** (font bold, hiện đại).
-  * Bên phải: Thông tin tài khoản người dùng (`Myanh 👤`) hoặc số dư điểm. Không dùng thanh điều hướng demo `Home | Project | Editor`.
+  * Bên phải: Thông tin tài khoản người dùng (`My Anh 👤`) hoặc số dư điểm. Không dùng thanh điều hướng demo `Home | Project | Editor`.
 * **Thanh công cụ trang chủ (Project Toolbar):**
   * Tiêu đề danh mục: `Dự án của tôi`.
   * Nút hành động chính bên phải: **`[ + Tạo dự án mới ]`** (Màu vàng nổi bật, click mở Modal `Story`).
@@ -27,7 +27,7 @@ Tài liệu đặc tả kiến trúc giao diện, luồng tương tác và kế 
 
 ```
 +----------------------------------------------------------------------------------------------------+
-|  Story2Video                                                      [ User: Myanh 👤 ]               |
+|  Story2Video                                                      [ User: My Anh 👤 ]               |
 +----------------------------------------------------------------------------------------------------+
 |  Dự án của tôi                                                                [ + Tạo dự án mới ]  |
 |  [ 🔍 Tìm kiếm dự án...                                          ]             [ ⊞ Lưới | ☰ DS ]   |
@@ -36,22 +36,22 @@ Tài liệu đặc tả kiến trúc giao diện, luồng tương tác và kế 
 |  +------------------------+  +------------------------+  +------------------------+                |
 |  | [    ẢNH THUMBNAIL   ] |  | [    ẢNH THUMBNAIL   ] |  | +--------------------+ |                |
 |  |                        |  |                        |  | | Introduction:      | | (Text Preview) |
-|  | ● Creation draft       |  | ● Creation draft       |  | | "Xin chào tất cả..."| |                |
+|  | ● Đang tạo       |  | ● Đang tạo       |  | | "Xin chào tất cả..."| |                |
 |  +------------------------+  +------------------------+  | +--------------------+ |                |
-|  | Căn cứ kết quả giám... |  | Diễn viên Thúy Diễm... |  | ● Creation draft       |                |
-|  | 40m ago · Myanh        |  | 2h ago · Myanh         |  +------------------------+                |
+|  | Căn cứ kết quả giám... |  | Diễn viên Thúy Diễm... |  | ● Đang tạo       |                |
+|  | 40m ago · My Anh        |  | 2h ago · My Anh         |  +------------------------+                |
 |  +------------------------+  +------------------------+  | Dưới sự thao túng...   |                |
-|                                                          | 2d ago · Myanh         |                |
+|                                                          | 2d ago · My Anh         |                |
 |                                                          +------------------------+                |
 +----------------------------------------------------------------------------------------------------+
 ```
 
 * **Hai dạng thẻ dự án trong Lưới:**
-  1. **Thẻ Thumbnail Video/Ảnh:** Hình ảnh đại diện tỷ lệ 16:9, góc dưới có badge chấm xanh `● Creation draft`.
-  2. **Thẻ Text Preview (Kịch bản văn bản):** Khung trang giấy xem trước 3–4 dòng văn bản đầu (`"Introduction: Xin chào tất cả mọi người..."`), góc dưới có badge `● Creation draft`.
-* **Chân thẻ:** Tiêu đề dự án (cắt ngắn 1 dòng `...`) và metadata (`40 minutes ago · Myanh`).
+  1. **Thẻ Thumbnail Video/Ảnh:** Hình ảnh đại diện tỷ lệ 16:9, góc dưới có badge chấm xanh `● Đang tạo`.
+  2. **Thẻ Text Preview (Kịch bản văn bản):** Khung trang giấy xem trước 3–4 dòng văn bản đầu (`"Introduction: Xin chào tất cả mọi người..."`), góc dưới có badge `● Đang tạo`.
+* **Chân thẻ:** Tiêu đề dự án (cắt ngắn 1 dòng `...`) và metadata (`40 minutes ago · My Anh`).
 * **Hành vi click thẻ (Card Click):**
-  * **Nếu thẻ có tag `● Creation draft`:** Nhấp vào sẽ **mở lại Modal Khởi tạo & Import Story (`Story`)** với dữ liệu bản thảo cũ để người dùng tiếp tục thiết lập.
+  * **Nếu thẻ có tag `● Đang tạo`:** Nhấp vào sẽ **mở lại Modal Khởi tạo & Import Story (`Story`)** với dữ liệu bản thảo cũ để người dùng tiếp tục thiết lập.
   * **Nếu thẻ không có tag (để trống):** Nhấp vào sẽ mở thẳng vào trang Studio (`/editor/:projectId`).
 
 ---
@@ -64,9 +64,9 @@ Khi người dùng chuyển sang chế độ `[ ☰ Danh sách ]`, giao diện c
 +----------------------------------------------------------------------------------------------------+
 |  Title                                   Created          Created by     Status                    |
 +----------------------------------------------------------------------------------------------------+
-|  [🖼] Căn cứ kết quả giám...              2 hours ago      Myanh          ● Creation draft     [...]|
-|  [📄] Diễn viên Thúy Diễm cho...         3 hours ago      Myanh          ● Creation draft     [...]|
-|  [📄] Dưới sự thao túng của...           3 days ago       Myanh                                (i)[...]|
+|  [🖼] Căn cứ kết quả giám...              2 hours ago      My Anh          ● Đang tạo     [...]|
+|  [📄] Diễn viên Thúy Diễm cho...         3 hours ago      My Anh          ● Đang tạo     [...]|
+|  [📄] Dưới sự thao túng của...           3 days ago       My Anh                                (i)[...]|
 +----------------------------------------------------------------------------------------------------+
 ```
 
@@ -75,13 +75,13 @@ Khi người dùng chuyển sang chế độ `[ ☰ Danh sách ]`, giao diện c
      * Bên trái: Thumbnail thu nhỏ (nếu có ảnh bìa) hoặc icon trang văn bản `[📄]` (nếu là dạng text draft).
      * Bên phải: Tên dự án (chữ đậm vừa, hover đổi màu/gạch chân).
   2. **`Created` (Thời gian tạo):** Hiển thị thời gian tương đối (`2 hours ago`, `3 days ago`).
-  3. **`Created by` (Người tạo):** Tên tài khoản tác giả (`Myanh`).
-  4. **`Status` (Trạng thái):** Huy hiệu chấm xanh `● Creation draft` (hoặc **để trống hoàn toàn**, không có tag gì cả đối với các dự án bình thường).
+  3. **`Created by` (Người tạo):** Tên tài khoản tác giả (`My Anh`).
+  4. **`Status` (Trạng thái):** Huy hiệu chấm xanh `● Đang tạo` (hoặc **để trống hoàn toàn**, không có tag gì cả đối với các dự án bình thường).
   5. **Cột Thao tác phụ:**
      * Nút `(i)`: Xem chi tiết thông số/lịch sử dự án.
      * Nút menu `[...]` (Dropdown): Chứa các thao tác nhanh: `Đổi tên`, `Nhân bản`, `Xóa dự án`.
 * **Hành vi click hàng (Row Click):**
-  * **Với dòng có tag `● Creation draft`:** Nhấp vào dòng sẽ **mở lại Modal Khởi tạo & Import Story (`Story`)**.
+  * **Với dòng có tag `● Đang tạo`:** Nhấp vào dòng sẽ **mở lại Modal Khởi tạo & Import Story (`Story`)**.
   * **Với dòng không có tag:** Nhấp vào dòng sẽ điều hướng thẳng vào Studio (`/editor/:projectId`).
 
 ---
@@ -169,7 +169,7 @@ Toàn bộ giao diện Trang chủ (`HomePage`) và Modal Khởi tạo (`CreateS
 | STT | Tên Component | Đường dẫn file gốc (`src/components/ui/`) | Trạng thái hiện tại | Vị trí & Mục đích sử dụng cụ thể trong dự án |
 | :---: | :--- | :--- | :---: | :--- |
 | 1 | **`button`** | `src/components/ui/button.tsx` | **ĐÃ CÓ SẴN** | Nút `[+ Tạo dự án mới]`, nút Stepper `[Tiếp tục]`, `[Quay lại]`, `[Tạo dự án]`, nút `[Đổi tệp]`, `[Sửa]`, nút Play demo audio `[▶]`. |
-| 2 | **`badge`** | `src/components/ui/badge.tsx` | **ĐÃ CÓ SẴN** | Huy hiệu chấm xanh `● Creation draft`, tag định dạng file `DOCX` / `PDF` / `TXT`, badge cờ vùng miền và `Nâng cao · Sách nói`. |
+| 2 | **`badge`** | `src/components/ui/badge.tsx` | **ĐÃ CÓ SẴN** | Huy hiệu chấm xanh `● Đang tạo`, tag định dạng file `DOCX` / `PDF` / `TXT`, badge cờ vùng miền và `Nâng cao · Sách nói`. |
 | 3 | **`card`** | `src/components/ui/card.tsx` | **ĐÃ CÓ SẴN** | Thẻ tóm tắt thông tin Tài liệu & Giọng đọc ở Bước 3 (Kiểm tra); thẻ chứa giọng đọc đang chọn ở Bước 2. |
 | 4 | **`dialog`** | `src/components/ui/dialog.tsx` | **ĐÃ CÓ SẴN** | Khung Modal popup `CreateStoryModal` (hỗ trợ nền mờ, bo góc, tiêu đề `Story` và nút đóng `[✕]`). |
 | 5 | **`input`** | `src/components/ui/input.tsx` | **ĐÃ CÓ SẴN** | Ô tìm kiếm `[ 🔍 Tìm kiếm dự án... ]` trên thanh công cụ `ProjectToolbar`. |
@@ -263,7 +263,7 @@ npx shadcn@latest add select radio-group separator textarea tabs
     {
       id: "voice-1",
       name: "Duy Phương nâng cao (Beta)",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces",
+      avatar: "/wireframe-placeholder.svg",
       costPerChar: 2,
       tags: ["Nâng cao", "Sách nói", "Miền Bắc"],
       isPremium: true,
@@ -272,7 +272,7 @@ npx shadcn@latest add select radio-group separator textarea tabs
     {
       id: "voice-2",
       name: "Thanh Long nâng cao",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
+      avatar: "/wireframe-placeholder.svg",
       costPerChar: 2,
       tags: ["Nâng cao", "Truyền cảm", "Miền Bắc"],
       isPremium: true,
@@ -281,7 +281,7 @@ npx shadcn@latest add select radio-group separator textarea tabs
     {
       id: "voice-3",
       name: "HN - Hà Chi",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
+      avatar: "/wireframe-placeholder.svg",
       costPerChar: 1,
       tags: ["Tiêu chuẩn", "Tin tức", "Miền Bắc"],
       isPremium: false,
@@ -290,7 +290,7 @@ npx shadcn@latest add select radio-group separator textarea tabs
     {
       id: "voice-4",
       name: "SG - Chí Đạt",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces",
+      avatar: "/wireframe-placeholder.svg",
       costPerChar: 1,
       tags: ["Tiêu chuẩn", "Kể chuyện", "Miền Nam"],
       isPremium: false,
@@ -319,7 +319,7 @@ Các file dưới đây đã có sẵn nhưng cần hoàn thiện liên kết. *
   * Đảm bảo dropdown menu `[...]` (đã dùng `DropdownMenu` của shadcn) có sự kiện `e.stopPropagation()` khi bấm vào item để không kích hoạt click mở thẻ.
 * **Cái CẦN GIỮ NGUYÊN:**
   * Khung hình tỷ lệ 16:9 (`aspect-video`), viền bo góc bo tròn `rounded-xl`.
-  * Badge góc dưới `● Creation draft` (chỉ hiển thị khi `status === "Creation draft"`).
+  * Badge góc dưới `● Đang tạo` (chỉ hiển thị khi `status === "draft"`).
   * Tiêu đề và ngày tạo đặt bên ngoài khung thumbnail.
 
 #### 4.3. File `src/pages/HomePage/components/ProjectTable.tsx`
@@ -328,16 +328,16 @@ Các file dưới đây đã có sẵn nhưng cần hoàn thiện liên kết. *
   * Đảm bảo dropdown menu `[...]` có `e.stopPropagation()`.
 * **Cái CẦN GIỮ NGUYÊN:**
   * Cấu trúc 5 cột: `Title`, `Created`, `Created by`, `Status`, và cột action cuối.
-  * Badge trạng thái `● Creation draft` dạng pill nhỏ gọn.
+  * Badge trạng thái `● Đang tạo` dạng pill nhỏ gọn.
 
 #### 4.4. File `src/pages/HomePage/HomePage.tsx`
 * **Cái CẦN SỬA:**
   * Đảm bảo xử lý `handleProjectClick`:
-    * Thẻ/dòng có tag `Creation draft` -> Gán `selectedDraft` và mở Modal `Story`.
+    * Thẻ/dòng có tag `Đang tạo` -> Gán `selectedDraft` và mở Modal `Story`.
     * Thẻ/dòng không có tag -> Điều hướng thẳng sang `/editor/:projectId`.
   * Khi bấm `[+ Tạo dự án mới]` -> Reset `selectedDraft = null` và mở Modal.
 * **Cái CẦN GIỮ NGUYÊN:**
-  * Header thương hiệu `Story2Video` & avatar `Myanh 👤` trên đầu trang.
+  * Header thương hiệu `Story2Video` & avatar `My Anh 👤` trên đầu trang.
   * Cụm Toolbar tìm kiếm và toggle view `[⊞ Lưới | ☰ Danh sách]`.
 
 ---
@@ -379,9 +379,9 @@ flowchart TD
     VIEW -->|'list'| LIST
     TB -->|Bấm '+ Tạo dự án mới'| MODAL
 
-    GRID -->|Click thẻ có tag 'Creation draft'| MODAL
+    GRID -->|Click thẻ có tag 'Đang tạo'| MODAL
     GRID -->|Click thẻ không có tag| STUDIO["EditorPage (Studio: /editor/:projectId)"]
-    LIST -->|Click dòng có tag 'Creation draft'| MODAL
+    LIST -->|Click dòng có tag 'Đang tạo'| MODAL
     LIST -->|Click dòng không có tag| STUDIO
     MODAL -->|Bấm nút vàng 'Tạo dự án'| STUDIO
     

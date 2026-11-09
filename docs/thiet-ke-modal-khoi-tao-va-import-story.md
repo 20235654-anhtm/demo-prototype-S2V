@@ -2,7 +2,10 @@
 
 Tài liệu đặc tả toàn diện cấu trúc giao diện, luồng tương tác và kế hoạch triển khai Frontend trong thư mục `fe/` cho **Modal Khởi Tạo & Import Story (`Story`)**. Modal được kích hoạt khi:
 1. Nhấp nút **`[ + Tạo dự án mới ]`** trên Toolbar trang chủ.
-2. Nhấp vào bất kỳ thẻ hoặc dòng dự án nào có gắn tag **`● Creation draft`** để tiếp tục thiết lập bản thảo đang dang dở.
+2. Nhấp vào bất kỳ thẻ hoặc dòng dự án nào có gắn tag **`● Đang tạo`** để tiếp tục thiết lập bản thảo đang dang dở.
+
+> [!IMPORTANT]
+> **Cập nhật 09/11/2026:** Giao diện hiện tại đã lược bỏ khối **Phong cách đọc** (Single/Multi cast) và **Ảnh bìa sách** ở Bước 2. Bước 3 luôn là **Giọng đọc**; nhánh Multi cast/Nhân vật không còn được sử dụng. Các mô tả liên quan đến Multi cast và Ảnh bìa bên dưới chỉ mang tính lịch sử.
 
 ---
 
@@ -16,14 +19,14 @@ Khung modal tuân thủ chính xác kiến trúc dialog nguyên bản (`CreateSt
   * **Cột bước tiến trình bên trái (`w-55` / ~220px):** Chỉ hiển thị các nhãn bước **ngắn gọn, xúc tích**:
     1. `Tải lên`
     2. `Thiết lập`
-    3. `Giọng đọc` *(nếu ở Bước 2 chọn Single cast)* HOẶC `Nhân vật` *(nếu ở Bước 2 chọn Multi cast)*.
+    3. `Giọng đọc`
     *(Không có các dòng mô tả rườm rà dưới tên bước).*
   * **Khung nội dung bên phải (`flex-1`):** Chứa giao diện nội dung của bước đang kích hoạt.
 * **Footer chung:** Trải dài toàn bộ đáy modal (không bị vách ngăn chia cắt).
   * Toàn bộ cụm nút hành động được căn về **góc dưới bên phải (`justify-end gap-3`)**:
     * Nút **`[ ← Quay lại ]`**: Nằm bên trái của nút chính (chỉ xuất hiện từ Bước 2, ẩn khi đang ở Bước 1).
     * Nút **`[ Tiếp tục → ]`** (ở Bước 1 & 2) hoặc **`[ Tạo dự án ]`** (ở Bước 3, màu vàng nổi bật).
-  *(Tự động lưu bản nháp `● Creation draft` khi người dùng bấm `[ ✕ ]` hoặc đóng modal).*
+  *(Tự động lưu bản nháp `● Đang tạo` khi người dùng bấm `[ ✕ ]` hoặc đóng modal).*
 
 ```
 +----------------------------------------------------------------------------------------------------+
@@ -34,7 +37,6 @@ Khung modal tuân thủ chính xác kiến trúc dialog nguyên bản (`CreateSt
 | (●) 1. Tải lên    | [ ... Nội dung tương ứng theo bước được chọn ... ]                             |
 | (○) 2. Thiết lập  |                                                                                |
 | (○) 3. Giọng đọc  |                                                                                |
-|     / Nhân vật    |                                                                                |
 |                   |                                                                                |
 +-------------------+--------------------------------------------------------------------------------+
 |                                                  [ ← Quay lại ]             [ Tiếp tục → / Tạo dự án ] |
@@ -72,62 +74,51 @@ Giữ nguyên trải nghiệm tải file và xem trước nội dung văn bản 
 
 ### 3. Chi tiết Bước 2: Thiết lập (`Thiết lập`)
 
-Bước này tập trung toàn bộ cấu hình dự án: Phong cách đọc, Ảnh bìa sách, Ngôn ngữ tác phẩm, Phong cách mỹ thuật (có hình ảnh minh họa) và Tỷ lệ ảnh muốn sinh. Trong đó, khối **Ảnh bìa sách** và **Ngôn ngữ tác phẩm** được xếp theo **hàng dọc** để đảm bảo không gian rộng rãi, không bị co cụm:
+Bước này tập trung cấu hình dự án: Ngôn ngữ tác phẩm, Phong cách nghệ thuật (có hình ảnh minh họa), Tỷ lệ ảnh minh họa và Chế độ hiển thị. Hai khối **Phong cách đọc** và **Ảnh bìa sách** đã được lược bỏ khỏi giao diện; luồng hiện tại chỉ dùng một giọng đọc duy nhất.
 
 ```
 +----------------------------------------------------------------------------------------------------+
-| Phong cách đọc                                                                                     |
-| +---------------------------------------------------+ +------------------------------------------+ |
-| | (•) Single cast                                   | | ( ) Multi cast                           | |
-| | Một giọng người kể chuyện cho toàn bộ cuốn sách   | | Các giọng đọc riêng biệt cho người kể    | |
-| | Thích hợp cho sách tóm tắt, tiểu luận, phóng sự   | | chuyện và từng nhân vật trong tác phẩm   | |
-| +---------------------------------------------------+ +------------------------------------------+ |
-|                                                                                                    |
-| Ảnh bìa sách                                                                                       |
-| +-----------+                                                                                      |
-| | [ ẢNH     |  [ Thay ảnh bìa ]                                                                    |
-| |   BÌA     |  [ Xóa ảnh bìa ]                                                                     |
-| |  PREVIEW] |                                                                                      |
-| +-----------+                                                                                      |
-|                                                                                                    |
 | Ngôn ngữ tác phẩm                                                                                  |
 | +------------------------------------------------------------------------------------------------+ |
 | | 🇻🇳 Tiếng Việt                                                                               [v] | |
 | +------------------------------------------------------------------------------------------------+ |
 |                                                                                                    |
-| Phong cách mỹ thuật                                                                                |
+| Phong cách nghệ thuật                                                                              |
 | +---------------+ +---------------+ +---------------+ +---------------+                            |
 | | [🖼 ẢNH DEMO] | | [🖼 ẢNH DEMO] | | [🖼 ẢNH DEMO] | | [🖼 ẢNH DEMO] |                            |
 | | Ghibli Anime  | | 3D Cinematic  | | Watercolor    | | Cyberpunk     |                            |
 | +---------------+ +---------------+ +---------------+ +---------------+                            |
 |                                                                                                    |
-| Tỷ lệ ảnh muốn sinh                                                                                |
+| Tỷ lệ ảnh minh họa                                                                                 |
 | [ 16:9 (Ngang chuẩn) ]      [ 9:16 (Dọc) ]      [ 1:1 (Vuông) ]      [ 4:3 (Cổ điển) ]             |
+|                                                                                                    |
+| Chế độ hiển thị                                                                                    |
+| +--------------------------------+ +--------------------------------+                               |
+| | 🔒 Riêng tư                    | | 🌐 Công khai                   |                               |
+| | Chỉ bạn có thể xem dự án.      | | Mọi người có thể xem dự án.    |                               |
+| +--------------------------------+ +--------------------------------+                               |
 +----------------------------------------------------------------------------------------------------+
 ```
 
-* **1. Phong cách đọc:**
-  * Chuyển sang Bước 2 để người dùng không bị gián đoạn màn hình tải tệp ở Bước 1.
-  * Khi chọn **`Single cast`**: Bước 3 trên cột bên trái sẽ có tên là **`Giọng đọc`**.
-  * Khi chọn **`Multi cast`**: Bước 3 trên cột bên trái sẽ có tên là **`Nhân vật`**.
-* **2. Ảnh bìa sách (Xếp dọc phía trên):**
-  * Tự động nhận diện từ file EPUB/PDF hoặc người dùng upload ảnh ngoài.
-  * Khi đã có ảnh: Hiển thị thumbnail + 2 nút thao tác **`[ Thay ảnh bìa ]`** và **`[ Xóa ảnh bìa ]`**.
-* **3. Ngôn ngữ tác phẩm (Xếp dọc ngay dưới khối Ảnh bìa):**
-  * Đặt theo hàng dọc để đảm bảo không gian hiển thị dropdown thoáng đãng, không bị chèn ép.
+* **1. Ngôn ngữ tác phẩm:**
   * Dropdown chọn ngôn ngữ gốc của kịch bản, hiển thị cờ quốc gia `🇻🇳 Tiếng Việt`.
-* **4. Phong cách mỹ thuật (CÓ ẢNH MINH HỌA):**
-  * Mỗi lựa chọn là một card trực quan gồm **ảnh thumbnail mẫu minh họa phong cách** bên trên và tên phong cách bên dưới (Ví dụ: `Ghibli Anime`, `3D Cinematic`, `Watercolor Painting`, `Vintage Retro Comic`, `Photorealistic`).
-* **5. Tỷ lệ ảnh muốn sinh:**
+* **2. Phong cách nghệ thuật (CÓ ẢNH MINH HỌA):**
+  * Mỗi lựa chọn là một card trực quan gồm **ảnh thumbnail mẫu minh họa phong cách** bên trên và tên phong cách bên dưới (Ví dụ: `Ghibli Anime`, `3D Cinematic`, `Watercolor`, `Cyberpunk`).
+* **3. Tỷ lệ ảnh minh họa:**
   * Lựa chọn tỷ lệ cho các ảnh AI sẽ sinh ra cho các phân cảnh/shot: `16:9` (khung ngang), `9:16` (khung dọc), `1:1` (khung vuông), `4:3` (truyện cổ điển).
+* **4. Chế độ hiển thị:**
+  * Hai lựa chọn: **`Riêng tư`** (chỉ chủ dự án xem và chỉnh sửa) và **`Công khai`** (mọi người có thể xem).
+  * Mặc định là **`Riêng tư`**.
 
 ---
 
-### 4. Chi tiết Bước 3: Giọng đọc / Nhân vật
+### 4. Chi tiết Bước 3: Giọng đọc người dẫn truyện
 
-Tùy vào phong cách đọc đã chọn ở Bước 2, Bước 3 sẽ tự động kích hoạt một trong hai giao diện:
+Bước 3 dùng để chọn giọng đọc cho **người dẫn truyện** (narrator). Avatar của mỗi giọng là **chữ cái đầu trong tên** (ví dụ: Duy Khoa → `D`, Hà Chi → `H`).
 
-#### Nhánh 3A: Chọn Giọng đọc (`Giọng đọc` - Khi chọn Single cast)
+> Phần mô tả Multi cast/Nhân vật bên dưới chỉ còn mang tính lịch sử.
+
+#### Nhánh 3A: Chọn giọng đọc cho người dẫn truyện (`Giọng đọc` - Khi chọn Single cast)
 Áp dụng theo giao diện tuyển chọn giọng:
 
 ```
@@ -150,7 +141,7 @@ Tùy vào phong cách đọc đã chọn ở Bước 2, Bước 3 sẽ tự đ�
 ```
 * Bộ lọc Accent (Bắc, Trung, Nam), Giới tính (Nam, Nữ), Độ tuổi, Thể loại.
 * 2 Tab: `Khám phá` (Giọng mẫu có sẵn) và `Giọng của tôi` (Giọng clone cá nhân).
-* Thẻ giọng có avatar (có badge check), tên giọng, mô tả âm sắc, biểu tượng checkmark `[ ✓ ]` khi được chọn và nút Play **`[ ▶ ]`** (chỉ có icon `[ ▶ ]`, không để chữ "Nghe thử" để giao diện gọn gàng). *(Đã bỏ hoàn toàn nút ba chấm `...` bên cạnh nút play theo đúng thiết kế).*
+* Thẻ giọng có avatar chữ cái đầu của tên (có badge check), tên giọng, mô tả âm sắc, biểu tượng checkmark `[ ✓ ]` khi được chọn và nút Play **`[ ▶ ]`** (chỉ có icon `[ ▶ ]`, không để chữ "Nghe thử" để giao diện gọn gàng). *(Đã bỏ hoàn toàn nút ba chấm `...` bên cạnh nút play theo đúng thiết kế).*
 
 ---
 
@@ -271,7 +262,7 @@ Khi nhấp vào bất kỳ hàng nhân vật nào (ví dụ Người kể chuy�
 
 * Ở Bước 3, nút bấm góc dưới bên phải hiển thị: **`[ Tạo dự án ]`** (Màu vàng thương hiệu, icon `✨`).
 * Khi người dùng nhấp:
-  1. Tổng hợp dữ liệu: File kịch bản, `narrationStyle`, `coverImage`, `language`, `artStyle`, `aspectRatio`, danh sách nhân vật và gán giọng.
+  1. Tổng hợp dữ liệu: File kịch bản, `language`, `artStyle`, `aspectRatio` và giọng đọc đã chọn.
   2. Tạo bản ghi dự án mới.
   3. Đóng modal và chuyển hướng mượt sang Studio Editor: `navigate('/editor/' + newProjectId)`.
 
@@ -309,7 +300,7 @@ Trước khi bắt tay vào code, cần nắm rõ tình trạng các file liên 
 | STT | Tên Component | Đường dẫn file gốc (`src/components/ui/`) | Trạng thái hiện tại | Vị trí & Mục đích sử dụng cụ thể trong dự án |
 | :---: | :--- | :--- | :---: | :--- |
 | 1 | **`button`** | `src/components/ui/button.tsx` | **ĐÃ CÓ SẴN** | Nút `[+ Tạo dự án mới]`, nút `[Tiếp tục →]`, `[← Quay lại]`, `[Tạo dự án]`, nút `[Thay ảnh bìa]`, `[Xóa ảnh bìa]`, nút Play demo audio icon `[ ▶ ]`. |
-| 2 | **`badge`** | `src/components/ui/badge.tsx` | **ĐÃ CÓ SẴN** | Huy hiệu chấm xanh `● Creation draft`, tag định dạng file `DOCX` / `PDF` / `TXT`, badge cờ vùng miền. |
+| 2 | **`badge`** | `src/components/ui/badge.tsx` | **ĐÃ CÓ SẴN** | Huy hiệu chấm xanh `● Đang tạo`, tag định dạng file `DOCX` / `PDF` / `TXT`, badge cờ vùng miền. |
 | 3 | **`card`** | `src/components/ui/card.tsx` | **ĐÃ CÓ SẴN** | Thẻ lựa chọn phong cách đọc `Single cast` / `Multi cast`, thẻ ảnh bìa, thẻ phong cách mỹ thuật. |
 | 4 | **`dialog`** | `src/components/ui/dialog.tsx` | **ĐÃ CÓ SẴN** | Khung Modal popup `CreateStoryModal` (hỗ trợ nền mờ, bo góc, tiêu đề `Story` và nút đóng `[✕]`). |
 | 5 | **`input`** | `src/components/ui/input.tsx` | **ĐÃ CÓ SẴN** | Ô tìm kiếm `[ 🔍 Tìm kiếm dự án... ]`, ô tìm kiếm giọng đọc, ô nhập tên nhân vật. |
@@ -402,6 +393,7 @@ export interface CreateStoryFormData {
   language: string; // 'vi' | 'en'
   artStyle: string; // 'anime' | 'cinematic' | 'watercolor' | 'cyberpunk'
   aspectRatio: '16:9' | '9:16' | '1:1' | '4:3';
+  visibility: 'private' | 'public';
 
   // Bước 3: Giọng đọc hoặc Nhân vật
   singleVoiceId?: string;
@@ -412,12 +404,10 @@ export interface CreateStoryFormData {
 #### 4.2. `src/pages/HomePage/components/CreateStoryModal/StepSettings.tsx`
 * **Mục đích:** Giao diện Bước 2: Thiết lập cấu hình dự án.
 * **Quy cách giao diện:**
-  1. **Phong cách đọc:** 2 card radio chọn `Single cast` (Một giọng người kể chuyện cho toàn bộ cuốn sách) hoặc `Multi cast` (Các giọng đọc riêng biệt cho người kể chuyện và từng nhân vật). Tuyệt đối không dùng tiếng Anh trong ngoặc đơn, không để tag `[NEW]`.
-  2. **Ảnh bìa sách & Ngôn ngữ tác phẩm: XẾP HÀNG DỌC (Vertical Stack):**
-     * Khối trên: Ảnh bìa sách với khung xem trước ảnh bìa + 2 nút `[ Thay ảnh bìa ]` và `[ Xóa ảnh bìa ]`.
-     * Khối dưới: Dropdown Ngôn ngữ tác phẩm chọn `🇻🇳 Tiếng Việt`.
-  3. **Phong cách mỹ thuật:** Lưới 4 card phong cách có ảnh thumbnail mẫu minh họa (`Ghibli Anime`, `3D Cinematic`, `Watercolor`, `Cyberpunk`).
-  4. **Tỷ lệ ảnh muốn sinh:** Cụm 4 nút lựa chọn `16:9 (Ngang chuẩn)`, `9:16 (Dọc)`, `1:1 (Vuông)`, `4:3 (Cổ điển)`.
+  1. **Ngôn ngữ tác phẩm:** Dropdown chọn `🇻🇳 Tiếng Việt`.
+  2. **Phong cách nghệ thuật:** Lưới 4 card phong cách có ảnh thumbnail mẫu minh họa (`Ghibli Anime`, `3D Cinematic`, `Watercolor`, `Cyberpunk`).
+  3. **Tỷ lệ ảnh minh họa:** Cụm 4 nút lựa chọn `16:9 (Ngang chuẩn)`, `9:16 (Dọc)`, `1:1 (Vuông)`, `4:3 (Cổ điển)`.
+  4. **Chế độ hiển thị:** 2 card lựa chọn `Riêng tư` (mặc định) và `Công khai`.
 * **Interface Props:**
   ```typescript
   interface StepSettingsProps {
@@ -552,7 +542,7 @@ Chỉ chỉnh sửa đúng các file và vị trí được chỉ định dướ
   * Kiểm tra logic hiển thị: Nếu `project.thumbnail` có giá trị ➔ render thẻ ảnh bìa `<img>`; nếu không có ➔ render thẻ trang giấy xem trước văn bản (`project.textPreview`).
   * Đảm bảo dropdown menu `[...]` có `e.stopPropagation()` khi nhấp chuột.
 * **Cái CẦN GIỮ NGUYÊN:**
-  * Toàn bộ layout tỉ lệ 16:9 (`aspect-video`), bo góc tròn `rounded-xl`, badge góc dưới `● Creation draft` và thông tin tác giả/thời gian tạo bên dưới.
+  * Toàn bộ layout tỉ lệ 16:9 (`aspect-video`), bo góc tròn `rounded-xl`, badge góc dưới `● Đang tạo` và thông tin tác giả/thời gian tạo bên dưới.
 
 #### 5.4. File `src/pages/HomePage/components/ProjectTable.tsx`
 * **Cái CẦN SỬA:**
@@ -564,9 +554,9 @@ Chỉ chỉnh sửa đúng các file và vị trí được chỉ định dướ
 #### 5.5. File `src/pages/HomePage/HomePage.tsx`
 * **Cái CẦN SỬA:**
   * Cập nhật hàm `handleCreateProject`: Nhận dữ liệu `formData`, gán `thumbnail: formData.coverImage || undefined`, thêm vào danh sách dự án và điều hướng sang `/editor/:id`.
-  * Khi click dự án có tag `Creation draft` ➔ nạp dữ liệu cũ (`thumbnail`, `textPreview`) vào modal để mở lại.
+  * Khi click dự án có tag `Đang tạo` ➔ nạp dữ liệu cũ (`thumbnail`, `textPreview`) vào modal để mở lại.
 * **Cái CẦN GIỮ NGUYÊN:**
-  * Header thương hiệu `Story2Video` & avatar `Myanh 👤`.
+  * Header thương hiệu `Story2Video` & avatar `My Anh 👤`.
   * Thanh công cụ `ProjectToolbar` với ô tìm kiếm và cụm toggle `[ ⊞ Lưới | ☰ Danh sách ]`.
 
 ---
@@ -588,7 +578,7 @@ Chỉ chỉnh sửa đúng các file và vị trí được chỉ định dướ
 | `src/mocks/mockVoices.ts` & `src/mocks/mockArtStyles.ts` | **TẠO MỚI** | Danh sách giọng mẫu tiếng Việt và phong cách nghệ thuật kèm ảnh demo. |
 | `src/pages/HomePage/components/CreateStoryModal/CreateStoryModal.tsx` | **SỬA CÓ GIỚI HẠN** | Nhãn bước động, footer `justify-end gap-3` (Quay lại + Tiếp tục nằm cạnh nhau bên phải). |
 | `src/pages/HomePage/components/CreateStoryModal/StepUpload.tsx` | **SỬA CÓ GIỚI HẠN** | Cập nhật interface `formData`, giữ nguyên Dropzone và Text Preview Box. |
-| `src/pages/HomePage/components/ProjectCard.tsx` | **SỬA CÓ GIỚI HẠN** | Render ảnh bìa hoặc text preview, giữ nguyên layout 16:9 và badge `● Creation draft`. |
+| `src/pages/HomePage/components/ProjectCard.tsx` | **SỬA CÓ GIỚI HẠN** | Render ảnh bìa hoặc text preview, giữ nguyên layout 16:9 và badge `● Đang tạo`. |
 | `src/pages/HomePage/components/ProjectTable.tsx` | **SỬA CÓ GIỚI HẠN** | Render ảnh bìa thu nhỏ ở cột Title, tích hợp Tooltip cho icon `(i)`. |
 | `src/pages/HomePage/HomePage.tsx` | **SỬA CÓ GIỚI HẠN** | Nhận `formData` lưu dự án và chuyển trang `/editor/:id`. |
 | `src/pages/EditorPage/**` (Toàn bộ) | **GIỮ NGUYÊN 100%** | Toàn bộ code Studio Editor, Kịch bản, Phân cảnh, Canvas, Resplit, Timeline. **CẤM CHẠM VÀO.** |
