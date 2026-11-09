@@ -34,8 +34,8 @@ export default function EditorPage() {
   const [characters, setCharacters] = useState<CharacterAsset[]>(mockCharacters);
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
 
-  // 2. Quản lý 2 chế độ thanh tua
-  const [timelineMode, setTimelineMode] = useState<"compact" | "expanded">("compact");
+  // 2. Quản lý 2 chế độ thanh tua (mặc định mở thanh timeline đa track khi vào Studio)
+  const [timelineMode, setTimelineMode] = useState<"compact" | "expanded">("expanded");
 
   // 3. Quản lý dữ liệu phân cảnh
   const [shots, setShots] = useState<Shot[]>(mockInitialShots);

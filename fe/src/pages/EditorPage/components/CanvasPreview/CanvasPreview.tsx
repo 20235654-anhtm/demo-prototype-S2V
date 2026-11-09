@@ -109,12 +109,12 @@ export default function CanvasPreview({
                 className="w-full h-full object-contain select-none"
               />
 
-              {/* Subtitle Overlay (Phụ đề kịch bản) */}
-              <div className="absolute inset-x-6 bottom-5 text-center pointer-events-none">
+              {/* Subtitle Overlay (Phụ đề kịch bản) - Đã ẩn theo yêu cầu */}
+              {/* <div className="absolute inset-x-6 bottom-5 text-center pointer-events-none">
                 <p className="inline-block px-4 py-2 rounded-xl bg-black/75 text-white text-xs sm:text-sm font-medium leading-relaxed backdrop-blur-md max-w-2xl shadow-lg border border-white/10">
                   {currentShot.text}
                 </p>
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="text-muted-foreground text-sm">
