@@ -69,7 +69,7 @@ export default function StepSettings({ formData, onFormDataChange }: StepSetting
                   }
                   className={`group relative rounded-xl border-2 overflow-hidden cursor-pointer transition-all flex flex-col bg-card ${
                     isSelected
-                      ? "border-amber-500 ring-2 ring-amber-500/20 shadow-md"
+                      ? "border-brand ring-2 ring-brand/20 shadow-md"
                       : "border-border hover:border-muted-foreground/40"
                   }`}
                 >
@@ -81,7 +81,7 @@ export default function StepSettings({ formData, onFormDataChange }: StepSetting
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     {isSelected && (
-                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-xs">
+                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-brand text-brand-foreground flex items-center justify-center shadow-xs">
                         <Check className="w-3.5 h-3.5 stroke-[3]" />
                       </div>
                     )}
@@ -122,7 +122,7 @@ export default function StepSettings({ formData, onFormDataChange }: StepSetting
                   }
                   className={`p-3 rounded-xl border-2 text-left cursor-pointer transition-all flex flex-col justify-between ${
                     isSelected
-                      ? "border-amber-500 bg-amber-500/10 shadow-xs"
+                      ? "border-brand bg-brand/10 shadow-xs"
                       : "border-border hover:border-muted-foreground/40 bg-card"
                   }`}
                 >
@@ -133,7 +133,7 @@ export default function StepSettings({ formData, onFormDataChange }: StepSetting
                       />
                     </div>
                     {isSelected && (
-                      <Check className="w-4 h-4 text-amber-600 dark:text-amber-400 stroke-[3]" />
+                      <Check className="w-4 h-4 text-brand-strong dark:text-brand stroke-[3]" />
                     )}
                   </div>
                   <div>
@@ -168,14 +168,14 @@ export default function StepSettings({ formData, onFormDataChange }: StepSetting
                   }
                   className={`p-3.5 rounded-xl border-2 text-left cursor-pointer transition-all flex items-start gap-3 ${
                     isSelected
-                      ? "border-amber-500 bg-amber-500/5 dark:bg-amber-500/10 shadow-xs"
+                      ? "border-brand bg-brand/5 dark:bg-brand/10 shadow-xs"
                       : "border-border hover:border-muted-foreground/40 bg-card"
                   }`}
                 >
                   <div
                     className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
                       isSelected
-                        ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                        ? "bg-brand/15 text-brand-strong dark:text-brand"
                         : "bg-muted/60 text-muted-foreground"
                     }`}
                   >
@@ -188,7 +188,7 @@ export default function StepSettings({ formData, onFormDataChange }: StepSetting
                         {item.label}
                       </span>
                       {isSelected && (
-                        <Check className="w-4 h-4 text-amber-600 dark:text-amber-400 stroke-[3] shrink-0" />
+                        <Check className="w-4 h-4 text-brand-strong dark:text-brand stroke-[3] shrink-0" />
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 leading-snug">

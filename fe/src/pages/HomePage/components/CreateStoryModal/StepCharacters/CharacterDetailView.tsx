@@ -96,7 +96,7 @@ export default function CharacterDetailView({
                 onClick={handleAiEnhanceDescription}
                 disabled={isAiEnhancing}
                 title="AI tự động gợi ý mô tả nhân vật"
-                className="text-xs text-amber-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                className="text-xs text-brand-strong dark:text-brand hover:underline inline-flex items-center gap-1 cursor-pointer"
               >
                 <Wand2 className={`w-3.5 h-3.5 ${isAiEnhancing ? "animate-spin" : ""}`} />
                 <span>{isAiEnhancing ? "Đang viết..." : "Gợi ý AI"}</span>

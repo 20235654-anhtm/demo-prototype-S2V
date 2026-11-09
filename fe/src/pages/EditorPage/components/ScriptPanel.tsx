@@ -132,7 +132,7 @@ export default function ScriptPanel({
             variant="ghost"
             size="sm"
             onClick={onOpenResplitModal}
-            className="h-6 px-2 text-[11px] font-medium text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-950/40 cursor-pointer gap-1"
+            className="h-6 px-2 text-[11px] font-medium text-brand-strong dark:text-brand hover:bg-brand/10 dark:hover:bg-brand/15 cursor-pointer gap-1"
             title="Mở gợi ý chia lại toàn bộ kịch bản"
           >
             <Sparkles className="w-3 h-3" />

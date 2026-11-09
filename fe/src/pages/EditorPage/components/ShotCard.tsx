@@ -39,7 +39,7 @@ export default function ShotCard({
           : isSelected
             ? "border-primary bg-primary/5 shadow-xs ring-2 ring-primary/20"
             : isActive
-              ? "border-yellow-500 bg-yellow-50/20 shadow-xs ring-2 ring-yellow-400/30"
+              ? "border-brand bg-brand/5 shadow-xs ring-2 ring-brand/30"
               : "border-border bg-card hover:border-border/80 hover:shadow-xs"
       }`}
     >
@@ -76,7 +76,7 @@ export default function ShotCard({
             }}
             className={`absolute bottom-1 right-1 p-1 rounded-md text-[10px] backdrop-blur-xs transition-opacity cursor-pointer ${
               shot.isLocked
-                ? "bg-black/70 text-amber-400 opacity-100"
+                ? "bg-black/70 text-brand opacity-100"
                 : "bg-black/50 text-white opacity-0 group-hover/img:opacity-100 hover:bg-black/80"
             }`}
             title={shot.isLocked ? "Đã khóa hình ảnh" : "Khóa hình ảnh này"}
@@ -108,10 +108,10 @@ export default function ShotCard({
                 e.stopPropagation();
                 onResplitSingle(shot.id);
               }}
-              className="h-6 px-1.5 text-[11px] text-muted-foreground hover:text-yellow-600 hover:bg-yellow-50 cursor-pointer opacity-70 group-hover:opacity-100"
+              className="h-6 px-1.5 text-[11px] text-muted-foreground hover:text-brand-strong dark:hover:text-brand hover:bg-brand/10 cursor-pointer opacity-70 group-hover:opacity-100"
               title="Chia lại cảnh này"
             >
-              <Sparkles className="w-3 h-3 mr-1 text-yellow-500" />
+              <Sparkles className="w-3 h-3 mr-1 text-brand" />
               <span>Chia lại</span>
             </Button>
           </div>

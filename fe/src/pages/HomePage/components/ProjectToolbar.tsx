@@ -24,7 +24,7 @@ export default function ProjectToolbar({
         <h2 className="text-2xl font-bold">Dự án của tôi</h2>
         <Button
           onClick={onCreateClick}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold"
+          className="bg-brand hover:bg-brand-hover text-brand-foreground font-semibold"
         >
           <Plus className="w-4 h-4" />
           Tạo dự án mới

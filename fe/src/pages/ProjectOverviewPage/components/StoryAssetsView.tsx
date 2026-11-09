@@ -7,7 +7,6 @@ import {
   Package,
   Search,
   UserRound,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -15,7 +14,6 @@ import {
   mockStoryAssets,
   type StoryAssetKind,
 } from "@/mocks/mockStoryDetails";
-import PanelHeader from "./PanelHeader";
 
 type AssetFilter = "all" | StoryAssetKind;
 
@@ -28,8 +26,8 @@ interface KindStyle {
 const KIND_STYLE: Record<StoryAssetKind, KindStyle> = {
   character: {
     icon: UserRound,
-    avatar: "from-amber-400 via-orange-500 to-rose-500",
-    chip: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    avatar: "from-brand via-orange-500 to-rose-500",
+    chip: "border-brand/30 bg-brand/10 text-brand-strong dark:text-brand",
   },
   location: {
     icon: MapPin,
@@ -90,13 +88,6 @@ export default function StoryAssetsView() {
 
   return (
     <div className="space-y-5">
-      <PanelHeader
-        icon={Users}
-        title="Tài sản truyện"
-        description="Những nhân vật, bối cảnh và đạo cụ được trích xuất tự động từ nội dung chương truyện."
-        accent="amber"
-      />
-
       {/* Thống kê nhanh */}
       <div className="grid grid-cols-3 gap-3">
         {stats.map((stat) => (
@@ -113,7 +104,7 @@ export default function StoryAssetsView() {
       </div>
 
       {/* Bộ lọc + tìm kiếm */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+      <div className="flex flex-col gap-3">
         <div className="flex flex-wrap gap-1.5">
           {FILTER_OPTIONS.map((option) => {
             const count =
@@ -148,7 +139,7 @@ export default function StoryAssetsView() {
           })}
         </div>
 
-        <div className="relative w-full lg:max-w-xs">
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Tìm tài sản truyện..."
@@ -161,7 +152,7 @@ export default function StoryAssetsView() {
 
       {/* Danh sách tài sản */}
       {filteredAssets.length > 0 ? (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+        <div className="grid gap-3">
           {filteredAssets.map((asset) => {
             const style = KIND_STYLE[asset.kind];
             const Icon = style.icon;

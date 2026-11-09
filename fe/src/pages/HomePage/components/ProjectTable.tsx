@@ -37,10 +37,10 @@ export default function ProjectTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[40%]">Title</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead>Created by</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead className="w-[40%]">Tên dự án</TableHead>
+              <TableHead>Ngày tạo</TableHead>
+              <TableHead>Người tạo</TableHead>
+              <TableHead>Trạng thái</TableHead>
               <TableHead className="w-[100px] text-right"></TableHead>
             </TableRow>
           </TableHeader>

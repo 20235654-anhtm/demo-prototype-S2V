@@ -287,10 +287,11 @@ export default function EditorPage() {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-background select-none">
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-stone-50/70 dark:bg-neutral-950 select-none">
       {/* 1. Header riêng của Studio */}
       <EditorHeader
         title={projectTitle}
+        visibility={currentProject?.visibility}
         onExport={() => alert("Đang chuẩn bị xuất file video MP4 chất lượng cao...")}
       />
 

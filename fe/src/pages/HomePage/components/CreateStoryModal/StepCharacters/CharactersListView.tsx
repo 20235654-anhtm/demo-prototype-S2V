@@ -84,7 +84,7 @@ export default function CharactersListView({
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-xs text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                        <span className="font-semibold text-xs text-foreground group-hover:text-brand-strong dark:group-hover:text-brand transition-colors">
                           {char.name}
                         </span>
                         {hasVoice ? (
@@ -92,7 +92,7 @@ export default function CharactersListView({
                             ({char.voiceName})
                           </span>
                         ) : (
-                          <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                          <span className="text-[11px] text-brand-strong dark:text-brand font-medium bg-brand/10 px-1.5 py-0.5 rounded border border-brand/20">
                             Chưa chọn giọng
                           </span>
                         )}
@@ -122,7 +122,7 @@ export default function CharactersListView({
                       className={`h-8 w-8 rounded-md flex items-center justify-center transition-all ${
                         hasVoice
                           ? isPlaying
-                            ? "bg-amber-500 text-slate-950 shadow-xs cursor-pointer"
+                            ? "bg-brand text-brand-foreground shadow-xs cursor-pointer"
                             : "hover:bg-muted text-foreground cursor-pointer"
                           : "opacity-30 cursor-not-allowed text-muted-foreground"
                       }`}
@@ -152,7 +152,7 @@ export default function CharactersListView({
       {/* Footer hint */}
       <div className="mt-2.5 flex items-center justify-between text-xs text-muted-foreground shrink-0 px-1">
         <span className="flex items-center gap-1">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <Sparkles className="w-3.5 h-3.5 text-brand" />
           Nhân vật chưa gán giọng sẽ có icon loa mờ.
         </span>
         <span>Nhấp vào hàng nhân vật để gán giọng.</span>

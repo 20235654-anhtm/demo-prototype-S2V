@@ -67,9 +67,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-y-auto">
+    <div className="h-full flex flex-col overflow-y-auto bg-stone-50/70 dark:bg-neutral-950">
       {/* Header Dashboard của HomePage */}
-      <header className="sticky top-0 z-30 border-b px-6 py-3 flex items-center justify-between bg-white dark:bg-neutral-900 shrink-0">
+      <header className="sticky top-0 z-30 h-14 border-b px-4 md:px-6 flex items-center justify-between bg-white/95 dark:bg-neutral-900/95 backdrop-blur shrink-0">
         <span className="text-lg font-bold">Story2Video</span>
         <div className="flex items-center gap-2 text-sm">
           <span>My Anh</span>
@@ -79,7 +79,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto p-6 w-full flex-1">
+      <div className="max-w-[1120px] mx-auto p-6 w-full flex-1">
         {/* Toolbar */}
         <ProjectToolbar
           viewMode={viewMode}

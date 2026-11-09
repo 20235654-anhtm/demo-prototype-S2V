@@ -10,7 +10,7 @@ export const mockProjects: Project[] = [
     title: "Đấu Phá Thương Khung",
     thumbnail: PLACEHOLDER_IMAGE,
     textPreview: STORY_PREVIEW,
-    createdAt: "40 minutes ago",
+    createdAt: "40 phút trước",
     author: "My Anh",
     visibility: "private",
   },

@@ -40,7 +40,7 @@ export default function ResplitAllModal({
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b flex flex-row items-center justify-between space-y-0 shrink-0 bg-muted/20">
           <DialogTitle className="flex items-center gap-2 text-base font-semibold">
-            <Sparkles className="w-5 h-5 text-yellow-500" />
+            <Sparkles className="w-5 h-5 text-brand" />
             <span>Re-split all shots (Chia lại toàn bộ phân cảnh)</span>
           </DialogTitle>
           <DialogClose render={<Button variant="ghost" size="icon" className="h-8 w-8 rounded-full cursor-pointer hover:bg-muted" />}>
@@ -134,7 +134,7 @@ export default function ResplitAllModal({
                           : "bg-muted/40 hover:bg-muted text-muted-foreground"
                       }`}
                     >
-                      <Zap className="w-3 h-3 text-amber-500" />
+                      <Zap className="w-3 h-3 text-brand" />
                       <span>Nhanh (Shorts / Reels): ~6s</span>
                     </button>
                     <button
@@ -208,8 +208,8 @@ export default function ResplitAllModal({
           </div>
 
           {/* Warning Banner */}
-          <div className="flex items-start gap-3 p-3.5 border border-amber-300 bg-amber-50/70 rounded-xl text-amber-900 text-xs leading-relaxed">
-            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-3.5 border border-brand/40 bg-brand/10 rounded-xl text-brand-strong dark:text-brand text-xs leading-relaxed">
+            <AlertTriangle className="w-4 h-4 text-brand-strong dark:text-brand shrink-0 mt-0.5" />
             <p>
               <strong>Cảnh báo:</strong> Thao tác này sẽ phân đoạn lại toàn bộ kịch bản và làm mới các hình ảnh chưa khóa (ảnh có icon 🔒 sẽ được giữ nguyên).
             </p>
@@ -224,7 +224,7 @@ export default function ResplitAllModal({
           <Button
             size="sm"
             onClick={handleApply}
-            className="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-semibold cursor-pointer"
+            className="bg-brand hover:bg-brand-hover text-brand-foreground font-semibold cursor-pointer"
           >
             Áp dụng chia lại toàn bộ
           </Button>

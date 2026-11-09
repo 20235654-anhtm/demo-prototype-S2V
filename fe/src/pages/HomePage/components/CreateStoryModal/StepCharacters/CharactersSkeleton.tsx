@@ -5,7 +5,7 @@ export default function CharactersSkeleton() {
     <div className="flex-1 min-h-0 flex flex-col justify-center items-center py-10 px-4">
       {/* Detecting indicator */}
       <div className="flex items-center gap-3 mb-8">
-        <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
+        <Loader2 className="w-5 h-5 text-brand animate-spin" />
         <span className="font-semibold text-sm text-foreground">
           Đang nhận diện nhân vật...
         </span>

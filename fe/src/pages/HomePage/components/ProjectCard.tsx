@@ -77,7 +77,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
           {project.title}
         </p>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Created {project.createdAt} · {project.author}
+          {project.createdAt} · {project.author}
         </p>
       </div>
     </div>

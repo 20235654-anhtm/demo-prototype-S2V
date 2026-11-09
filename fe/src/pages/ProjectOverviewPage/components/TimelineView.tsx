@@ -5,7 +5,6 @@ import {
   Clock3,
   Flag,
   Flame,
-  History,
   MapPin,
   RotateCcw,
   TrendingUp,
@@ -17,7 +16,6 @@ import {
   mockStoryTimeline,
   type TimelineKind,
 } from "@/mocks/mockStoryDetails";
-import PanelHeader from "./PanelHeader";
 
 interface KindStyle {
   icon: LucideIcon;
@@ -28,9 +26,9 @@ interface KindStyle {
 const KIND_STYLE: Record<TimelineKind, KindStyle> = {
   opening: {
     icon: Flag,
-    dot: "from-amber-400 to-orange-500",
+    dot: "from-brand to-orange-500",
     badge:
-      "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+      "border-brand/30 bg-brand/10 text-brand-strong dark:text-brand",
   },
   conflict: {
     icon: Zap,
@@ -68,14 +66,7 @@ const locations = new Set(mockStoryTimeline.map((event) => event.location));
 
 export default function TimelineView() {
   return (
-    <div className="space-y-5">
-      <PanelHeader
-        icon={History}
-        title="Dòng thời gian truyện"
-        description="Diễn tiến các sự kiện chính trong chương, sắp xếp theo trình tự xuất hiện trong nguyên tác."
-        accent="emerald"
-      />
-
+    <div className="space-y-4">
       {/* Thống kê chương */}
       <div className="rounded-xl border bg-card px-4 py-3 shadow-2xs flex flex-wrap items-center gap-x-6 gap-y-2">
         <div>
@@ -107,7 +98,7 @@ export default function TimelineView() {
 
       {/* Timeline dọc */}
       <div className="relative">
-        <div className="absolute left-[23px] top-3 bottom-3 w-px bg-gradient-to-b from-amber-300 via-border to-emerald-300 dark:from-amber-500/50 dark:to-emerald-500/50" />
+        <div className="absolute left-[19px] top-3 bottom-3 w-px bg-gradient-to-b from-brand/60 via-border to-emerald-300 dark:from-brand/50 dark:to-emerald-500/50" />
 
         <div className="space-y-4">
           {mockStoryTimeline.map((event) => {
@@ -115,18 +106,18 @@ export default function TimelineView() {
             const Icon = style.icon;
 
             return (
-              <div key={event.id} className="relative pl-16">
+              <div key={event.id} className="relative pl-14">
                 <div
                   className={cn(
-                    "absolute left-0 top-0 z-10 w-12 h-12 rounded-full bg-gradient-to-br text-white flex items-center justify-center shadow-md ring-4 ring-background",
+                    "absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br text-white flex items-center justify-center shadow-md ring-4 ring-background",
                     style.dot
                   )}
                   title={`Sự kiện ${event.order}`}
                 >
-                  <span className="text-sm font-bold">{event.order}</span>
+                  <span className="text-xs font-bold">{event.order}</span>
                 </div>
 
-                <div className="rounded-xl border bg-card p-4 shadow-2xs transition-shadow hover:shadow-md">
+                <div className="rounded-xl border bg-card p-3.5 shadow-2xs transition-shadow hover:shadow-md">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <Badge
                       variant="outline"

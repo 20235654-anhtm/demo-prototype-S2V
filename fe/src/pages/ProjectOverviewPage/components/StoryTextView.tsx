@@ -54,17 +54,13 @@ export default function StoryTextView() {
         spellCheck={false}
         onBlur={handleBlur}
         onInput={handleInput}
-        className="min-h-[calc(100vh-220px)] rounded-2xl border bg-card px-5 sm:px-8 md:px-12 py-8 md:py-10 shadow-2xs outline-none transition-shadow focus:border-amber-500/40 focus:shadow-md focus:ring-2 focus:ring-amber-500/10"
+        className="min-h-[calc(100vh-220px)] rounded-2xl border bg-card px-5 sm:px-8 md:px-12 py-8 md:py-10 shadow-2xs outline-none transition-shadow focus:border-brand/40 focus:shadow-md focus:ring-2 focus:ring-brand/15"
       >
         <div className="space-y-5">
           {paragraphs.map((paragraph, index) => (
             <p
               key={index}
-              className={
-                index === 0
-                  ? "text-[15px] leading-8 font-medium text-foreground"
-                  : "text-[15px] leading-8 text-foreground/80"
-              }
+              className="text-[15px] leading-8 font-normal text-foreground/80"
             >
               {paragraph}
             </p>

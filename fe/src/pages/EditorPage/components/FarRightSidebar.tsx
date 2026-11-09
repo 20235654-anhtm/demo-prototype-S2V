@@ -40,7 +40,7 @@ export default function FarRightSidebar({
               onClick={onToggleScript}
               className={`h-9 w-9 rounded-lg transition-colors cursor-pointer ${
                 isScriptActive
-                  ? "bg-primary/10 text-primary font-medium hover:bg-primary/15"
+                  ? "bg-muted text-foreground font-medium hover:bg-muted/80"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             />
@@ -58,7 +58,7 @@ export default function FarRightSidebar({
           </TooltipContent>
         </Tooltip>
 
-        {/* 2. Nút Story Assets */}
+        {/* 2. Nút Tài sản truyện */}
         <Tooltip>
           <TooltipTrigger render={
             <Button
@@ -67,7 +67,7 @@ export default function FarRightSidebar({
               onClick={onToggleAssets}
               className={`h-9 w-9 rounded-lg transition-colors cursor-pointer ${
                 isAssetsActive
-                  ? "bg-primary/10 text-primary font-medium hover:bg-primary/15"
+                  ? "bg-muted text-foreground font-medium hover:bg-muted/80"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             />
@@ -75,7 +75,7 @@ export default function FarRightSidebar({
             <Users className="w-4 h-4" />
           </TooltipTrigger>
           <TooltipContent side="left">
-            <span>Story Assets</span>
+            <span>Tài sản truyện</span>
           </TooltipContent>
         </Tooltip>
 
@@ -88,7 +88,7 @@ export default function FarRightSidebar({
               onClick={onToggleVisuals}
               className={`h-9 w-9 rounded-lg transition-colors cursor-pointer ${
                 isVisualsActive
-                  ? "bg-primary/10 text-primary font-medium hover:bg-primary/15"
+                  ? "bg-muted text-foreground font-medium hover:bg-muted/80"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             />
@@ -96,7 +96,7 @@ export default function FarRightSidebar({
             <ImageIcon className="w-4 h-4" />
           </TooltipTrigger>
           <TooltipContent side="left">
-            <span>Visuals (Sinh ảnh)</span>
+            <span>Hình ảnh phân cảnh</span>
           </TooltipContent>
         </Tooltip>
       </div>

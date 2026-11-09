@@ -153,14 +153,14 @@ export default function CreateStoryModal({
                   onClick={() => setCurrentStep(s.step)}
                   className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-left transition-colors cursor-pointer ${
                     isActive
-                      ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 font-semibold shadow-2xs"
+                      ? "bg-brand/10 text-brand-strong dark:text-brand font-semibold shadow-2xs"
                       : "text-muted-foreground hover:bg-muted"
                   }`}
                 >
                   <span
                     className={`w-5 h-5 rounded-full flex items-center justify-center text-xs border font-medium ${
                       isActive
-                        ? "bg-amber-500 text-slate-950 border-amber-500 font-bold"
+                        ? "bg-brand text-brand-foreground border-brand font-bold"
                         : isPassed
                           ? "bg-emerald-600 text-white border-emerald-600"
                           : "border-muted-foreground/40"
@@ -200,7 +200,7 @@ export default function CreateStoryModal({
             <Button
               size="sm"
               onClick={handleNext}
-              className="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-semibold cursor-pointer shadow-xs"
+              className="bg-brand hover:bg-brand-hover text-brand-foreground font-semibold cursor-pointer shadow-xs"
             >
               Tiếp tục
               <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -209,7 +209,7 @@ export default function CreateStoryModal({
             <Button
               size="sm"
               onClick={handleCreate}
-              className="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-semibold cursor-pointer shadow-sm"
+              className="bg-brand hover:bg-brand-hover text-brand-foreground font-semibold cursor-pointer shadow-sm"
             >
               Tạo dự án
             </Button>

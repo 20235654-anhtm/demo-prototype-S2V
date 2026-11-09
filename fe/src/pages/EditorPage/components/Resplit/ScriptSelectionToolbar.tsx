@@ -38,9 +38,9 @@ export default function ScriptSelectionToolbar({
         <Button
           size="sm"
           onClick={onOpenResplit}
-          className="h-7 px-2.5 text-xs bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-white font-medium shadow-2xs cursor-pointer gap-1 transition-colors"
+          className="h-7 px-2.5 text-xs bg-brand hover:bg-brand-hover text-brand-foreground font-medium shadow-2xs cursor-pointer gap-1 transition-colors"
         >
-          <Sparkles className="w-3 h-3 text-amber-100" />
+          <Sparkles className="w-3 h-3 text-brand-foreground" />
           <span>Chia lại</span>
         </Button>
 

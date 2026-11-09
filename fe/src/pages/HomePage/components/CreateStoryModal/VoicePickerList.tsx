@@ -141,7 +141,7 @@ export default function VoicePickerList({
                   onClick={() => onSelectVoice(voice)}
                   className={`flex items-center justify-between p-3 transition-colors cursor-pointer group ${
                     isSelected
-                      ? "bg-amber-500/10 dark:bg-amber-500/15"
+                      ? "bg-brand/10 dark:bg-brand/15"
                       : "hover:bg-muted/50"
                   }`}
                 >
@@ -151,17 +151,17 @@ export default function VoicePickerList({
                       <div
                         className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
                           isSelected
-                            ? "border-amber-500 bg-amber-500 text-white"
+                            ? "border-brand bg-brand text-brand-foreground"
                             : "border-muted-foreground/40 group-hover:border-foreground/60"
                         }`}
                       >
-                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-brand-foreground" />}
                       </div>
                     </div>
 
                     <div
                       aria-hidden="true"
-                      className="w-10 h-10 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm font-bold shrink-0"
+                      className="w-10 h-10 rounded-full border border-brand/30 bg-brand/10 text-brand-strong dark:text-brand flex items-center justify-center text-sm font-bold shrink-0"
                     >
                       {getVoiceInitial(voice.name)}
                     </div>
@@ -189,7 +189,7 @@ export default function VoicePickerList({
                       title={isPlaying ? "Dừng" : "Nghe thử"}
                       className={`h-8 w-8 rounded-full flex items-center justify-center cursor-pointer transition-colors ${
                         isPlaying
-                          ? "bg-amber-500 text-slate-950 shadow-xs"
+                          ? "bg-brand text-brand-foreground shadow-xs"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       }`}
                     >

@@ -76,7 +76,7 @@ export default function ResplitPopover({
       // Trường hợp C: Đúng 1 cảnh
       return [
         {
-          icon: <Scissors className="w-3 h-3 text-amber-500" />,
+          icon: <Scissors className="w-3 h-3 text-brand" />,
           label: "Mỗi câu là 1 cảnh",
           text: "Chia nhỏ cảnh này ra, mỗi câu trọn vẹn thành một phân cảnh riêng biệt.",
         },
@@ -97,7 +97,7 @@ export default function ResplitPopover({
       // Trường hợp A - Tab 1: Gom đoạn rồi chia lại
       return [
         {
-          icon: <Scissors className="w-3 h-3 text-amber-500" />,
+          icon: <Scissors className="w-3 h-3 text-brand" />,
           label: "Gom lại rồi chia đôi",
           text: "Gom toàn bộ nội dung của các cảnh này lại và chia đều thành 2 phân cảnh cân đối.",
         },
@@ -116,7 +116,7 @@ export default function ResplitPopover({
       // Trường hợp B hoặc Tab 2: Chia nhỏ từng cảnh độc lập
       return [
         {
-          icon: <Scissors className="w-3 h-3 text-amber-500" />,
+          icon: <Scissors className="w-3 h-3 text-brand" />,
           label: "Mỗi câu là 1 cảnh",
           text: "Duyệt qua từng cảnh đã chọn, tách mỗi câu trọn vẹn thành một phân cảnh riêng biệt.",
         },
