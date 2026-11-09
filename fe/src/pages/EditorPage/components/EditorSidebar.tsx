@@ -6,32 +6,29 @@ import {
 } from "@/components/ui/tooltip";
 import { FileText, Users, Image as ImageIcon, Settings } from "lucide-react";
 
-interface FarRightSidebarProps {
-  isScriptPinned: boolean;
+interface EditorSidebarProps {
   isScriptOpen: boolean;
-  activeRightTab: "script" | "assets" | "visuals" | null;
+  activeTab: "script" | "assets" | "visuals" | null;
   onToggleScript: () => void;
   onToggleAssets: () => void;
   onToggleVisuals: () => void;
 }
 
-export default function FarRightSidebar({
-  isScriptPinned,
+export default function EditorSidebar({
   isScriptOpen,
-  activeRightTab,
+  activeTab,
   onToggleScript,
   onToggleAssets,
   onToggleVisuals,
-}: FarRightSidebarProps) {
-  // Script icon active khi Cột Trái đang mở (nếu đã pin) hoặc đang mở ở Panel Phải (nếu chưa pin)
-  const isScriptActive = isScriptPinned ? isScriptOpen : activeRightTab === "script";
-  const isAssetsActive = activeRightTab === "assets";
-  const isVisualsActive = activeRightTab === "visuals";
+}: EditorSidebarProps) {
+  const isScriptActive = isScriptOpen;
+  const isAssetsActive = activeTab === "assets";
+  const isVisualsActive = activeTab === "visuals";
 
   return (
-    <aside className="w-12 border-l flex flex-col items-center py-3 justify-between bg-white dark:bg-neutral-900 shrink-0 z-10 select-none">
+    <aside className="w-12 border-r flex flex-col items-center py-3 justify-between bg-white dark:bg-neutral-900 shrink-0 z-10 select-none">
       <div className="flex flex-col items-center gap-2">
-        {/* 1. Nút Script (Kịch bản) */}
+        {/* 1. Nút Script (Kịch bản & Cấu hình giọng) */}
         <Tooltip>
           <TooltipTrigger render={
             <Button
@@ -47,14 +44,8 @@ export default function FarRightSidebar({
           }>
             <FileText className="w-4 h-4" />
           </TooltipTrigger>
-          <TooltipContent side="left">
-            <span>
-              {isScriptPinned
-                ? isScriptOpen
-                  ? "Đóng kịch bản (Cột trái)"
-                  : "Mở kịch bản (Cột trái)"
-                : "Mở kịch bản"}
-            </span>
+          <TooltipContent side="right">
+            <span>{isScriptOpen ? "Đóng kịch bản" : "Mở kịch bản"}</span>
           </TooltipContent>
         </Tooltip>
 
@@ -74,7 +65,7 @@ export default function FarRightSidebar({
           }>
             <Users className="w-4 h-4" />
           </TooltipTrigger>
-          <TooltipContent side="left">
+          <TooltipContent side="right">
             <span>Tài sản truyện</span>
           </TooltipContent>
         </Tooltip>
@@ -95,7 +86,7 @@ export default function FarRightSidebar({
           }>
             <ImageIcon className="w-4 h-4" />
           </TooltipTrigger>
-          <TooltipContent side="left">
+          <TooltipContent side="right">
             <span>Hình ảnh phân cảnh</span>
           </TooltipContent>
         </Tooltip>
@@ -112,7 +103,7 @@ export default function FarRightSidebar({
         }>
           <Settings className="w-4 h-4" />
         </TooltipTrigger>
-        <TooltipContent side="left">
+        <TooltipContent side="right">
           <span>Cài đặt dự án</span>
         </TooltipContent>
       </Tooltip>

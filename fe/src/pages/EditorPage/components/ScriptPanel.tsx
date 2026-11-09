@@ -17,7 +17,7 @@ import type { Shot, DiffProposal, DialogueBlock, CharacterAsset } from "@/types/
 import { mockCharacters } from "@/mocks/mockCharacters";
 
 interface ScriptPanelProps {
-  isPinned: boolean;
+  isPinned?: boolean;
   onTogglePin?: () => void;
   onClose: () => void;
   shots: Shot[];
@@ -49,7 +49,7 @@ interface ScriptPanelProps {
 }
 
 export default function ScriptPanel({
-  isPinned,
+  isPinned = true,
   onTogglePin,
   onClose,
   shots,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import EditorHeader from "./components/EditorHeader";
-import FarRightSidebar from "./components/FarRightSidebar";
+import EditorSidebar from "./components/EditorSidebar";
 import ScriptPanel from "./components/ScriptPanel";
 import StoryAssetsPanel from "./components/StoryAssetsPanel";
 import VisualsPanel from "./components/VisualsPanel";
@@ -24,14 +24,13 @@ export default function EditorPage() {
   const currentProject = projectId ? getProject(projectId) : undefined;
   const projectTitle = currentProject?.title || "Đấu Phá Thương Khung";
 
-  // 1. Quản lý trạng thái các Panel & Cơ chế Pin kịch bản
-  type RightTabType = "script" | "assets" | "visuals" | null;
-  const [isScriptPinned, setIsScriptPinned] = useState<boolean>(true); // Đã Pin sang Cột Trái
-  const [isScriptOpen, setIsScriptOpen] = useState<boolean>(true); // Cột Trái đang mở/đóng
-  const [activeRightTab, setActiveRightTab] = useState<RightTabType>(null); // Tab mở ở Panel Phải
+  // 1. Quản lý trạng thái các Panel & Menu Sidebar bên trái
+  type LeftTabType = "script" | "assets" | "visuals" | null;
+  const [isScriptOpen, setIsScriptOpen] = useState<boolean>(true); // Cột kịch bản & cấu hình giọng đang mở/đóng
+  const [activeTab, setActiveTab] = useState<LeftTabType>(null); // Tab phụ (assets, visuals)
 
   // 1.1 Quản lý danh sách nhân vật & điều hướng chọn nhân vật
-  const [characters, setCharacters] = useState<CharacterAsset[]>(mockCharacters);
+  const [characters] = useState<CharacterAsset[]>(mockCharacters);
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
 
   // 2. Quản lý 2 chế độ thanh tua (mặc định mở thanh timeline đa track khi vào Studio)
@@ -54,7 +53,7 @@ export default function EditorPage() {
   // Callback khi người dùng bấm [✏] ở bất kỳ đâu để mở Story Assets và điều hướng đúng nhân vật
   const handleEditCharacter = (characterId: string) => {
     setSelectedCharacterId(characterId);
-    setActiveRightTab("assets");
+    setActiveTab("assets");
   };
 
   // Cập nhật phân cảnh khi có thay đổi khối thoại/tách câu/sửa chữ
@@ -170,37 +169,17 @@ export default function EditorPage() {
     }
   }, [isPlaying, currentTime, shots]);
 
-  // Logic Sidebar & Pin kịch bản
+  // Logic Sidebar bên trái
   const handleToggleScriptTab = () => {
-    if (isScriptPinned) {
-      // Nếu đã Pin sang Cột Trái -> bật/tắt Cột Trái
-      setIsScriptOpen((prev) => !prev);
-    } else {
-      // Nếu chưa Pin -> mở/đóng ở Panel Phải
-      setActiveRightTab((prev) => (prev === "script" ? null : "script"));
-    }
+    setIsScriptOpen((prev) => !prev);
   };
 
   const handleToggleAssetsTab = () => {
-    setActiveRightTab((prev) => (prev === "assets" ? null : "assets"));
+    setActiveTab((prev) => (prev === "assets" ? null : "assets"));
   };
 
   const handleToggleVisualsTab = () => {
-    setActiveRightTab((prev) => (prev === "visuals" ? null : "visuals"));
-  };
-
-  const handlePinScript = () => {
-    // Chuyển Script từ Panel Phải sang cố định ở Cột Trái
-    setIsScriptPinned(true);
-    setIsScriptOpen(true);
-    setActiveRightTab(null);
-  };
-
-  const handleUnpinScript = () => {
-    // Bỏ ghim: đóng Cột Trái và chuyển sang Panel Phải
-    setIsScriptPinned(false);
-    setIsScriptOpen(false);
-    setActiveRightTab("script");
+    setActiveTab((prev) => (prev === "visuals" ? null : "visuals"));
   };
 
   // Logic tương tác kịch bản
@@ -255,13 +234,13 @@ export default function EditorPage() {
       newShots: [
         {
           id: `new-${Date.now()}-1`,
-          code: "Cảnh 2A",
+          code: "Cảnh 2A (Đề xuất)",
           text: "Trên quảng trường, trắc nghiệm ma thạch hiện lên năm chữ chói mắt: “Đấu chi lực, tam đoạn”.",
           duration: 7,
         },
         {
           id: `new-${Date.now()}-2`,
-          code: "Cảnh 2B",
+          code: "Cảnh 2B (Đề xuất)",
           text: "“Tiêu Viêm, đấu lực, tam đoạn! Cấp bậc: Cấp thấp!” Trung niên trắc nghiệm viên hờ hững công bố, đám đông lập tức xôn xao châm chọc.",
           duration: 6,
         },
@@ -296,13 +275,13 @@ export default function EditorPage() {
       newShots = [
         {
           id: `new-${Date.now()}-1`,
-          code: `Cảnh ${baseOrder}A`,
+          code: `Cảnh ${baseOrder}A (Đề xuất)`,
           text: part1 || originalText,
           duration: dur1,
         },
         {
           id: `new-${Date.now()}-2`,
-          code: `Cảnh ${baseOrder}B`,
+          code: `Cảnh ${baseOrder}B (Đề xuất)`,
           text: part2 || "Tiếp tục diễn biến phân cảnh...",
           duration: dur2,
         },
@@ -318,13 +297,13 @@ export default function EditorPage() {
       newShots = [
         {
           id: `new-${Date.now()}-1`,
-          code: `Cảnh ${baseOrder}A`,
+          code: `Cảnh ${baseOrder}A (Đề xuất)`,
           text: combinedText.slice(0, cut).trim(),
           duration: Math.max(3, Math.round(totalDur / 2)),
         },
         {
           id: `new-${Date.now()}-2`,
-          code: `Cảnh ${baseOrder}B`,
+          code: `Cảnh ${baseOrder}B (Đề xuất)`,
           text: combinedText.slice(cut).trim(),
           duration: Math.max(3, totalDur - Math.round(totalDur / 2)),
         },
@@ -341,13 +320,13 @@ export default function EditorPage() {
 
         newShots.push({
           id: `new-${Date.now()}-${counter++}`,
-          code: `Cảnh ${shotOrder}A`,
+          code: `Cảnh ${shotOrder}A (Đề xuất)`,
           text: text.slice(0, cut).trim() || text,
           duration: Math.max(3, Math.round(s.duration / 2)),
         });
         newShots.push({
           id: `new-${Date.now()}-${counter++}`,
-          code: `Cảnh ${shotOrder}B`,
+          code: `Cảnh ${shotOrder}B (Đề xuất)`,
           text: text.slice(cut).trim() || "Diễn biến tiếp theo...",
           duration: Math.max(3, s.duration - Math.round(s.duration / 2)),
         });
@@ -394,13 +373,34 @@ export default function EditorPage() {
         onExport={() => alert("Đang chuẩn bị xuất file video MP4 chất lượng cao...")}
       />
 
-      {/* 2. Thân Studio: Cơ chế co giãn 1, 2, 3 cột */}
+      {/* 2. Thân Studio: Menu thanh công cụ bên trái */}
       <div className="flex-1 min-h-0 flex overflow-hidden">
-        {/* (1) CỘT TRÁI: SCRIPT PANEL (Khi đã Pin và Cột Trái đang mở) */}
-        {isScriptPinned && isScriptOpen && (
+        {/* (1) THANH MENU CỘT BÊN TRÁI NGOÀI CÙNG (Sidebar) */}
+        <EditorSidebar
+          isScriptOpen={isScriptOpen}
+          activeTab={activeTab}
+          onToggleScript={handleToggleScriptTab}
+          onToggleAssets={handleToggleAssetsTab}
+          onToggleVisuals={handleToggleVisualsTab}
+        />
+
+        {/* (2) BẢNG TÀI SẢN TRUYỆN (Nếu mở) */}
+        {activeTab === "assets" && (
+          <StoryAssetsPanel
+            onClose={() => setActiveTab(null)}
+            selectedAssetId={selectedCharacterId}
+            onSelectAssetId={setSelectedCharacterId}
+          />
+        )}
+
+        {/* (3) BẢNG HÌNH ẢNH PHÂN CẢNH (Nếu mở) */}
+        {activeTab === "visuals" && (
+          <VisualsPanel onClose={() => setActiveTab(null)} />
+        )}
+
+        {/* (4) CỘT KỊCH BẢN & CẤU HÌNH GIỌNG (Khi mở sẽ đẩy khung Preview sang bên phải) */}
+        {isScriptOpen && (
           <ScriptPanel
-            isPinned={true}
-            onTogglePin={handleUnpinScript}
             onClose={() => setIsScriptOpen(false)}
             shots={shots}
             characters={characters}
@@ -424,7 +424,7 @@ export default function EditorPage() {
           />
         )}
 
-        {/* (2) KHUNG CANVAS PREVIEW (Tự co giãn flex-1 chiếm không gian trung tâm) */}
+        {/* (5) KHUNG CANVAS PREVIEW (Tự co giãn flex-1 chiếm không gian bên phải) */}
         <CanvasPreview
           timelineMode={timelineMode}
           onTimelineModeChange={setTimelineMode}
@@ -438,60 +438,6 @@ export default function EditorPage() {
           onSeek={(t) => setCurrentTime(t)}
           onRewind={(s) => setCurrentTime((t) => Math.max(0, t - s))}
           onSelectShot={handleSelectShot}
-        />
-
-        {/* (3) PANEL PHẢI (Khi mở Script ở dạng chưa Pin) */}
-        {!isScriptPinned && activeRightTab === "script" && (
-          <ScriptPanel
-            isPinned={false}
-            onTogglePin={handlePinScript}
-            onClose={() => setActiveRightTab(null)}
-            shots={shots}
-            characters={characters}
-            activeShotId={activeShotId}
-            selectedShotIds={selectedShotIds}
-            onSelectShot={handleSelectShot}
-            onToggleSelectShot={handleToggleSelectShot}
-            onClearSelection={() => setSelectedShotIds([])}
-            onTextChange={handleTextChange}
-            onShotUpdate={handleShotUpdate}
-            onToggleLock={handleToggleLock}
-            onOpenResplitModal={() => setIsResplitModalOpen(true)}
-            onRequestResplitScoped={handleRequestResplitScoped}
-            proposal={proposal}
-            onApplyProposal={handleApplyProposal}
-            onCancelProposal={() => setProposal(null)}
-            onMergeShots={handleMergeShots}
-            onEditCharacter={handleEditCharacter}
-            onSeekWord={(t) => setCurrentTime(t)}
-            onAddNewCharacter={() => handleEditCharacter("new")}
-          />
-        )}
-
-        {/* (3) PANEL PHẢI (Khi mở Story Assets) */}
-        {activeRightTab === "assets" && (
-          <StoryAssetsPanel
-            onClose={() => setActiveRightTab(null)}
-            characters={characters}
-            onCharactersChange={setCharacters}
-            selectedCharacterId={selectedCharacterId}
-            onSelectCharacterId={setSelectedCharacterId}
-          />
-        )}
-
-        {/* (3) PANEL PHẢI (Khi mở Visuals) */}
-        {activeRightTab === "visuals" && (
-          <VisualsPanel onClose={() => setActiveRightTab(null)} />
-        )}
-
-        {/* (4) THANH SIDEBAR PHẢI CÙNG */}
-        <FarRightSidebar
-          isScriptPinned={isScriptPinned}
-          isScriptOpen={isScriptOpen}
-          activeRightTab={activeRightTab}
-          onToggleScript={handleToggleScriptTab}
-          onToggleAssets={handleToggleAssetsTab}
-          onToggleVisuals={handleToggleVisualsTab}
         />
       </div>
 

@@ -1,110 +1,94 @@
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
+import { cn } from "cn";
+import { Users, X, Search } from "lucide-react";
 import {
-  Users,
-  X,
-  ChevronRight,
-  Wand2,
-  RefreshCw,
-  Plus,
-  Pencil,
-  Volume2,
-  MapPin,
-  Check,
-  User,
-} from "lucide-react";
-import type { CharacterAsset } from "@/types/script";
-import { MOCK_VOICES } from "@/pages/HomePage/components/CreateStoryModal/mockData";
-import { mockStoryAssets } from "@/mocks/mockStoryDetails";
+  STORY_ASSET_KIND_LABEL,
+  mockStoryAssets,
+  type StoryAsset,
+  type StoryAssetKind,
+} from "@/mocks/mockStoryDetails";
 import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
+import AssetDetailDialog from "@/pages/ProjectOverviewPage/components/AssetDetailDialog";
+
+type AssetFilter = StoryAssetKind;
+
+const FILTER_OPTIONS: Array<{ id: StoryAssetKind; label: string }> = [
+  { id: "character", label: STORY_ASSET_KIND_LABEL.character },
+  { id: "location", label: STORY_ASSET_KIND_LABEL.location },
+  { id: "prop", label: STORY_ASSET_KIND_LABEL.prop },
+];
 
 interface StoryAssetsPanelProps {
   onClose: () => void;
-  characters: CharacterAsset[];
-  onCharactersChange: (characters: CharacterAsset[]) => void;
-  selectedCharacterId?: string | null;
-  onSelectCharacterId?: (id: string | null) => void;
+  selectedAssetId?: string | null;
+  onSelectAssetId?: (id: string | null) => void;
 }
 
 export default function StoryAssetsPanel({
   onClose,
-  characters,
-  onCharactersChange,
-  selectedCharacterId,
-  onSelectCharacterId,
+  selectedAssetId,
+  onSelectAssetId,
 }: StoryAssetsPanelProps) {
-  // Trạng thái hiển thị: 'overview' (tổng quan) hoặc 'detail' (chi tiết 1 nhân vật)
-  const [viewMode, setViewMode] = useState<"overview" | "detail">("overview");
-  const [activeCharId, setActiveCharId] = useState<string | null>(null);
-  const [isChangingVoice, setIsChangingVoice] = useState(false);
-  const [activeTab, setActiveTab] = useState<"characters" | "locations">("characters");
+  const [assets, setAssets] = useState<StoryAsset[]>(mockStoryAssets);
+  const [filter, setFilter] = useState<AssetFilter>("character");
+  const [query, setQuery] = useState("");
+  const [selectedAsset, setSelectedAsset] = useState<StoryAsset | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Đồng bộ khi có selectedCharacterId được truyền vào từ ngoài (click cây bút ở kịch bản)
+  // Mở dialog khi có selectedAssetId truyền vào từ bên ngoài (ví dụ click nút sửa)
   useEffect(() => {
-    if (selectedCharacterId) {
-      if (selectedCharacterId === "new") {
-        // Tạo nhân vật mới nhanh
-        const newChar: CharacterAsset = {
-          id: `char-${Date.now()}`,
-          name: "Nhân vật mới",
-          avatar: PLACEHOLDER_IMAGE,
-          description: "Mô tả tính cách và ngoại hình nhân vật...",
-          voice: {
-            id: MOCK_VOICES[0].id,
-            name: MOCK_VOICES[0].name,
-            style: MOCK_VOICES[0].subtitle,
-          },
-          volume: 150,
-        };
-        onCharactersChange([...characters, newChar]);
-        setActiveCharId(newChar.id);
-        setViewMode("detail");
-      } else {
-        const found = characters.find((c) => c.id === selectedCharacterId);
-        if (found) {
-          setActiveCharId(found.id);
-          setViewMode("detail");
-        }
+    if (selectedAssetId) {
+      const found = assets.find((a) => a.id === selectedAssetId);
+      if (found) {
+        setSelectedAsset(found);
+        setFilter(found.kind);
+        setDialogOpen(true);
       }
     }
-  }, [selectedCharacterId, characters, onCharactersChange]);
+  }, [selectedAssetId, assets]);
 
-  const activeCharacter = characters.find((c) => c.id === activeCharId) || characters[0];
+  const countByKind = (kind: StoryAssetKind) =>
+    assets.filter((asset) => asset.kind === kind).length;
 
-  const handleUpdateActiveCharacter = (patch: Partial<CharacterAsset>) => {
-    if (!activeCharacter) return;
-    const updated = characters.map((c) =>
-      c.id === activeCharacter.id ? { ...c, ...patch } : c
+  const filteredAssets = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return assets.filter((asset) => {
+      const matchesFilter = asset.kind === filter;
+      const matchesQuery =
+        !normalizedQuery ||
+        asset.name.toLowerCase().includes(normalizedQuery) ||
+        asset.description.toLowerCase().includes(normalizedQuery) ||
+        (asset.imagePrompt && asset.imagePrompt.toLowerCase().includes(normalizedQuery)) ||
+        asset.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery));
+
+      return matchesFilter && matchesQuery;
+    });
+  }, [assets, filter, query]);
+
+  const handleOpenDetail = (asset: StoryAsset) => {
+    setSelectedAsset(asset);
+    setDialogOpen(true);
+  };
+
+  const handleUpdateAsset = (updated: StoryAsset) => {
+    setAssets((prev) =>
+      prev.map((item) => (item.id === updated.id ? updated : item))
     );
-    onCharactersChange(updated);
   };
 
-  const handleAddNewCharacter = () => {
-    const newChar: CharacterAsset = {
-      id: `char-${Date.now()}`,
-      name: `Nhân vật ${characters.length + 1}`,
-      avatar: PLACEHOLDER_IMAGE,
-      description: "Mô tả diện mạo, tính cách...",
-      voice: {
-        id: MOCK_VOICES[0].id,
-        name: MOCK_VOICES[0].name,
-        style: MOCK_VOICES[0].subtitle,
-      },
-      volume: 150,
-    };
-    onCharactersChange([...characters, newChar]);
-    setActiveCharId(newChar.id);
-    setViewMode("detail");
+  const handleDialogClose = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      onSelectAssetId?.(null);
+    }
   };
-
-  const locations = mockStoryAssets.filter((a) => a.kind === "location");
 
   return (
-    <div className="w-80 md:w-[360px] xl:w-[400px] border-l flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none">
-      {/* 1. Header chuẩn có tiêu đề và nút đóng ✕ (Giữ nguyên 100% style hiện tại) */}
+    <div className="w-80 sm:w-96 md:w-[420px] xl:w-[460px] border-r flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none overflow-hidden">
+      {/* 1. Header chuẩn có tiêu đề và nút đóng ✕ */}
       <div className="h-12 px-4 border-b flex items-center justify-between shrink-0 bg-muted/20">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-md bg-brand/15 text-brand-strong dark:text-brand flex items-center justify-center">
@@ -123,326 +107,109 @@ export default function StoryAssetsPanel({
         </Button>
       </div>
 
-      {/* 2. Breadcrumb Navigation khi ở chế độ Detail */}
-      {viewMode === "detail" && activeCharacter && (
-        <div className="px-4 py-2 border-b bg-muted/10 flex items-center gap-1.5 text-xs text-muted-foreground shrink-0">
-          <button
-            type="button"
-            onClick={() => {
-              setViewMode("overview");
-              onSelectCharacterId?.(null);
-            }}
-            className="hover:text-brand-strong dark:hover:text-brand transition-colors font-medium cursor-pointer"
-          >
-            Tài sản truyện
-          </button>
-          <ChevronRight className="w-3 h-3 text-muted-foreground/60" />
-          <span className="text-foreground font-semibold truncate">
-            {activeCharacter.name}
-          </span>
-        </div>
-      )}
-
-      {/* 3. Phần thân cuộn linh hoạt */}
+      {/* 2. Nội dung cuộn: Tìm kiếm, Bộ lọc và Danh sách tài sản (Sao chép 1:1 từ StoryAssetsView) */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
-        {viewMode === "detail" && activeCharacter ? (
-          /* ================= CHẾ ĐỘ DETAIL (Cấu hình nhân vật) ================= */
-          <div className="space-y-4 animate-in fade-in duration-150">
-            {/* Avatar & Tên */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                Tên nhân vật
-              </label>
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-muted border border-border/80 shrink-0 flex items-center justify-center">
-                  {activeCharacter.avatar ? (
-                    <img
-                      src={activeCharacter.avatar}
-                      alt={activeCharacter.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <User className="w-5 h-5 text-muted-foreground" />
-                  )}
-                </div>
-                <Input
-                  value={activeCharacter.name}
-                  onChange={(e) =>
-                    handleUpdateActiveCharacter({ name: e.target.value })
-                  }
-                  placeholder="Nhập tên nhân vật..."
-                  className="h-9 text-xs font-medium"
-                />
-              </div>
-            </div>
+        {/* Bộ lọc + tìm kiếm */}
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap gap-1.5">
+            {FILTER_OPTIONS.map((option) => {
+              const count = countByKind(option.id);
+              const isActive = filter === option.id;
 
-            {/* Description + AI Magic Sparkles */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-foreground">
-                  Mô tả nhân vật
-                </label>
+              return (
                 <button
+                  key={option.id}
                   type="button"
-                  onClick={() => {
-                    handleUpdateActiveCharacter({
-                      description: `${activeCharacter.description} Khí chất tự tin, đôi mắt sắc sảo và hành động dứt khoát.`,
-                    });
-                  }}
-                  className="inline-flex items-center gap-1 text-[11px] text-brand-strong dark:text-brand hover:underline cursor-pointer"
-                  title="Tối ưu mô tả bằng AI Magic"
+                  onClick={() => setFilter(option.id)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors cursor-pointer",
+                    isActive
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
                 >
-                  <Wand2 className="w-3 h-3 text-brand" />
-                  <span>AI Magic</span>
-                </button>
-              </div>
-              <Textarea
-                value={activeCharacter.description}
-                onChange={(e) =>
-                  handleUpdateActiveCharacter({ description: e.target.value })
-                }
-                placeholder="Mô tả đặc điểm, ngoại hình, tính cách nhân vật..."
-                rows={3}
-                className="text-xs resize-none leading-relaxed"
-              />
-            </div>
-
-            {/* Voice & Đổi giọng */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                Giọng đọc
-              </label>
-              <div className="rounded-xl border border-border p-3 bg-card shadow-2xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-brand/10 text-brand-strong dark:text-brand flex items-center justify-center shrink-0">
-                      <User className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-foreground truncate">
-                        {activeCharacter.voice.name}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground truncate">
-                        {activeCharacter.voice.style}
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsChangingVoice(!isChangingVoice)}
-                    className="p-1.5 rounded-lg border border-border/80 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-                    title="Đổi giọng đọc"
+                  {option.label}
+                  <span
+                    className={cn(
+                      "text-[10px] rounded-full px-1.5 py-px",
+                      isActive ? "bg-background/20" : "bg-muted"
+                    )}
                   >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                  </button>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Tìm tài sản truyện..."
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className="pl-9 bg-card text-xs h-9"
+            />
+          </div>
+        </div>
+
+        {/* Danh sách tài sản: Nhân vật & Vật phẩm 2 cột, Địa điểm 1 cột */}
+        {filteredAssets.length > 0 ? (
+          <div
+            className={cn(
+              "grid gap-3",
+              filter === "location" ? "grid-cols-1" : "grid-cols-2"
+            )}
+          >
+            {filteredAssets.map((asset) => (
+              <article
+                key={asset.id}
+                onClick={() => handleOpenDetail(asset)}
+                className="group rounded-2xl border bg-card p-3 shadow-2xs transition-all flex flex-col items-center text-center cursor-pointer hover:border-brand/40 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] select-none"
+              >
+                {/* Ô ảnh ở trên */}
+                <div
+                  className={cn(
+                    "relative w-full rounded-xl border border-dashed border-border bg-muted/40 p-2 overflow-hidden flex items-center justify-center group-hover:border-brand/40 transition-colors",
+                    filter === "location" ? "aspect-[16/9]" : "aspect-square"
+                  )}
+                >
+                  <img
+                    src={asset.imageUrl || PLACEHOLDER_IMAGE}
+                    alt={asset.name}
+                    className="w-full h-full object-contain rounded-lg"
+                  />
                 </div>
 
-                <div className="text-[11px] text-muted-foreground/80 italic">
-                  Giọng đọc đang được chọn cho nhân vật này
+                {/* Tên ở dưới */}
+                <div className="w-full mt-2.5 px-1">
+                  <h3 className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-brand-strong dark:group-hover:text-brand transition-colors truncate">
+                    {asset.name}
+                  </h3>
                 </div>
-
-                {/* Danh sách chọn giọng mở rộng */}
-                {isChangingVoice && (
-                  <div className="pt-2 border-t space-y-1 max-h-48 overflow-y-auto animate-in fade-in duration-100">
-                    <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                      Chọn giọng đọc tiếng Việt:
-                    </div>
-                    {MOCK_VOICES.map((v) => {
-                      const isCurrent = v.id === activeCharacter.voice.id;
-                      return (
-                        <div
-                          key={v.id}
-                          onClick={() => {
-                            handleUpdateActiveCharacter({
-                              voice: {
-                                id: v.id,
-                                name: v.name,
-                                style: `${v.subtitle} (${v.gender})`,
-                              },
-                            });
-                            setIsChangingVoice(false);
-                          }}
-                          className={`flex items-center justify-between p-1.5 rounded-lg text-xs cursor-pointer transition-colors ${
-                            isCurrent
-                              ? "bg-brand/10 text-brand-strong font-medium"
-                              : "hover:bg-muted/70 text-foreground"
-                          }`}
-                        >
-                          <div className="min-w-0">
-                            <span className="font-medium">{v.name}</span>
-                            <span className="text-[10px] text-muted-foreground ml-1.5">
-                              · {v.subtitle}
-                            </span>
-                          </div>
-                          {isCurrent && (
-                            <Check className="w-3.5 h-3.5 text-brand" />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Voice Volume Slider */}
-            <div className="space-y-2 pt-1">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                  <Volume2 className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span>Âm lượng giọng đọc</span>
-                </label>
-                <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-muted/60 border border-border/80">
-                  {activeCharacter.volume} %
-                </span>
-              </div>
-              <Slider
-                value={[activeCharacter.volume]}
-                min={0}
-                max={200}
-                onValueChange={(val) => {
-                  if (Array.isArray(val) && val.length > 0) {
-                    handleUpdateActiveCharacter({ volume: val[0] });
-                  } else if (typeof val === "number") {
-                    handleUpdateActiveCharacter({ volume: val });
-                  }
-                }}
-                className="w-full cursor-pointer py-1"
-              />
-              <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
-                <span>0%</span>
-                <span>100%</span>
-                <span>200%</span>
-              </div>
-            </div>
+              </article>
+            ))}
           </div>
         ) : (
-          /* ================= CHẾ ĐỘ OVERVIEW (Danh sách tổng quan) ================= */
-          <div className="space-y-4 animate-in fade-in duration-150">
-            {/* Tabs chuyển đổi Characters / Locations */}
-            <div className="flex items-center p-1 rounded-lg bg-muted/50 border border-border/60">
-              <button
-                type="button"
-                onClick={() => setActiveTab("characters")}
-                className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                  activeTab === "characters"
-                    ? "bg-background text-foreground shadow-xs font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Nhân vật ({characters.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("locations")}
-                className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                  activeTab === "locations"
-                    ? "bg-background text-foreground shadow-xs font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Bối cảnh ({locations.length})
-              </button>
+          <div className="rounded-xl border border-dashed bg-card/60 py-12 flex flex-col items-center justify-center text-center">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+              <Search className="w-4 h-4" />
             </div>
-
-            {activeTab === "characters" ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">
-                    Danh sách nhân vật
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAddNewCharacter}
-                    className="h-7 text-xs px-2 text-brand-strong dark:text-brand hover:bg-brand/10 border-brand/30 cursor-pointer"
-                  >
-                    <Plus className="w-3 h-3 mr-1" />
-                    <span>Thêm nhân vật</span>
-                  </Button>
-                </div>
-
-                <div className="space-y-1.5">
-                  {characters.map((char) => (
-                    <div
-                      key={char.id}
-                      onClick={() => {
-                        setActiveCharId(char.id);
-                        setViewMode("detail");
-                        onSelectCharacterId?.(char.id);
-                      }}
-                      className="group flex items-center justify-between p-2 rounded-xl border border-border/80 bg-card hover:border-brand/40 hover:bg-brand/5 transition-all cursor-pointer shadow-2xs"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-muted border border-border/60 shrink-0 flex items-center justify-center">
-                          {char.avatar ? (
-                            <img
-                              src={char.avatar}
-                              alt={char.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <User className="w-4 h-4 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-semibold text-foreground group-hover:text-brand-strong transition-colors truncate">
-                            {char.name}
-                          </div>
-                          <div className="text-[10px] text-muted-foreground truncate">
-                            {char.voice?.name} · {char.volume}%
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="p-1 rounded-md text-muted-foreground group-hover:text-brand-strong transition-colors">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">
-                    Bối cảnh câu chuyện
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => alert("Chức năng thêm bối cảnh mới...")}
-                    className="h-7 text-xs px-2 text-brand-strong dark:text-brand hover:bg-brand/10 border-brand/30 cursor-pointer"
-                  >
-                    <Plus className="w-3 h-3 mr-1" />
-                    <span>Thêm bối cảnh</span>
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  {locations.map((loc) => (
-                    <div
-                      key={loc.id}
-                      className="p-2.5 rounded-xl border border-border/80 bg-card shadow-2xs space-y-1"
-                    >
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-brand" />
-                        <span className="font-semibold text-xs text-foreground">
-                          {loc.name}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                        {loc.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <p className="mt-3 text-xs font-medium">Không tìm thấy tài sản nào</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Thử đổi bộ lọc hoặc từ khóa tìm kiếm khác.
+            </p>
           </div>
         )}
       </div>
+
+      {/* Popup chỉnh sửa chi tiết tài sản (Sao chép dùng chung AssetDetailDialog) */}
+      <AssetDetailDialog
+        asset={selectedAsset}
+        open={dialogOpen}
+        onOpenChange={handleDialogClose}
+        onSave={handleUpdateAsset}
+      />
     </div>
   );
 }
