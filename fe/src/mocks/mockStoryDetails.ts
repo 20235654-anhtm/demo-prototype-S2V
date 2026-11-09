@@ -6,6 +6,8 @@ export interface StoryAsset {
   kind: StoryAssetKind;
   description: string;
   tags: string[];
+  imageUrl?: string;
+  imagePrompt?: string;
 }
 
 export const STORY_ASSET_KIND_LABEL: Record<StoryAssetKind, string> = {
@@ -22,6 +24,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Thiếu niên từng là thiên tài trăm năm của Ô Thản Thành; sau biến cố ba năm trước chỉ còn tam đoạn đấu khí.",
     tags: ["Nhân vật chính", "Tam đoạn"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Thiếu niên 15 tuổi, dáng người thanh mảnh, ánh mắt kiên định trầm tĩnh, trang phục thanh bào gia tộc Tiêu gia, phong cách anime tu tiên 3D chi tiết cao.",
   },
   {
     id: "asset-tieu-mi",
@@ -30,6 +35,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Thiếu nữ mười bốn tuổi, thanh thuần pha chút vũ mị; đấu khí thất đoạn, được xem là hạt giống của gia tộc.",
     tags: ["Thất đoạn", "Hạt giống gia tộc"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Thiếu nữ 14 tuổi, diện mạo thanh thuần quyến rũ, tóc dài xõa nhẹ, y phục đỏ nhạt thêu hoa văn tinh xảo, phong cách hoạt hình 3D cổ phong.",
   },
   {
     id: "asset-tieu-huan-nhi",
@@ -38,6 +46,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Tử y thiếu nữ khí chất thoát tục; đấu khí cửu đoạn, gia tộc tuổi trẻ đệ nhất nhân.",
     tags: ["Cửu đoạn", "Đệ nhất nhân"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Tử y thiếu nữ thanh tú tuyệt trần, khí chất cao quý trang nhã, áo choàng tím điểm viền vàng kim, đôi mắt phượng thông tuệ, phong cách donghua cinematic 3D.",
   },
   {
     id: "asset-trac-nghiem-vien",
@@ -46,6 +57,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Trung niên nam tử phụ trách đo đấu khí, thái độ hờ hững trước kết quả của Tiêu Viêm.",
     tags: ["Phụ trách trắc nghiệm"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Nam tử trung niên nghiêm nghị, râu ngắn, y phục giám khảo màu xám tro trang trọng, đứng cạnh bia đá trắc nghiệm, phong cách 3D cổ phong chân thực.",
   },
   {
     id: "asset-dam-dong",
@@ -54,6 +68,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Các tộc nhân chứng kiến lễ trắc nghiệm, nhanh chóng châm chọc khi Tiêu Viêm mất phong độ.",
     tags: ["Quần chúng"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Nhóm thanh thiếu niên gia tộc Tiêu gia đứng vây quanh quảng trường xôn xao bàn tán chỉ trỏ, phong cách 3D donghua phong phú biểu cảm.",
   },
   {
     id: "asset-quang-truong",
@@ -62,6 +79,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Nơi diễn ra lễ trắc nghiệm đấu khí hằng năm, tập trung đông đảo tộc nhân.",
     tags: ["Địa điểm chính"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Quảng trường đá cổ kính rộng lớn của gia tộc tu tiên, bao quanh là các bậc thềm đá và cờ hiệu gia tộc, ánh nắng ban chiều chiếu rọi, phong cách 3D cinematic.",
   },
   {
     id: "asset-o-than-thanh",
@@ -70,6 +90,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Thành trấn quê hương của Tiêu Viêm, nơi gia tộc Tiêu gia tọa lạc.",
     tags: ["Quê hương"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Thành cổ phồn hoa náo nhiệt dưới chân núi, kiến trúc phương Đông cổ đại mái ngói cong, đường phố lát đá xanh, phong cảnh hùng vĩ phong cách 3D.",
   },
   {
     id: "asset-ma-thach-bia",
@@ -78,6 +101,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Bia đá đen dùng để đo đấu khí; kết quả hiện thành những chữ phát sáng.",
     tags: ["Vật phẩm trắc nghiệm"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Tấm bia đá đen khổng lồ bóng loáng khắc phù văn cổ xưa, bề mặt phát ra ánh sáng vàng kim lung linh đo đạc năng lượng, góc nhìn cận cảnh chi tiết cao 3D.",
   },
   {
     id: "asset-hac-kim-tu-tu",
@@ -86,6 +112,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Trang phục tím đen của Tiêu Huân Nhi, tôn lên khí chất thoát tục của nàng.",
     tags: ["Trang phục"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Bộ y phục cổ trang lụa tím thêu hoa văn chỉ vàng tinh xảo, chất vải mềm mại sang trọng, phong cách tiên hiệp 3D chân thực.",
   },
   {
     id: "asset-dau-khi",
@@ -94,6 +123,9 @@ export const mockStoryAssets: StoryAsset[] = [
     description:
       "Năng lượng tu luyện của đấu giả, chia từ nhất đoạn đến thập đoạn.",
     tags: ["Hệ thống sức mạnh"],
+    imageUrl: "/wireframe-placeholder.svg",
+    imagePrompt:
+      "Quầng sáng năng lượng đấu khí huyền ảo luân chuyển quanh bàn tay, các hạt ánh sáng lấp lánh rực rỡ hiệu ứng kỹ xảo VFX 3D.",
   },
 ];
 

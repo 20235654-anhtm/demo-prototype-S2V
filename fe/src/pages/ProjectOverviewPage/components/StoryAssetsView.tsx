@@ -1,45 +1,17 @@
 import { useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "cn";
-import {
-  MapPin,
-  Package,
-  Search,
-  UserRound,
-  type LucideIcon,
-} from "lucide-react";
+import { Search } from "lucide-react";
 import {
   STORY_ASSET_KIND_LABEL,
   mockStoryAssets,
+  type StoryAsset,
   type StoryAssetKind,
 } from "@/mocks/mockStoryDetails";
+import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
+import AssetDetailDialog from "./AssetDetailDialog";
 
 type AssetFilter = StoryAssetKind;
-
-interface KindStyle {
-  icon: LucideIcon;
-  avatar: string;
-  chip: string;
-}
-
-const KIND_STYLE: Record<StoryAssetKind, KindStyle> = {
-  character: {
-    icon: UserRound,
-    avatar: "from-brand via-orange-500 to-rose-500",
-    chip: "border-brand/30 bg-brand/10 text-brand-strong dark:text-brand",
-  },
-  location: {
-    icon: MapPin,
-    avatar: "from-emerald-400 via-teal-500 to-cyan-600",
-    chip: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  },
-  prop: {
-    icon: Package,
-    avatar: "from-violet-400 via-purple-500 to-fuchsia-600",
-    chip: "border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300",
-  },
-};
 
 const FILTER_OPTIONS: Array<{ id: StoryAssetKind; label: string }> = [
   { id: "character", label: STORY_ASSET_KIND_LABEL.character },
@@ -47,37 +19,45 @@ const FILTER_OPTIONS: Array<{ id: StoryAssetKind; label: string }> = [
   { id: "prop", label: STORY_ASSET_KIND_LABEL.prop },
 ];
 
-/** Lấy chữ cái đầu của từ cuối trong tên (tên gọi chính). */
-const getInitial = (name: string) => {
-  const words = name.trim().split(/\s+/);
-  const mainWord = words[words.length - 1] || name;
-  return mainWord.charAt(0).toUpperCase() || "?";
-};
-
-const countByKind = (kind: StoryAssetKind) =>
-  mockStoryAssets.filter((asset) => asset.kind === kind).length;
-
 export default function StoryAssetsView() {
+  const [assets, setAssets] = useState<StoryAsset[]>(mockStoryAssets);
   const [filter, setFilter] = useState<AssetFilter>("character");
   const [query, setQuery] = useState("");
+  const [selectedAsset, setSelectedAsset] = useState<StoryAsset | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const countByKind = (kind: StoryAssetKind) =>
+    assets.filter((asset) => asset.kind === kind).length;
 
   const filteredAssets = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return mockStoryAssets.filter((asset) => {
+    return assets.filter((asset) => {
       const matchesFilter = asset.kind === filter;
       const matchesQuery =
         !normalizedQuery ||
         asset.name.toLowerCase().includes(normalizedQuery) ||
         asset.description.toLowerCase().includes(normalizedQuery) ||
+        (asset.imagePrompt && asset.imagePrompt.toLowerCase().includes(normalizedQuery)) ||
         asset.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery));
 
       return matchesFilter && matchesQuery;
     });
-  }, [filter, query]);
+  }, [assets, filter, query]);
+
+  const handleOpenDetail = (asset: StoryAsset) => {
+    setSelectedAsset(asset);
+    setDialogOpen(true);
+  };
+
+  const handleUpdateAsset = (updated: StoryAsset) => {
+    setAssets((prev) =>
+      prev.map((item) => (item.id === updated.id ? updated : item))
+    );
+  };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Bộ lọc + tìm kiếm */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap gap-1.5">
@@ -122,68 +102,42 @@ export default function StoryAssetsView() {
         </div>
       </div>
 
-      {/* Danh sách tài sản */}
+      {/* Danh sách tài sản: Nhân vật & Vật phẩm 2 cột/hàng, Địa điểm 1 cột/hàng */}
       {filteredAssets.length > 0 ? (
-        <div className="grid gap-3">
-          {filteredAssets.map((asset) => {
-            const style = KIND_STYLE[asset.kind];
-            const Icon = style.icon;
-
-            return (
-              <article
-                key={asset.id}
-                className="group rounded-xl border bg-card p-4 shadow-2xs transition-all hover:-translate-y-0.5 hover:shadow-md"
+        <div
+          className={cn(
+            "grid gap-3",
+            filter === "location" ? "grid-cols-1" : "grid-cols-2"
+          )}
+        >
+          {filteredAssets.map((asset) => (
+            <article
+              key={asset.id}
+              onClick={() => handleOpenDetail(asset)}
+              className="group rounded-2xl border bg-card p-3 shadow-2xs transition-all flex flex-col items-center text-center cursor-pointer hover:border-brand/40 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] select-none"
+            >
+              {/* Ô ảnh ở trên (địa điểm dùng aspect-video hoặc aspect-[16/9] tạo cảm giác bối cảnh rộng, nhân vật/vật phẩm giữ aspect-square) */}
+              <div
+                className={cn(
+                  "relative w-full rounded-xl border border-dashed border-border bg-muted/40 p-2 overflow-hidden flex items-center justify-center group-hover:border-brand/40 transition-colors",
+                  filter === "location" ? "aspect-[16/9]" : "aspect-square"
+                )}
               >
-                <div className="flex items-start gap-3">
-                  <div
-                    className={cn(
-                      "w-11 h-11 rounded-xl bg-gradient-to-br text-white flex items-center justify-center shrink-0 shadow-sm",
-                      style.avatar
-                    )}
-                  >
-                    {asset.kind === "character" ? (
-                      <span className="text-sm font-bold">
-                        {getInitial(asset.name)}
-                      </span>
-                    ) : (
-                      <Icon className="w-5 h-5" />
-                    )}
-                  </div>
+                <img
+                  src={asset.imageUrl || PLACEHOLDER_IMAGE}
+                  alt={asset.name}
+                  className="w-full h-full object-contain rounded-lg"
+                />
+              </div>
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-sm font-semibold leading-snug text-foreground">
-                        {asset.name}
-                      </h3>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "text-[10px] shrink-0",
-                          style.chip
-                        )}
-                      >
-                        {STORY_ASSET_KIND_LABEL[asset.kind]}
-                      </Badge>
-                    </div>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-3">
-                      {asset.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {asset.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-md bg-muted/70 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            );
-          })}
+              {/* Tên ở dưới */}
+              <div className="w-full mt-2.5 px-1">
+                <h3 className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-brand-strong dark:group-hover:text-brand transition-colors truncate">
+                  {asset.name}
+                </h3>
+              </div>
+            </article>
+          ))}
         </div>
       ) : (
         <div className="rounded-xl border border-dashed bg-card/60 py-14 flex flex-col items-center justify-center text-center">
@@ -196,6 +150,14 @@ export default function StoryAssetsView() {
           </p>
         </div>
       )}
+
+      {/* Popup chi tiết tài sản (Nhân vật / Địa điểm / Vật phẩm) */}
+      <AssetDetailDialog
+        asset={selectedAsset}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSave={handleUpdateAsset}
+      />
     </div>
   );
 }
