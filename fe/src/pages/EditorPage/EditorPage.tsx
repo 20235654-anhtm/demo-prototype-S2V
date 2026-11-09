@@ -39,14 +39,14 @@ export default function EditorPage() {
 
   // 3. Quản lý dữ liệu phân cảnh
   const [shots, setShots] = useState<Shot[]>(mockInitialShots);
-  const [activeShotId, setActiveShotId] = useState<string>(mockInitialShots[1]?.id || mockInitialShots[0]?.id);
+  const [activeShotId, setActiveShotId] = useState<string>(mockInitialShots[0]?.id || "shot-1");
   const [selectedShotIds, setSelectedShotIds] = useState<string[]>([]);
   const [proposal, setProposal] = useState<DiffProposal | null>(null);
   const [isResplitModalOpen, setIsResplitModalOpen] = useState<boolean>(false);
 
   // 4. Quản lý phát Video
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [currentTime, setCurrentTime] = useState<number>(31.0); // Bắt đầu ở 00:31
+  const [currentTime, setCurrentTime] = useState<number>(0);
   const duration = shots.reduce((acc, s) => acc + s.duration, 0) || 44.0;
 
   const activeShot = shots.find((s) => s.id === activeShotId) || shots[0];
@@ -106,15 +106,20 @@ export default function EditorPage() {
     return () => clearInterval(interval);
   }, [isPlaying, duration]);
 
-  // Cập nhật activeShot theo currentTime khi phát video
+  // Cập nhật activeShot theo currentTime khi phát video hoặc tua timeline
   useEffect(() => {
     let acc = 0;
-    for (const shot of shots) {
-      acc += shot.duration;
-      if (currentTime <= acc) {
+    for (let i = 0; i < shots.length; i++) {
+      const shot = shots[i];
+      const nextAcc = acc + shot.duration;
+      const isLast = i === shots.length - 1;
+
+      // Kim thời gian nằm trong khoảng [acc, nextAcc) hoặc tại mốc cuối của cảnh cuối cùng
+      if (currentTime >= acc - 0.001 && (currentTime < nextAcc - 0.001 || isLast)) {
         setActiveShotId(shot.id);
         break;
       }
+      acc = nextAcc;
     }
   }, [currentTime, shots]);
 
@@ -250,13 +255,13 @@ export default function EditorPage() {
       newShots: [
         {
           id: `new-${Date.now()}-1`,
-          code: "Cảnh 2A (Đề xuất)",
+          code: "Cảnh 2A",
           text: "Trên quảng trường, trắc nghiệm ma thạch hiện lên năm chữ chói mắt: “Đấu chi lực, tam đoạn”.",
           duration: 7,
         },
         {
           id: `new-${Date.now()}-2`,
-          code: "Cảnh 2B (Đề xuất)",
+          code: "Cảnh 2B",
           text: "“Tiêu Viêm, đấu lực, tam đoạn! Cấp bậc: Cấp thấp!” Trung niên trắc nghiệm viên hờ hững công bố, đám đông lập tức xôn xao châm chọc.",
           duration: 6,
         },
@@ -291,13 +296,13 @@ export default function EditorPage() {
       newShots = [
         {
           id: `new-${Date.now()}-1`,
-          code: `Cảnh ${baseOrder}A (Đề xuất)`,
+          code: `Cảnh ${baseOrder}A`,
           text: part1 || originalText,
           duration: dur1,
         },
         {
           id: `new-${Date.now()}-2`,
-          code: `Cảnh ${baseOrder}B (Đề xuất)`,
+          code: `Cảnh ${baseOrder}B`,
           text: part2 || "Tiếp tục diễn biến phân cảnh...",
           duration: dur2,
         },
@@ -313,13 +318,13 @@ export default function EditorPage() {
       newShots = [
         {
           id: `new-${Date.now()}-1`,
-          code: `Cảnh ${baseOrder}A (Đề xuất)`,
+          code: `Cảnh ${baseOrder}A`,
           text: combinedText.slice(0, cut).trim(),
           duration: Math.max(3, Math.round(totalDur / 2)),
         },
         {
           id: `new-${Date.now()}-2`,
-          code: `Cảnh ${baseOrder}B (Đề xuất)`,
+          code: `Cảnh ${baseOrder}B`,
           text: combinedText.slice(cut).trim(),
           duration: Math.max(3, totalDur - Math.round(totalDur / 2)),
         },
@@ -336,13 +341,13 @@ export default function EditorPage() {
 
         newShots.push({
           id: `new-${Date.now()}-${counter++}`,
-          code: `Cảnh ${shotOrder}A (Đề xuất)`,
+          code: `Cảnh ${shotOrder}A`,
           text: text.slice(0, cut).trim() || text,
           duration: Math.max(3, Math.round(s.duration / 2)),
         });
         newShots.push({
           id: `new-${Date.now()}-${counter++}`,
-          code: `Cảnh ${shotOrder}B (Đề xuất)`,
+          code: `Cảnh ${shotOrder}B`,
           text: text.slice(cut).trim() || "Diễn biến tiếp theo...",
           duration: Math.max(3, s.duration - Math.round(s.duration / 2)),
         });

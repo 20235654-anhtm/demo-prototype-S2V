@@ -38,7 +38,6 @@ export default function DialogueLineItem({
   }, [line.text]);
 
   const handleTextareaClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
-    e.stopPropagation();
     // Caret Word Seek: Xác định từ tại vị trí con trỏ chuột khi nhấp vào
     if (onSeekWord && line.words && line.words.length > 0) {
       const charPos = e.currentTarget.selectionStart || 0;
@@ -47,8 +46,9 @@ export default function DialogueLineItem({
       for (const w of line.words) {
         const wordLen = w.word.length;
         if (charPos >= cumulativeLength && charPos <= cumulativeLength + wordLen + 1) {
+          e.stopPropagation();
           onSeekWord(w.start);
-          break;
+          return;
         }
         cumulativeLength += wordLen + 1; // +1 cho dấu cách
       }
