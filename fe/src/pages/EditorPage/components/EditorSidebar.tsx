@@ -4,52 +4,26 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { FileText, Users, Image as ImageIcon, Settings } from "lucide-react";
+import { Users, Image as ImageIcon, Settings } from "lucide-react";
 
 interface EditorSidebarProps {
-  isScriptOpen: boolean;
-  activeTab: "script" | "assets" | "visuals" | null;
-  onToggleScript: () => void;
+  activeTab: "assets" | "visuals" | null;
   onToggleAssets: () => void;
   onToggleVisuals: () => void;
 }
 
 export default function EditorSidebar({
-  isScriptOpen,
   activeTab,
-  onToggleScript,
   onToggleAssets,
   onToggleVisuals,
 }: EditorSidebarProps) {
-  const isScriptActive = isScriptOpen;
   const isAssetsActive = activeTab === "assets";
   const isVisualsActive = activeTab === "visuals";
 
   return (
-    <aside className="w-12 border-r flex flex-col items-center py-3 justify-between bg-white dark:bg-neutral-900 shrink-0 z-10 select-none">
+    <aside className="w-12 border-l flex flex-col items-center py-3 justify-between bg-white dark:bg-neutral-900 shrink-0 z-10 select-none">
       <div className="flex flex-col items-center gap-2">
-        {/* 1. Nút Script (Kịch bản & Cấu hình giọng) */}
-        <Tooltip>
-          <TooltipTrigger render={
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggleScript}
-              className={`h-9 w-9 rounded-lg transition-colors cursor-pointer ${
-                isScriptActive
-                  ? "bg-muted text-foreground font-medium hover:bg-muted/80"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            />
-          }>
-            <FileText className="w-4 h-4" />
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <span>{isScriptOpen ? "Đóng kịch bản" : "Mở kịch bản"}</span>
-          </TooltipContent>
-        </Tooltip>
-
-        {/* 2. Nút Tài sản truyện */}
+        {/* 1. Nút Tài sản truyện */}
         <Tooltip>
           <TooltipTrigger render={
             <Button
@@ -65,12 +39,12 @@ export default function EditorSidebar({
           }>
             <Users className="w-4 h-4" />
           </TooltipTrigger>
-          <TooltipContent side="right">
+          <TooltipContent side="left">
             <span>Tài sản truyện</span>
           </TooltipContent>
         </Tooltip>
 
-        {/* 3. Nút Visuals */}
+        {/* 2. Nút Visuals */}
         <Tooltip>
           <TooltipTrigger render={
             <Button
@@ -86,7 +60,7 @@ export default function EditorSidebar({
           }>
             <ImageIcon className="w-4 h-4" />
           </TooltipTrigger>
-          <TooltipContent side="right">
+          <TooltipContent side="left">
             <span>Hình ảnh phân cảnh</span>
           </TooltipContent>
         </Tooltip>
@@ -103,7 +77,7 @@ export default function EditorSidebar({
         }>
           <Settings className="w-4 h-4" />
         </TooltipTrigger>
-        <TooltipContent side="right">
+        <TooltipContent side="left">
           <span>Cài đặt dự án</span>
         </TooltipContent>
       </Tooltip>

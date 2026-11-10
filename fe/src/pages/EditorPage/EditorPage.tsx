@@ -24,10 +24,9 @@ export default function EditorPage() {
   const currentProject = projectId ? getProject(projectId) : undefined;
   const projectTitle = currentProject?.title || "Đấu Phá Thương Khung";
 
-  // 1. Quản lý trạng thái các Panel & Menu Sidebar bên trái
-  type LeftTabType = "script" | "assets" | "visuals" | null;
-  const [isScriptOpen, setIsScriptOpen] = useState<boolean>(true); // Cột kịch bản & cấu hình giọng đang mở/đóng
-  const [activeTab, setActiveTab] = useState<LeftTabType>(null); // Tab phụ (assets, visuals)
+  // 1. Quản lý trạng thái các Panel & Menu Sidebar
+  type RightTabType = "assets" | "visuals" | null;
+  const [activeTab, setActiveTab] = useState<RightTabType>(null); // Tab phụ (assets, visuals)
 
   // 1.1 Quản lý danh sách nhân vật & điều hướng chọn nhân vật
   const [characters] = useState<CharacterAsset[]>(mockCharacters);
@@ -170,10 +169,6 @@ export default function EditorPage() {
   }, [isPlaying, currentTime, shots]);
 
   // Logic Sidebar bên trái
-  const handleToggleScriptTab = () => {
-    setIsScriptOpen((prev) => !prev);
-  };
-
   const handleToggleAssetsTab = () => {
     setActiveTab((prev) => (prev === "assets" ? null : "assets"));
   };
@@ -373,60 +368,34 @@ export default function EditorPage() {
         onExport={() => alert("Đang chuẩn bị xuất file video MP4 chất lượng cao...")}
       />
 
-      {/* 2. Thân Studio: Menu thanh công cụ bên trái */}
+      {/* 2. Thân Studio: Cột kịch bản (luôn hiện bên trái) + Canvas Preview + Menu Sidebar bên phải */}
       <div className="flex-1 min-h-0 flex overflow-hidden">
-        {/* (1) THANH MENU CỘT BÊN TRÁI NGOÀI CÙNG (Sidebar) */}
-        <EditorSidebar
-          isScriptOpen={isScriptOpen}
-          activeTab={activeTab}
-          onToggleScript={handleToggleScriptTab}
-          onToggleAssets={handleToggleAssetsTab}
-          onToggleVisuals={handleToggleVisualsTab}
+        {/* (1) CỘT KỊCH BẢN & CẤU HÌNH GIỌNG (Luôn luôn hiển thị) */}
+        <ScriptPanel
+          shots={shots}
+          characters={characters}
+          activeShotId={activeShotId}
+          selectedShotIds={selectedShotIds}
+          onSelectShot={handleSelectShot}
+          onToggleSelectShot={handleToggleSelectShot}
+          onClearSelection={() => setSelectedShotIds([])}
+          onTextChange={handleTextChange}
+          onShotUpdate={handleShotUpdate}
+          onToggleLock={handleToggleLock}
+          onOpenResplitModal={() => setIsResplitModalOpen(true)}
+          onRequestResplitScoped={handleRequestResplitScoped}
+          proposal={proposal}
+          onApplyProposal={handleApplyProposal}
+          onCancelProposal={() => setProposal(null)}
+          onMergeShots={handleMergeShots}
+          onEditCharacter={handleEditCharacter}
+          onSeekWord={(t) => setCurrentTime(t)}
+          onAddNewCharacter={() => handleEditCharacter("new")}
+          currentTime={currentTime}
+          isPlaying={isPlaying}
         />
 
-        {/* (2) BẢNG TÀI SẢN TRUYỆN (Nếu mở) */}
-        {activeTab === "assets" && (
-          <StoryAssetsPanel
-            onClose={() => setActiveTab(null)}
-            selectedAssetId={selectedCharacterId}
-            onSelectAssetId={setSelectedCharacterId}
-          />
-        )}
-
-        {/* (3) BẢNG HÌNH ẢNH PHÂN CẢNH (Nếu mở) */}
-        {activeTab === "visuals" && (
-          <VisualsPanel onClose={() => setActiveTab(null)} />
-        )}
-
-        {/* (4) CỘT KỊCH BẢN & CẤU HÌNH GIỌNG (Khi mở sẽ đẩy khung Preview sang bên phải) */}
-        {isScriptOpen && (
-          <ScriptPanel
-            onClose={() => setIsScriptOpen(false)}
-            shots={shots}
-            characters={characters}
-            activeShotId={activeShotId}
-            selectedShotIds={selectedShotIds}
-            onSelectShot={handleSelectShot}
-            onToggleSelectShot={handleToggleSelectShot}
-            onClearSelection={() => setSelectedShotIds([])}
-            onTextChange={handleTextChange}
-            onShotUpdate={handleShotUpdate}
-            onToggleLock={handleToggleLock}
-            onOpenResplitModal={() => setIsResplitModalOpen(true)}
-            onRequestResplitScoped={handleRequestResplitScoped}
-            proposal={proposal}
-            onApplyProposal={handleApplyProposal}
-            onCancelProposal={() => setProposal(null)}
-            onMergeShots={handleMergeShots}
-            onEditCharacter={handleEditCharacter}
-            onSeekWord={(t) => setCurrentTime(t)}
-            onAddNewCharacter={() => handleEditCharacter("new")}
-            currentTime={currentTime}
-            isPlaying={isPlaying}
-          />
-        )}
-
-        {/* (5) KHUNG CANVAS PREVIEW (Tự co giãn flex-1 chiếm không gian bên phải) */}
+        {/* (2) KHUNG CANVAS PREVIEW (Tự co giãn flex-1 chiếm không gian trung tâm) */}
         <CanvasPreview
           timelineMode={timelineMode}
           onTimelineModeChange={setTimelineMode}
@@ -440,6 +409,27 @@ export default function EditorPage() {
           onSeek={(t) => setCurrentTime(t)}
           onRewind={(s) => setCurrentTime((t) => Math.max(0, t - s))}
           onSelectShot={handleSelectShot}
+        />
+
+        {/* (3) BẢNG TÀI SẢN TRUYỆN (Nếu mở từ menu bên phải) */}
+        {activeTab === "assets" && (
+          <StoryAssetsPanel
+            onClose={() => setActiveTab(null)}
+            selectedAssetId={selectedCharacterId}
+            onSelectAssetId={setSelectedCharacterId}
+          />
+        )}
+
+        {/* (4) BẢNG HÌNH ẢNH PHÂN CẢNH (Nếu mở từ menu bên phải) */}
+        {activeTab === "visuals" && (
+          <VisualsPanel onClose={() => setActiveTab(null)} />
+        )}
+
+        {/* (5) THANH MENU CỘT BÊN PHẢI NGOÀI CÙNG (Sidebar) */}
+        <EditorSidebar
+          activeTab={activeTab}
+          onToggleAssets={handleToggleAssetsTab}
+          onToggleVisuals={handleToggleVisualsTab}
         />
       </div>
 

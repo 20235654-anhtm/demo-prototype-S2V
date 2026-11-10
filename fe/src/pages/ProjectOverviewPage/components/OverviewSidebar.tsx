@@ -1,4 +1,10 @@
 import { cn } from "cn";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { OVERVIEW_SECTIONS } from "../sections";
 import type { OverviewSection } from "../types";
 
@@ -12,35 +18,40 @@ export default function OverviewSidebar({
   onSectionSelect,
 }: OverviewSidebarProps) {
   return (
-    <nav
+    <aside
       aria-label="Mục lục dự án"
-      className="flex lg:flex-col items-stretch gap-1 border-b lg:border-b-0 lg:border-r bg-white dark:bg-neutral-900 p-2 lg:w-24 shrink-0"
+      className="w-12 border-r flex flex-col items-center py-3 bg-white dark:bg-neutral-900 shrink-0 z-10 select-none"
     >
-      {OVERVIEW_SECTIONS.map((section) => {
-        const Icon = section.icon;
-        const isActive = activeSection === section.id;
+      <div className="flex flex-col items-center gap-2">
+        {OVERVIEW_SECTIONS.map((section) => {
+          const Icon = section.icon;
+          const isActive = activeSection === section.id;
 
-        return (
-          <button
-            key={section.id}
-            type="button"
-            onClick={() => onSectionSelect(section.id)}
-            title={section.label}
-            aria-pressed={isActive}
-            className={cn(
-              "flex flex-1 lg:flex-none flex-col items-center justify-center gap-1 rounded-lg px-1 py-2.5 transition-colors cursor-pointer",
-              isActive
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
-            )}
-          >
-            <Icon className="w-5 h-5" />
-            <span className="max-w-[84px] text-center text-[10px] font-medium leading-tight">
-              {section.label}
-            </span>
-          </button>
-        );
-      })}
-    </nav>
+          return (
+            <Tooltip key={section.id}>
+              <TooltipTrigger render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onSectionSelect(section.id)}
+                  aria-pressed={isActive}
+                  className={cn(
+                    "h-9 w-9 rounded-lg transition-colors cursor-pointer",
+                    isActive
+                      ? "bg-muted text-foreground font-medium hover:bg-muted/80"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                />
+              }>
+                <Icon className="w-4 h-4" />
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <span>{section.label}</span>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </aside>
   );
 }

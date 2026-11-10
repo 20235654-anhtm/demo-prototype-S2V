@@ -163,16 +163,9 @@ export default function AssetDetailDialog({
             {/* Giọng đọc cho Nhân vật */}
             {asset.kind === "character" && (
               <div className="space-y-1.5 pt-0.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-foreground">
-                    Giọng đọc nhân vật
-                  </label>
-                  {voiceName && (
-                    <span className="text-[11px] text-muted-foreground">
-                      Đang chọn: <strong className="text-brand-strong dark:text-brand font-medium">{voiceName}</strong>
-                    </span>
-                  )}
-                </div>
+                <label className="text-xs font-semibold text-foreground block">
+                  Giọng đọc nhân vật
+                </label>
                 <CharacterVoiceSelect
                   voiceId={voiceId}
                   voiceName={voiceName}

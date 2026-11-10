@@ -4,9 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   FileText,
-  Pin,
-  PinOff,
-  X,
   Sparkles,
 } from "lucide-react";
 import ShotCard from "./ShotCard";
@@ -17,9 +14,6 @@ import type { Shot, DiffProposal, DialogueBlock, CharacterAsset } from "@/types/
 import { mockCharacters } from "@/mocks/mockCharacters";
 
 interface ScriptPanelProps {
-  isPinned?: boolean;
-  onTogglePin?: () => void;
-  onClose: () => void;
   shots: Shot[];
   activeShotId: string | null;
   selectedShotIds: string[];
@@ -51,9 +45,6 @@ interface ScriptPanelProps {
 }
 
 export default function ScriptPanel({
-  isPinned = true,
-  onTogglePin,
-  onClose,
   shots,
   activeShotId,
   selectedShotIds,
@@ -155,42 +146,6 @@ export default function ScriptPanel({
           >
             <Sparkles className="w-3 h-3" />
             <span>Chia lại tất cả</span>
-          </Button>
-
-          <div className="h-3 w-[1px] bg-border mx-0.5" />
-
-          {/* Nút Pin / Unpin kịch bản sang Cột Trái */}
-          {onTogglePin && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onTogglePin}
-              className={`h-6 w-6 rounded-md hover:bg-muted cursor-pointer ${
-                isPinned ? "text-primary hover:text-primary" : "text-muted-foreground hover:text-foreground"
-              }`}
-              title={
-                isPinned
-                  ? "Bỏ ghim (chuyển sang Panel Phải)"
-                  : "Ghim kịch bản cố định sang Cột Trái (Pin)"
-              }
-            >
-              {isPinned ? (
-                <PinOff className="w-3.5 h-3.5" />
-              ) : (
-                <Pin className="w-3.5 h-3.5" />
-              )}
-            </Button>
-          )}
-
-          {/* Nút Đóng */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-6 w-6 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
-            title="Đóng kịch bản"
-          >
-            <X className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>

@@ -7,7 +7,7 @@ interface VisualsPanelProps {
 
 export default function VisualsPanel({ onClose }: VisualsPanelProps) {
   return (
-    <div className="w-80 md:w-[360px] xl:w-[400px] border-r flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none">
+    <div className="w-80 lg:w-[420px] border-l flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none overflow-hidden">
       {/* 1. Header chuẩn có tiêu đề và nút đóng ✕ */}
       <div className="h-12 px-4 border-b flex items-center justify-between shrink-0 bg-muted/20">
         <div className="flex items-center gap-2">
