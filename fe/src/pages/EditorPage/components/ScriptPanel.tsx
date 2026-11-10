@@ -47,6 +47,7 @@ interface ScriptPanelProps {
   onSeekWord?: (timeSec: number) => void;
   onAddNewCharacter?: () => void;
   currentTime?: number;
+  isPlaying?: boolean;
 }
 
 export default function ScriptPanel({
@@ -73,6 +74,7 @@ export default function ScriptPanel({
   onSeekWord,
   onAddNewCharacter,
   currentTime,
+  isPlaying,
 }: ScriptPanelProps) {
   // Quản lý việc mở ResplitPopover cho 1 hoặc nhiều phân cảnh cụ thể
   const [resplitTargetShotIds, setResplitTargetShotIds] = useState<string[] | null>(null);
@@ -270,6 +272,7 @@ export default function ScriptPanel({
                       onEditCharacter={onEditCharacter}
                       onSeekWord={onSeekWord}
                       onAddNewCharacter={onAddNewCharacter}
+                      isPlaying={isPlaying}
                     />
                   </>
                 )}

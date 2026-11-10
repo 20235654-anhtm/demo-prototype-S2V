@@ -13,6 +13,7 @@ interface DialogueBlockCardProps {
   onSeekWord?: (timeSec: number) => void;
   onAddNewCharacter?: () => void;
   currentTime?: number;
+  isPlaying?: boolean;
 }
 
 export default function DialogueBlockCard({
@@ -25,6 +26,7 @@ export default function DialogueBlockCard({
   onSeekWord,
   onAddNewCharacter,
   currentTime,
+  isPlaying,
 }: DialogueBlockCardProps) {
   const currentCharacter = characters.find((c) => c.id === block.characterId);
 
@@ -76,6 +78,7 @@ export default function DialogueBlockCard({
             character={currentCharacter}
             characters={characters}
             currentTime={currentTime}
+            isPlaying={isPlaying}
             onSeekWord={onSeekWord}
             onLineTextChange={onLineTextChange}
             onChangeLineCharacter={(lineId, newCharId) =>

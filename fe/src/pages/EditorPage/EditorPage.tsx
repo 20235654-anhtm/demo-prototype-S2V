@@ -422,6 +422,7 @@ export default function EditorPage() {
             onSeekWord={(t) => setCurrentTime(t)}
             onAddNewCharacter={() => handleEditCharacter("new")}
             currentTime={currentTime}
+            isPlaying={isPlaying}
           />
         )}
 

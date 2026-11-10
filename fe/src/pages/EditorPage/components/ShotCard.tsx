@@ -17,6 +17,7 @@ interface ShotCardProps {
   isActive: boolean;
   hasAnySelection?: boolean;
   currentTime?: number;
+  isPlaying?: boolean;
   isDisabled?: boolean;
   characters: CharacterAsset[];
   onSelect: (id: string, selected: boolean) => void;
@@ -38,6 +39,7 @@ export default function ShotCard({
   isActive,
   hasAnySelection = false,
   currentTime,
+  isPlaying,
   isDisabled = false,
   characters,
   onSelect,
@@ -192,6 +194,7 @@ export default function ShotCard({
               block={block}
               characters={characters}
               currentTime={currentTime}
+              isPlaying={isPlaying}
               onChangeBlockCharacter={handleChangeBlockCharacter}
               onChangeLineCharacter={handleChangeLineCharacter}
               onLineTextChange={handleLineTextChange}
