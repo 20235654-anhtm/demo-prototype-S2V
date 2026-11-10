@@ -143,10 +143,6 @@ export default function VisualsPanel({
                 </span>
               </div>
             )}
-
-            <span className="absolute bottom-2 left-2 text-[10px] bg-black/60 backdrop-blur-xs text-white px-2 py-0.5 rounded-md font-mono">
-              16:9 · 1080p
-            </span>
           </div>
 
           <Button

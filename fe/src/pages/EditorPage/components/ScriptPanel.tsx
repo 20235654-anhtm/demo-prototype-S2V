@@ -124,7 +124,7 @@ export default function ScriptPanel({
     : [];
 
   return (
-    <div className="w-96 lg:w-[420px] border-r flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none">
+    <div className="w-[420px] lg:w-[468px] xl:w-[480px] border-r flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none">
       {/* 1. Header ScriptPanel */}
       <div className="h-10 px-3.5 border-b flex items-center justify-between shrink-0 bg-muted/20">
         <div className="flex items-center gap-2">
