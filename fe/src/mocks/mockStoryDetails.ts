@@ -8,6 +8,8 @@ export interface StoryAsset {
   tags: string[];
   imageUrl?: string;
   imagePrompt?: string;
+  voiceId?: string;
+  voiceName?: string;
 }
 
 export const STORY_ASSET_KIND_LABEL: Record<StoryAssetKind, string> = {
@@ -27,6 +29,8 @@ export const mockStoryAssets: StoryAsset[] = [
     imageUrl: "/wireframe-placeholder.svg",
     imagePrompt:
       "Thiếu niên 15 tuổi, dáng người thanh mảnh, ánh mắt kiên định trầm tĩnh, trang phục thanh bào gia tộc Tiêu gia, phong cách anime tu tiên 3D chi tiết cao.",
+    voiceId: "v-hoang-nam",
+    voiceName: "Hoàng Nam",
   },
   {
     id: "asset-tieu-mi",
@@ -38,6 +42,8 @@ export const mockStoryAssets: StoryAsset[] = [
     imageUrl: "/wireframe-placeholder.svg",
     imagePrompt:
       "Thiếu nữ 14 tuổi, diện mạo thanh thuần quyến rũ, tóc dài xõa nhẹ, y phục đỏ nhạt thêu hoa văn tinh xảo, phong cách hoạt hình 3D cổ phong.",
+    voiceId: "v-cam-hong",
+    voiceName: "Cẩm Hồng",
   },
   {
     id: "asset-tieu-huan-nhi",
@@ -49,6 +55,8 @@ export const mockStoryAssets: StoryAsset[] = [
     imageUrl: "/wireframe-placeholder.svg",
     imagePrompt:
       "Tử y thiếu nữ thanh tú tuyệt trần, khí chất cao quý trang nhã, áo choàng tím điểm viền vàng kim, đôi mắt phượng thông tuệ, phong cách donghua cinematic 3D.",
+    voiceId: "v-ha-chi",
+    voiceName: "Hà Chi",
   },
   {
     id: "asset-trac-nghiem-vien",
@@ -60,6 +68,8 @@ export const mockStoryAssets: StoryAsset[] = [
     imageUrl: "/wireframe-placeholder.svg",
     imagePrompt:
       "Nam tử trung niên nghiêm nghị, râu ngắn, y phục giám khảo màu xám tro trang trọng, đứng cạnh bia đá trắc nghiệm, phong cách 3D cổ phong chân thực.",
+    voiceId: "v-duy-khoa",
+    voiceName: "Duy Khoa",
   },
   {
     id: "asset-dam-dong",
@@ -71,6 +81,8 @@ export const mockStoryAssets: StoryAsset[] = [
     imageUrl: "/wireframe-placeholder.svg",
     imagePrompt:
       "Nhóm thanh thiếu niên gia tộc Tiêu gia đứng vây quanh quảng trường xôn xao bàn tán chỉ trỏ, phong cách 3D donghua phong phú biểu cảm.",
+    voiceId: "v-minh-triet",
+    voiceName: "Minh Triết",
   },
   {
     id: "asset-quang-truong",

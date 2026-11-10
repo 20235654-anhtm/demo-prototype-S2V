@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { cn } from "cn";
-import { Search } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import {
   STORY_ASSET_KIND_LABEL,
   mockStoryAssets,
@@ -50,6 +51,29 @@ export default function StoryAssetsView() {
     setDialogOpen(true);
   };
 
+  const handleAddNewAsset = () => {
+    const defaultName =
+      filter === "character"
+        ? "Nhân vật mới"
+        : filter === "location"
+          ? "Địa điểm mới"
+          : "Vật phẩm mới";
+
+    const newAsset: StoryAsset = {
+      id: `asset-${Date.now()}`,
+      name: defaultName,
+      kind: filter,
+      description: `Mô tả chi tiết cho ${defaultName.toLowerCase()}...`,
+      tags: ["Mới thêm"],
+      imageUrl: "/wireframe-placeholder.svg",
+      imagePrompt: `Mô tả phong cách ảnh 3D cinematic cho ${defaultName.toLowerCase()}...`,
+    };
+
+    setAssets((prev) => [newAsset, ...prev]);
+    setSelectedAsset(newAsset);
+    setDialogOpen(true);
+  };
+
   const handleUpdateAsset = (updated: StoryAsset) => {
     setAssets((prev) =>
       prev.map((item) => (item.id === updated.id ? updated : item))
@@ -58,37 +82,49 @@ export default function StoryAssetsView() {
 
   return (
     <div className="space-y-4">
-      {/* Bộ lọc + tìm kiếm */}
+      {/* Bộ lọc + nút thêm mới + tìm kiếm */}
       <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap gap-1.5">
-          {FILTER_OPTIONS.map((option) => {
-            const count = countByKind(option.id);
-            const isActive = filter === option.id;
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap gap-1.5">
+            {FILTER_OPTIONS.map((option) => {
+              const count = countByKind(option.id);
+              const isActive = filter === option.id;
 
-            return (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => setFilter(option.id)}
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
-                  isActive
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                {option.label}
-                <span
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setFilter(option.id)}
                   className={cn(
-                    "text-[10px] rounded-full px-1.5 py-px",
-                    isActive ? "bg-background/20" : "bg-muted"
+                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
+                    isActive
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
+                  {option.label}
+                  <span
+                    className={cn(
+                      "text-[10px] rounded-full px-1.5 py-px",
+                      isActive ? "bg-background/20" : "bg-muted"
+                    )}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <Button
+            size="sm"
+            onClick={handleAddNewAsset}
+            className="h-8 gap-1 px-2.5 text-xs font-semibold bg-brand hover:bg-brand-hover text-brand-foreground cursor-pointer shrink-0"
+            title={`Thêm ${STORY_ASSET_KIND_LABEL[filter].toLowerCase()} mới`}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Thêm</span>
+          </Button>
         </div>
 
         <div className="relative w-full">
@@ -135,6 +171,11 @@ export default function StoryAssetsView() {
                 <h3 className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-brand-strong dark:group-hover:text-brand transition-colors truncate">
                   {asset.name}
                 </h3>
+                {asset.kind === "character" && asset.voiceName && (
+                  <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-normal">
+                    Giọng: <span className="text-foreground/90 font-medium">{asset.voiceName}</span>
+                  </p>
+                )}
               </div>
             </article>
           ))}

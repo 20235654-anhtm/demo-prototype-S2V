@@ -80,6 +80,7 @@ export default function ProjectOverviewPage() {
             chapters={chapters}
             activeChapterId={activeChapterId}
             onSelectChapter={handleSelectChapter}
+            onOpenInStudio={handleSelectChapterForStudio}
             onClose={() => setActiveSection(null)}
           />
         )}

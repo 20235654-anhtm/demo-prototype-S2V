@@ -3,7 +3,7 @@ import CharactersSkeleton from "./CharactersSkeleton";
 import CharactersListView from "./CharactersListView";
 import CharacterDetailView from "./CharacterDetailView";
 import type { CreateStoryFormData, CharacterItem } from "../types";
-import { MOCK_INITIAL_CHARACTERS } from "../mockData";
+import { MOCK_INITIAL_CHARACTERS, MOCK_VOICES } from "../mockData";
 import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
 
 interface StepCharactersProps {
@@ -15,14 +15,32 @@ export default function StepCharacters({ formData, onFormDataChange }: StepChara
   const [viewState, setViewState] = useState<"skeleton" | "list" | "detail">("skeleton");
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
 
+  // Tìm thông tin giọng mặc định đã chọn ở bước 3
+  const defaultVoice = MOCK_VOICES.find((v) => v.id === formData.singleVoiceId) || MOCK_VOICES[0];
+
   // Initialize characters and simulate 1.5s AI scan
   useEffect(() => {
-    if (!formData.characters || formData.characters.length === 0) {
-      onFormDataChange((prev) => ({
+    onFormDataChange((prev) => {
+      const activeVoice = MOCK_VOICES.find((v) => v.id === prev.singleVoiceId) || MOCK_VOICES[0];
+      const initialList = prev.characters && prev.characters.length > 0 ? prev.characters : MOCK_INITIAL_CHARACTERS;
+
+      // Cập nhật voiceId mặc định từ bước trước nếu nhân vật chưa có voice
+      const updatedChars = initialList.map((c) => {
+        if (!c.voiceId) {
+          return {
+            ...c,
+            voiceId: activeVoice?.id,
+            voiceName: activeVoice?.name,
+          };
+        }
+        return c;
+      });
+
+      return {
         ...prev,
-        characters: MOCK_INITIAL_CHARACTERS,
-      }));
-    }
+        characters: updatedChars,
+      };
+    });
 
     const timer = setTimeout(() => {
       setViewState("list");
@@ -58,10 +76,10 @@ export default function StepCharacters({ formData, onFormDataChange }: StepChara
     const newChar: CharacterItem = {
       id: `char-${Date.now()}`,
       name: "Nhân vật mới",
-      description: "Nhân vật phụ bổ sung từ kịch bản...",
-      previewLine: "Nhập dòng thoại mẫu để nghe thử giọng đọc...",
-      voiceId: undefined,
-      voiceName: undefined,
+      description: "Mô tả tạo hình và tính cách nhân vật...",
+      previewLine: "Dòng thoại mẫu của nhân vật...",
+      voiceId: defaultVoice?.id,
+      voiceName: defaultVoice?.name,
       avatarUrl: PLACEHOLDER_IMAGE,
     };
 

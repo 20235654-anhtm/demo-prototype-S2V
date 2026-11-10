@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RefreshCw, Check } from "lucide-react";
 import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
+import CharacterVoiceSelect from "@/pages/HomePage/components/CreateStoryModal/CharacterVoiceSelect";
+import type { VoiceOption } from "@/pages/HomePage/components/CreateStoryModal/types";
 import {
   STORY_ASSET_KIND_LABEL,
   type StoryAsset,
@@ -32,6 +34,8 @@ export default function AssetDetailDialog({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [voiceId, setVoiceId] = useState<string | undefined>(undefined);
+  const [voiceName, setVoiceName] = useState<string | undefined>(undefined);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [isSavedToast, setIsSavedToast] = useState(false);
 
@@ -44,6 +48,8 @@ export default function AssetDetailDialog({
           `Hình ảnh chi tiết cho ${asset.name}, phong cách 3D cinematic, chất lượng cao.`
       );
       setImageUrl(asset.imageUrl || PLACEHOLDER_IMAGE);
+      setVoiceId(asset.voiceId);
+      setVoiceName(asset.voiceName);
     }
   }, [asset]);
 
@@ -59,6 +65,11 @@ export default function AssetDetailDialog({
     }, 1000);
   };
 
+  const handleSelectVoice = (voice: VoiceOption) => {
+    setVoiceId(voice.id);
+    setVoiceName(voice.name);
+  };
+
   const handleSave = () => {
     if (onSave) {
       onSave({
@@ -67,6 +78,8 @@ export default function AssetDetailDialog({
         description,
         imagePrompt: description,
         imageUrl,
+        voiceId: asset.kind === "character" ? voiceId : undefined,
+        voiceName: asset.kind === "character" ? voiceName : undefined,
       });
     }
     setIsSavedToast(true);
@@ -142,10 +155,31 @@ export default function AssetDetailDialog({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={`Nhập mô tả tạo hình ${kindLabel.toLowerCase()}...`}
-                rows={5}
+                rows={asset.kind === "character" ? 3 : 5}
                 className="text-xs leading-relaxed resize-none font-normal text-foreground bg-muted/20"
               />
             </div>
+
+            {/* Giọng đọc cho Nhân vật */}
+            {asset.kind === "character" && (
+              <div className="space-y-1.5 pt-0.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground">
+                    Giọng đọc nhân vật
+                  </label>
+                  {voiceName && (
+                    <span className="text-[11px] text-muted-foreground">
+                      Đang chọn: <strong className="text-brand-strong dark:text-brand font-medium">{voiceName}</strong>
+                    </span>
+                  )}
+                </div>
+                <CharacterVoiceSelect
+                  voiceId={voiceId}
+                  voiceName={voiceName}
+                  onSelectVoice={handleSelectVoice}
+                />
+              </div>
+            )}
           </div>
         </div>
 

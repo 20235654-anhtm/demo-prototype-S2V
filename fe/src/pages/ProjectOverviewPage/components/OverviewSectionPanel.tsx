@@ -21,6 +21,7 @@ interface OverviewSectionPanelProps {
   chapters: StoryChapter[];
   activeChapterId: string | null;
   onSelectChapter: (chapter: StoryChapter) => void;
+  onOpenInStudio?: (chapter: StoryChapter) => void;
   onClose: () => void;
 }
 
@@ -29,6 +30,7 @@ export default function OverviewSectionPanel({
   chapters,
   activeChapterId,
   onSelectChapter,
+  onOpenInStudio,
   onClose,
 }: OverviewSectionPanelProps) {
   const meta = getOverviewSectionMeta(section);
@@ -126,6 +128,7 @@ export default function OverviewSectionPanel({
               chapters={chapters}
               activeChapterId={activeChapterId}
               onSelectChapter={onSelectChapter}
+              onOpenInStudio={onOpenInStudio}
             />
           )}
           {section === "assets" && <StoryAssetsView />}
