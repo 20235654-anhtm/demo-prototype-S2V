@@ -170,9 +170,6 @@ export default function CharacterDetailView({
                 voiceName={character.voiceName}
                 onSelectVoice={handleSelectVoice}
               />
-              <p className="text-[11px] text-muted-foreground mt-1">
-                Mặc định lấy từ giọng dẫn truyện đã chọn ở bước trước. Bạn có thể bấm để đổi giọng khác.
-              </p>
             </div>
           </div>
         </div>

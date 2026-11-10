@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Volume2, Trash2, Plus, Sparkles } from "lucide-react";
+import { Volume2, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { demoAudio } from "../mockData";
@@ -72,8 +72,8 @@ export default function CharactersListView({
                   onClick={() => onSelectCharacter(char)}
                   className="flex items-center justify-between p-3.5 transition-colors cursor-pointer hover:bg-muted/50 group"
                 >
-                  {/* Left: Avatar + Info */}
-                  <div className="flex items-start gap-3 min-w-0 pr-4 flex-1">
+                  {/* Left: Avatar + Tên nhân vật */}
+                  <div className="flex items-center gap-3 min-w-0 pr-4 flex-1">
                     <div className="relative shrink-0">
                       <img
                         src={char.avatarUrl || PLACEHOLDER_IMAGE}
@@ -82,26 +82,19 @@ export default function CharactersListView({
                       />
                     </div>
 
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-xs text-foreground group-hover:text-brand-strong dark:group-hover:text-brand transition-colors">
-                          {char.name}
+                    <div className="min-w-0 flex-1 flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-xs text-foreground group-hover:text-brand-strong dark:group-hover:text-brand transition-colors">
+                        {char.name}
+                      </span>
+                      {hasVoice ? (
+                        <span className="text-[11px] text-muted-foreground font-medium">
+                          ({char.voiceName})
                         </span>
-                        {hasVoice ? (
-                          <span className="text-[11px] text-muted-foreground font-medium">
-                            ({char.voiceName})
-                          </span>
-                        ) : (
-                          <span className="text-[11px] text-brand-strong dark:text-brand font-medium bg-brand/10 px-1.5 py-0.5 rounded border border-brand/20">
-                            Chưa chọn giọng
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Excerpt dialogue line */}
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                        "{char.previewLine || 'Chưa có câu thoại mẫu...'}"
-                      </p>
+                      ) : (
+                        <span className="text-[11px] text-brand-strong dark:text-brand font-medium bg-brand/10 px-1.5 py-0.5 rounded border border-brand/20">
+                          Chưa chọn giọng
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -130,7 +123,7 @@ export default function CharactersListView({
                       <Volume2 className={`w-4 h-4 ${isPlaying ? "animate-pulse" : ""}`} />
                     </button>
 
-                    {/* Delete button (cannot delete main Narrator) */}
+                    {/* Delete button */}
                     {!char.isNarrator && (
                       <button
                         type="button"
@@ -147,15 +140,6 @@ export default function CharactersListView({
             })}
           </div>
         </ScrollArea>
-      </div>
-
-      {/* Footer hint */}
-      <div className="mt-2.5 flex items-center justify-between text-xs text-muted-foreground shrink-0 px-1">
-        <span className="flex items-center gap-1">
-          <Sparkles className="w-3.5 h-3.5 text-brand" />
-          Nhân vật chưa gán giọng sẽ có icon loa mờ.
-        </span>
-        <span>Nhấp vào hàng nhân vật để gán giọng.</span>
       </div>
     </div>
   );

@@ -32,10 +32,6 @@ export default function CharactersSkeleton() {
           </div>
         ))}
       </div>
-
-      <p className="text-xs text-muted-foreground mt-6 text-center">
-        AI đang phân tích các đoạn hội thoại, đại từ xưng hô và bóc tách nhân vật...
-      </p>
     </div>
   );
 }
