@@ -77,8 +77,12 @@ export default function EditorPage() {
 
   // Khi chọn một phân cảnh (click ShotCard hoặc Scene trên Timeline):
   // Chuyển activeShotId VÀ chuyển con trỏ thời gian timeline về mốc bắt đầu của phân cảnh đó
+  // Đồng thời tự động mở tab Hình ảnh phân cảnh (visuals) ở panel bên phải nếu đang không mở
   const handleSelectShot = (id: string) => {
     setActiveShotId(id);
+
+    // Mở panel visuals để xem và chỉnh sửa thông tin chi tiết của cảnh đó
+    setActiveTab("visuals");
 
     let startTime = 0;
     for (const s of shots) {
@@ -425,9 +429,13 @@ export default function EditorPage() {
           />
         )}
 
-        {/* (4) BẢNG HÌNH ẢNH PHÂN CẢNH (Nếu mở từ menu bên phải) */}
+        {/* (4) BẢNG HÌNH ẢNH PHÂN CẢNH (Nếu mở từ menu bên phải hoặc khi click phân cảnh) */}
         {activeTab === "visuals" && (
-          <VisualsPanel onClose={() => setActiveTab(null)} />
+          <VisualsPanel
+            onClose={() => setActiveTab(null)}
+            activeShot={activeShot}
+            characters={characters}
+          />
         )}
 
         {/* (5) BẢNG CÀI ĐẶT DỰ ÁN (Nếu mở từ menu bên phải) */}
