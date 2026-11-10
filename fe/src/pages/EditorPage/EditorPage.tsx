@@ -5,6 +5,7 @@ import EditorSidebar from "./components/EditorSidebar";
 import ScriptPanel from "./components/ScriptPanel";
 import StoryAssetsPanel from "./components/StoryAssetsPanel";
 import VisualsPanel from "./components/VisualsPanel";
+import ProjectSettingsPanel from "./components/ProjectSettingsPanel";
 import CanvasPreview from "./components/CanvasPreview/CanvasPreview";
 import ResplitAllModal from "./components/Resplit/ResplitAllModal";
 import { mockInitialShots } from "@/mocks/mockShots";
@@ -25,8 +26,8 @@ export default function EditorPage() {
   const projectTitle = currentProject?.title || "Đấu Phá Thương Khung";
 
   // 1. Quản lý trạng thái các Panel & Menu Sidebar
-  type RightTabType = "assets" | "visuals" | null;
-  const [activeTab, setActiveTab] = useState<RightTabType>(null); // Tab phụ (assets, visuals)
+  type RightTabType = "assets" | "visuals" | "settings" | null;
+  const [activeTab, setActiveTab] = useState<RightTabType>(null); // Tab phụ (assets, visuals, settings)
 
   // 1.1 Quản lý danh sách nhân vật & điều hướng chọn nhân vật
   const [characters] = useState<CharacterAsset[]>(mockCharacters);
@@ -175,6 +176,10 @@ export default function EditorPage() {
 
   const handleToggleVisualsTab = () => {
     setActiveTab((prev) => (prev === "visuals" ? null : "visuals"));
+  };
+
+  const handleToggleSettingsTab = () => {
+    setActiveTab((prev) => (prev === "settings" ? null : "settings"));
   };
 
   // Logic tương tác kịch bản
@@ -425,11 +430,17 @@ export default function EditorPage() {
           <VisualsPanel onClose={() => setActiveTab(null)} />
         )}
 
-        {/* (5) THANH MENU CỘT BÊN PHẢI NGOÀI CÙNG (Sidebar) */}
+        {/* (5) BẢNG CÀI ĐẶT DỰ ÁN (Nếu mở từ menu bên phải) */}
+        {activeTab === "settings" && (
+          <ProjectSettingsPanel onClose={() => setActiveTab(null)} />
+        )}
+
+        {/* (6) THANH MENU CỘT BÊN PHẢI NGOÀI CÙNG (Sidebar) */}
         <EditorSidebar
           activeTab={activeTab}
           onToggleAssets={handleToggleAssetsTab}
           onToggleVisuals={handleToggleVisualsTab}
+          onToggleSettings={handleToggleSettingsTab}
         />
       </div>
 
