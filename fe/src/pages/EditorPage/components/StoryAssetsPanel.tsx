@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "cn";
-import { Users, X, Search } from "lucide-react";
+import { Users, X, Search, Plus } from "lucide-react";
 import {
   STORY_ASSET_KIND_LABEL,
   mockStoryAssets,
@@ -49,8 +49,27 @@ export default function StoryAssetsPanel({
     }
   }, [selectedAssetId, assets]);
 
-  const countByKind = (kind: StoryAssetKind) =>
-    assets.filter((asset) => asset.kind === kind).length;
+  const handleAddNewAsset = () => {
+    const defaultName =
+      filter === "character"
+        ? "Nhân vật mới"
+        : filter === "location"
+          ? "Địa điểm mới"
+          : "Vật phẩm mới";
+
+    const newAsset: StoryAsset = {
+      id: `asset-${Date.now()}`,
+      name: defaultName,
+      kind: filter,
+      description: `Mô tả chi tiết cho ${defaultName.toLowerCase()}...`,
+      tags: ["Mới thêm"],
+      imageUrl: "/wireframe-placeholder.svg",
+      imagePrompt: `Mô tả phong cách ảnh 3D cinematic cho ${defaultName.toLowerCase()}...`,
+    };
+    setAssets((prev) => [newAsset, ...prev]);
+    setSelectedAsset(newAsset);
+    setDialogOpen(true);
+  };
 
   const filteredAssets = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -109,37 +128,41 @@ export default function StoryAssetsPanel({
 
       {/* 2. Nội dung cuộn: Tìm kiếm, Bộ lọc và Danh sách tài sản (Sao chép 1:1 từ StoryAssetsView) */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
-        {/* Bộ lọc + tìm kiếm */}
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap gap-1.5">
-            {FILTER_OPTIONS.map((option) => {
-              const count = countByKind(option.id);
-              const isActive = filter === option.id;
+        {/* Bộ lọc + nút thêm mới + tìm kiếm */}
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-center gap-2">
+            {/* Bộ tabs lọc phân loại dạng pill liền mạch */}
+            <div className="flex-1 min-w-0 p-1 bg-muted/60 dark:bg-muted/30 rounded-xl flex items-center gap-1">
+              {FILTER_OPTIONS.map((option) => {
+                const isActive = filter === option.id;
 
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() => setFilter(option.id)}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors cursor-pointer",
-                    isActive
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  {option.label}
-                  <span
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => setFilter(option.id)}
                     className={cn(
-                      "text-[10px] rounded-full px-1.5 py-px",
-                      isActive ? "bg-background/20" : "bg-muted"
+                      "flex-1 flex items-center justify-center py-1.5 px-2 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap",
+                      isActive
+                        ? "bg-background text-foreground shadow-2xs font-semibold"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/40"
                     )}
                   >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+                    <span>{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <Button
+              size="sm"
+              onClick={handleAddNewAsset}
+              className="h-8 gap-1 px-3 text-xs font-semibold bg-brand hover:bg-brand-hover text-brand-foreground cursor-pointer shrink-0 shadow-2xs"
+              title={`Thêm ${STORY_ASSET_KIND_LABEL[filter].toLowerCase()} mới`}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Thêm</span>
+            </Button>
           </div>
 
           <div className="relative w-full">
