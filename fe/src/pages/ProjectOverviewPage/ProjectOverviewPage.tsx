@@ -14,7 +14,7 @@ export default function ProjectOverviewPage() {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const [activeSection, setActiveSection] =
-    useState<OverviewSection | null>(null);
+    useState<OverviewSection | null>("assets");
   const [activeChapterId, setActiveChapterId] = useState<string | null>(
     "chapter-1"
   );
