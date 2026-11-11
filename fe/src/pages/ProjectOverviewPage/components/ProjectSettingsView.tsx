@@ -1,7 +1,5 @@
 import { useState } from "react";
 import {
-  Settings,
-  X,
   Volume2,
   Music,
   Video,
@@ -18,11 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "cn";
 
-interface ProjectSettingsPanelProps {
-  width?: number;
-  onClose: () => void;
-}
-
 interface PauseSetting {
   period: number; // Dấu chấm
   comma: number; // Dấu phẩy
@@ -30,7 +23,7 @@ interface PauseSetting {
   newline: number; // Xuống dòng
 }
 
-export default function ProjectSettingsPanel({ width, onClose }: ProjectSettingsPanelProps) {
+export default function ProjectSettingsView() {
   // 1. Quản lý thiết lập ngắt nghỉ (Pause Settings)
   const [isPauseDetailOpen, setIsPauseDetailOpen] = useState(false);
   const [pauseValues, setPauseValues] = useState<PauseSetting>({
@@ -76,31 +69,9 @@ export default function ProjectSettingsPanel({ width, onClose }: ProjectSettings
   };
 
   return (
-    <div
-      style={width ? { width: `${width}px`, flexBasis: `${width}px` } : undefined}
-      className="w-80 lg:w-[420px] border-l flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none overflow-hidden relative"
-    >
-      {/* 1. Header chuẩn có tiêu đề và nút đóng ✕ */}
-      <div className="h-12 px-4 border-b flex items-center justify-between shrink-0 bg-muted/20">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-md bg-brand/15 text-brand-strong dark:text-brand flex items-center justify-center">
-            <Settings className="w-3.5 h-3.5" />
-          </div>
-          <span className="font-semibold text-sm">Cài đặt dự án</span>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="h-7 w-7 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
-          title="Đóng cài đặt"
-        >
-          <X className="w-3.5 h-3.5" />
-        </Button>
-      </div>
-
-      {/* 2. Thanh tab 3 nhóm thiết lập chính */}
-      <div className="px-3 pt-3 pb-1 shrink-0">
+    <div className="flex flex-col h-full select-none">
+      {/* 1. Thanh tab 3 nhóm thiết lập chính */}
+      <div className="pb-3 shrink-0">
         <div className="p-1 bg-muted/60 dark:bg-muted/30 rounded-xl flex items-center gap-1">
           <button
             type="button"
@@ -144,8 +115,8 @@ export default function ProjectSettingsPanel({ width, onClose }: ProjectSettings
         </div>
       </div>
 
-      {/* 3. Nội dung cài đặt */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-5">
+      {/* 2. Nội dung cài đặt */}
+      <div className="space-y-5">
         {/* === TAB 1: THIẾT LẬP NGẮT NGHỈ GIỌNG ĐỌC === */}
         {activeTab === "pause" && (
           <div className="space-y-4">
@@ -154,7 +125,7 @@ export default function ProjectSettingsPanel({ width, onClose }: ProjectSettings
                 Cấu hình ngắt nghỉ
               </label>
 
-              {/* Nút bấm mở thiết lập ngắt nghỉ (Đúng theo ảnh chụp mẫu) */}
+              {/* Nút bấm mở thiết lập ngắt nghỉ */}
               <button
                 type="button"
                 onClick={() => setIsPauseDetailOpen((prev) => !prev)}
@@ -371,7 +342,7 @@ export default function ProjectSettingsPanel({ width, onClose }: ProjectSettings
                   </div>
                 </div>
 
-                {/* Nút Lưu (màu brand đồng bộ với web) */}
+                {/* Nút Lưu */}
                 <div className="pt-2 flex justify-end">
                   <Button
                     size="sm"

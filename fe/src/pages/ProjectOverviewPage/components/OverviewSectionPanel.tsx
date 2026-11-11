@@ -12,6 +12,7 @@ import { getOverviewSectionMeta } from "../sections";
 import type { OverviewSection } from "../types";
 import ChapterListView from "./ChapterListView";
 import StoryAssetsView from "./StoryAssetsView";
+import ProjectSettingsView from "./ProjectSettingsView";
 import { STORY_ASSET_KIND_LABEL, type StoryAsset, type StoryAssetKind } from "@/mocks/mockStoryDetails";
 
 const MIN_PANEL_WIDTH = 280;
@@ -190,6 +191,7 @@ export default function OverviewSectionPanel({
               onFilterChange={setAssetFilter}
             />
           )}
+          {section === "settings" && <ProjectSettingsView />}
         </div>
       </aside>
 
