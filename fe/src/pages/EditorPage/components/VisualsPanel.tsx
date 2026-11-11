@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  Sparkles,
   RefreshCw,
   X,
   ArrowLeft,
@@ -9,9 +8,6 @@ import {
   AlertTriangle,
   RotateCcw,
   Plus,
-  User,
-  MapPin,
-  Box,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -769,12 +765,11 @@ export default function VisualsPanel({
                 Liên kết Story Assets
               </label>
 
-              {/* Nhóm 1: 👤 Nhân vật */}
+              {/* Nhóm 1: Nhân vật */}
               <div className="space-y-1.5 bg-muted/30 p-2.5 rounded-lg border border-border/70">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>Nhân vật</span>
+                  <span className="text-[11px] font-semibold text-foreground">
+                    Nhân vật
                   </span>
                   <button
                     type="button"
@@ -820,12 +815,11 @@ export default function VisualsPanel({
                 </div>
               </div>
 
-              {/* Nhóm 2: 📍 Địa điểm */}
+              {/* Nhóm 2: Địa điểm */}
               <div className="space-y-1.5 bg-muted/30 p-2.5 rounded-lg border border-border/70">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>Địa điểm</span>
+                  <span className="text-[11px] font-semibold text-foreground">
+                    Địa điểm
                   </span>
                   <button
                     type="button"
@@ -871,12 +865,11 @@ export default function VisualsPanel({
                 </div>
               </div>
 
-              {/* Nhóm 3: 🔧 Vật phẩm */}
+              {/* Nhóm 3: Vật phẩm */}
               <div className="space-y-1.5 bg-muted/30 p-2.5 rounded-lg border border-border/70">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
-                    <Box className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>Vật phẩm</span>
+                  <span className="text-[11px] font-semibold text-foreground">
+                    Vật phẩm
                   </span>
                   <button
                     type="button"
@@ -926,9 +919,8 @@ export default function VisualsPanel({
             {/* 5. Prompt & Góc máy */}
             <div className="space-y-2 pt-2 border-t border-border/70">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-brand-strong dark:text-brand" />
-                  <span>Prompt sinh ảnh & Góc máy</span>
+                <label className="text-xs font-bold text-foreground">
+                  Prompt sinh ảnh & Góc máy
                 </label>
                 <div className="flex items-center gap-1">
                   <button
