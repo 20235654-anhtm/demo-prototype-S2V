@@ -87,7 +87,7 @@ export default function ProjectOverviewPage() {
 
         <main className="flex-1 min-h-0 overflow-y-auto">
           <div className="mx-auto w-full max-w-[1120px] px-4 md:px-6 lg:px-8 py-5 md:py-7">
-            <StoryTextView />
+            <StoryTextView activeChapterId={activeChapterId} />
           </div>
         </main>
       </div>

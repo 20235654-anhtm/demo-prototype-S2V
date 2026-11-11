@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, ArrowLeft, ArrowRight, X } from "lucide-react";
 import StepUpload from "./StepUpload";
 import StepSettings from "./StepSettings";
-import StepCharacters from "./StepCharacters/StepCharacters";
 import StepVoice from "./StepVoice";
 import type { CreateStoryFormData } from "./types";
 import { MOCK_INITIAL_CHARACTERS, MOCK_BOOK_SAMPLE_TEXT } from "./mockData";
@@ -93,16 +92,15 @@ export default function CreateStoryModal({
     }
   }, [open, selectedDraft]);
 
-  // Nhãn bước động theo phong cách đọc: Tải lên -> Thiết lập -> Giọng đọc -> Nhân vật
+  // 3 bước tạo dự án: Tải lên -> Thiết lập -> Giọng đọc
   const steps = [
     { step: 1, label: "Tải lên" },
     { step: 2, label: "Thiết lập" },
     { step: 3, label: "Giọng đọc" },
-    { step: 4, label: "Nhân vật" },
   ];
 
   const handleNext = () => {
-    if (currentStep < 4) setCurrentStep((s) => s + 1);
+    if (currentStep < 3) setCurrentStep((s) => s + 1);
   };
 
   const handleBack = () => {
@@ -187,9 +185,6 @@ export default function CreateStoryModal({
             {currentStep === 3 && (
               <StepVoice formData={formData} onFormDataChange={setFormData} />
             )}
-            {currentStep === 4 && (
-              <StepCharacters formData={formData} onFormDataChange={setFormData} />
-            )}
           </div>
         </div>
 
@@ -201,7 +196,7 @@ export default function CreateStoryModal({
               Quay lại
             </Button>
           )}
-          {currentStep < 4 ? (
+          {currentStep < 3 ? (
             <Button
               size="sm"
               onClick={handleNext}
