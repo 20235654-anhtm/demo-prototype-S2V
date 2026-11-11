@@ -72,11 +72,6 @@ export default function VisualsPanel({
     propActiveShot?.id || (shots.length > 0 ? shots[0].id : null)
   );
 
-  // Bộ lọc ở chế độ overview
-  const [filter, setFilter] = useState<
-    "all" | "missing_image" | "changed" | "unlinked" | "error"
-  >("all");
-
   // State cục bộ lưu visual data của các shots (prompt, linkedAssets, warnings...)
   const [localVisuals, setLocalVisuals] = useState<Record<string, ShotVisualData>>({});
 
@@ -158,34 +153,6 @@ export default function VisualsPanel({
       return v?.status === "stale" || v?.isAssetChanged || v?.isPromptModified;
     }).length;
   }, [shots, localVisuals]);
-
-  // Đếm số lượng phân cảnh bị lỗi
-  const errorShotsCount = useMemo(() => {
-    return shots.filter((s) => {
-      const v = localVisuals[s.id] || s.visual;
-      return v?.status === "error";
-    }).length;
-  }, [shots, localVisuals]);
-
-  // Lọc shots theo filter pill
-  const filteredShots = useMemo(() => {
-    return shots.filter((shot) => {
-      const v = localVisuals[shot.id] || shot.visual;
-      if (filter === "error") {
-        return v?.status === "error";
-      }
-      if (filter === "missing_image") {
-        return v?.status === "idle";
-      }
-      if (filter === "changed") {
-        return v?.status === "stale" || v?.isAssetChanged || v?.isPromptModified;
-      }
-      if (filter === "unlinked") {
-        return (v?.unlinkedWarnings?.length || 0) > 0;
-      }
-      return true;
-    });
-  }, [shots, localVisuals, filter]);
 
   // Handler khi click vào 1 ShotCard ở chế độ overview
   const handleOpenDetail = (shot: Shot) => {
@@ -414,93 +381,9 @@ export default function VisualsPanel({
               )}
             </div>
 
-            {/* 3. Bộ lọc trạng thái (Filter pills) */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-border/50 text-[11px]">
-              <button
-                type="button"
-                onClick={() => setFilter("all")}
-                className={cn(
-                  "px-2.5 py-1 rounded-full font-medium transition-all shrink-0 cursor-pointer border",
-                  filter === "all"
-                    ? "bg-foreground text-background font-semibold border-foreground shadow-2xs"
-                    : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
-                )}
-              >
-                Tất cả ({shots.length})
-              </button>
-
-              {/* Tag Lỗi hiển thị in đỏ nổi bật nếu có lỗi */}
-              {errorShotsCount > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setFilter("error")}
-                  className={cn(
-                    "px-2.5 py-1 rounded-full font-semibold transition-all shrink-0 cursor-pointer border flex items-center gap-1",
-                    filter === "error"
-                      ? "bg-destructive text-destructive-foreground border-destructive shadow-2xs"
-                      : "bg-destructive/10 text-destructive border-destructive/30 hover:bg-destructive/15"
-                  )}
-                >
-                  <AlertTriangle className="w-3 h-3" />
-                  <span>Có lỗi ({errorShotsCount})</span>
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setFilter("missing_image")}
-                className={cn(
-                  "px-2.5 py-1 rounded-full font-medium transition-all shrink-0 cursor-pointer border",
-                  filter === "missing_image"
-                    ? "bg-foreground text-background font-semibold border-foreground shadow-2xs"
-                    : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
-                )}
-              >
-                Chưa có ảnh (
-                {
-                  shots.filter(
-                    (s) => (localVisuals[s.id] || s.visual)?.status === "idle"
-                  ).length
-                }
-                )
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilter("changed")}
-                className={cn(
-                  "px-2.5 py-1 rounded-full font-medium transition-all shrink-0 cursor-pointer border",
-                  filter === "changed"
-                    ? "bg-foreground text-background font-semibold border-foreground shadow-2xs"
-                    : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
-                )}
-              >
-                Có thay đổi ({changedShotsCount})
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilter("unlinked")}
-                className={cn(
-                  "px-2.5 py-1 rounded-full font-medium transition-all shrink-0 cursor-pointer border",
-                  filter === "unlinked"
-                    ? "bg-foreground text-background font-semibold border-foreground shadow-2xs"
-                    : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
-                )}
-              >
-                Thiếu liên kết (
-                {
-                  shots.filter(
-                    (s) =>
-                      ((localVisuals[s.id] || s.visual)?.unlinkedWarnings?.length ||
-                        0) > 0
-                  ).length
-                }
-                )
-              </button>
-            </div>
-
-            {/* 4. Danh sách Storyboard Card (gọn gàng, ô ảnh to full chiều ngang, tiêu đề cảnh ở dưới) */}
+            {/* Danh sách Storyboard Card (gọn gàng, ô ảnh to full chiều ngang, tiêu đề cảnh ở dưới) */}
             <div className="space-y-3">
-              {filteredShots.map((shot) => {
+              {shots.map((shot) => {
                 const visual = localVisuals[shot.id] || shot.visual;
                 const isError = visual?.status === "error";
                 const isChanged =
