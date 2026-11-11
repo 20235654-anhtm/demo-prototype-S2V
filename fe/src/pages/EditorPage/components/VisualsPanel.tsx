@@ -391,6 +391,8 @@ export default function VisualsPanel({
                   visual?.isAssetChanged ||
                   visual?.isPromptModified;
 
+                const isNeedsUpdate = isError || isChanged;
+
                 return (
                   <article
                     key={shot.id}
@@ -412,7 +414,7 @@ export default function VisualsPanel({
                     }}
                     className={cn(
                       "group rounded-xl border p-2.5 transition-all flex flex-col gap-2 cursor-pointer select-none shadow-2xs",
-                      isError
+                      isNeedsUpdate
                         ? "border-destructive/80 bg-destructive/5 hover:border-destructive hover:bg-destructive/10 ring-1 ring-destructive/30"
                         : "border-border/70 bg-card hover:border-foreground/30 hover:bg-muted/40"
                     )}
@@ -437,16 +439,35 @@ export default function VisualsPanel({
                     {/* Tên phân cảnh và thông tin ở dưới ảnh */}
                     <div className="space-y-1 px-0.5">
                       <div className="flex items-center justify-between">
-                        <span
-                          className={cn(
-                            "font-bold text-xs transition-colors",
-                            isError
-                              ? "text-destructive"
-                              : "text-foreground group-hover:text-primary"
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={cn(
+                              "font-bold text-xs transition-colors",
+                              isNeedsUpdate
+                                ? "text-destructive"
+                                : "text-foreground group-hover:text-primary"
+                            )}
+                          >
+                            {shot.code.replace("Cảnh", "Phân cảnh")}
+                          </span>
+
+                          {/* Note bên cạnh Phân cảnh X nếu cần cập nhật ảnh */}
+                          {isNeedsUpdate && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/25">
+                              {isError ? (
+                                <>
+                                  <AlertTriangle className="w-2.5 h-2.5" />
+                                  <span>Lỗi sinh ảnh</span>
+                                </>
+                              ) : (
+                                <>
+                                  <RefreshCw className="w-2.5 h-2.5" />
+                                  <span>Cần cập nhật ảnh</span>
+                                </>
+                              )}
+                            </span>
                           )}
-                        >
-                          {shot.code.replace("Cảnh", "Phân cảnh")}
-                        </span>
+                        </div>
 
                         {isError && (
                           <span className="text-[10px] text-destructive font-medium underline">
@@ -454,24 +475,6 @@ export default function VisualsPanel({
                           </span>
                         )}
                       </div>
-
-                      {/* Badges cảnh báo nếu có */}
-                      {((isError) || (isChanged && !isError)) && (
-                        <div className="flex flex-wrap items-center gap-1 pt-0.5">
-                          {isError && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
-                              <AlertTriangle className="w-2.5 h-2.5" />
-                              {visual?.errorMessage || "Lỗi tạo hình ảnh"}
-                            </span>
-                          )}
-                          {isChanged && !isError && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
-                              <RefreshCw className="w-2.5 h-2.5 text-muted-foreground" />
-                              Cần cập nhật ảnh
-                            </span>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </article>
                 );
