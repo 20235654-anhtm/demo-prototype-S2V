@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Maximize2, Minimize2, Check } from "lucide-react";
+import { Maximize2, Minimize2, Check, Palette } from "lucide-react";
 import { ColorPickerPanel } from "./ColorPickerPanel";
 
 export interface AspectRatioOption {
@@ -66,6 +66,8 @@ interface ControlsPillProps {
   onBgColorChange: (color: string) => void;
   isFullscreen: boolean;
   onToggleFullscreen: () => void;
+  activeShotCode?: string;
+  onOpenVisualsDetail?: () => void;
 }
 
 export default function ControlsPill({
@@ -75,6 +77,8 @@ export default function ControlsPill({
   onBgColorChange,
   isFullscreen,
   onToggleFullscreen,
+  activeShotCode,
+  onOpenVisualsDetail,
 }: ControlsPillProps) {
   const [showAspectMenu, setShowAspectMenu] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -181,6 +185,22 @@ export default function ControlsPill({
           </div>
         )}
       </div>
+
+      {/* 2.5 Dynamic Context Button: Chỉnh ảnh {activeShotCode} */}
+      {activeShotCode && onOpenVisualsDetail && (
+        <>
+          <div className="w-px h-4 bg-border" />
+          <button
+            type="button"
+            onClick={onOpenVisualsDetail}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 transition-colors cursor-pointer"
+            title={`Mở chỉnh sửa hình ảnh chi tiết cho ${activeShotCode}`}
+          >
+            <Palette className="w-3.5 h-3.5" />
+            <span>Chỉnh ảnh {activeShotCode}</span>
+          </button>
+        </>
+      )}
 
       <div className="w-px h-4 bg-border" />
 

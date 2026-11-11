@@ -114,9 +114,10 @@ export default function ShotCard({
 
   return (
     <div
+      id={`shot-card-${shot.id}`}
       onClick={() => !isDisabled && onClick(shot.id)}
       className={cn(
-        "group relative flex items-start gap-2 py-2 px-2 rounded-lg transition-colors cursor-pointer",
+        "group relative flex items-start gap-2 py-2 px-2 rounded-lg transition-all cursor-pointer",
         isDisabled && "opacity-40 pointer-events-none bg-muted/30",
         isSelected ? "bg-primary/[0.05]" : isActive ? "bg-brand/[0.04]" : "hover:bg-muted/30"
       )}

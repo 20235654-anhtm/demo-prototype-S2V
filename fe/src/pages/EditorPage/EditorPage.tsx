@@ -12,7 +12,13 @@ import { mockInitialShots } from "@/mocks/mockShots";
 import { mockCharacters } from "@/mocks/mockCharacters";
 import { getProject } from "@/lib/projectStore";
 import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
-import type { Shot, DiffProposal, CharacterAsset, DialogueBlock } from "@/types/script";
+import type {
+  Shot,
+  DiffProposal,
+  CharacterAsset,
+  DialogueBlock,
+  ShotVisualData,
+} from "@/types/script";
 
 export default function EditorPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -28,6 +34,8 @@ export default function EditorPage() {
   // 1. Quản lý trạng thái các Panel & Menu Sidebar
   type RightTabType = "assets" | "visuals" | "settings" | null;
   const [activeTab, setActiveTab] = useState<RightTabType>(null); // Tab phụ (assets, visuals, settings)
+  const [visualsViewMode, setVisualsViewMode] = useState<"overview" | "detail">("overview");
+  const [visualsDetailShotId, setVisualsDetailShotId] = useState<string | null>(null);
 
   // 1.1 Quản lý danh sách nhân vật & điều hướng chọn nhân vật
   const [characters] = useState<CharacterAsset[]>(mockCharacters);
@@ -77,12 +85,8 @@ export default function EditorPage() {
 
   // Khi chọn một phân cảnh (click ShotCard hoặc Scene trên Timeline):
   // Chuyển activeShotId VÀ chuyển con trỏ thời gian timeline về mốc bắt đầu của phân cảnh đó
-  // Đồng thời tự động mở tab Hình ảnh phân cảnh (visuals) ở panel bên phải nếu đang không mở
   const handleSelectShot = (id: string) => {
     setActiveShotId(id);
-
-    // Mở panel visuals để xem và chỉnh sửa thông tin chi tiết của cảnh đó
-    setActiveTab("visuals");
 
     let startTime = 0;
     for (const s of shots) {
@@ -90,6 +94,50 @@ export default function EditorPage() {
       startTime += s.duration;
     }
     setCurrentTime(Number(startTime.toFixed(1)));
+  };
+
+  // Khi click nút [🎨 Chỉnh ảnh Cảnh X] trên Canvas Preview
+  const handleOpenVisualsDetail = (shotId: string) => {
+    setActiveShotId(shotId);
+    setVisualsDetailShotId(shotId);
+    setVisualsViewMode("detail");
+    setActiveTab("visuals");
+  };
+
+  // Cuộn mượt tới phân cảnh trong ScriptPanel và nhấp nháy flash ring
+  const handleScrollToScript = (shotId: string) => {
+    const el = document.getElementById(`shot-card-${shotId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-2", "ring-amber-400", "ring-offset-2");
+      setTimeout(() => {
+        el.classList.remove("ring-2", "ring-amber-400", "ring-offset-2");
+      }, 1500);
+    }
+  };
+
+  // Cập nhật thuộc tính visual của phân cảnh
+  const handleUpdateShotVisual = (
+    shotId: string,
+    visualData: Partial<ShotVisualData>
+  ) => {
+    setShots((prev) =>
+      prev.map((s) =>
+        s.id === shotId
+          ? {
+              ...s,
+              visual: {
+                prompt: s.visual?.prompt || "",
+                status: s.visual?.status || "ready",
+                linkedAssetIds: s.visual?.linkedAssetIds || [],
+                unlinkedWarnings: s.visual?.unlinkedWarnings || [],
+                ...s.visual,
+                ...visualData,
+              },
+            }
+          : s
+      )
+    );
   };
 
   // Giả lập phát video thời gian thực
@@ -179,7 +227,12 @@ export default function EditorPage() {
   };
 
   const handleToggleVisualsTab = () => {
-    setActiveTab((prev) => (prev === "visuals" ? null : "visuals"));
+    setActiveTab((prev) => {
+      if (prev === "visuals") return null;
+      setVisualsViewMode("overview");
+      setVisualsDetailShotId(null);
+      return "visuals";
+    });
   };
 
   const handleToggleSettingsTab = () => {
@@ -418,6 +471,7 @@ export default function EditorPage() {
           onSeek={(t) => setCurrentTime(t)}
           onRewind={(s) => setCurrentTime((t) => Math.max(0, t - s))}
           onSelectShot={handleSelectShot}
+          onOpenVisualsDetail={handleOpenVisualsDetail}
         />
 
         {/* (3) BẢNG TÀI SẢN TRUYỆN (Nếu mở từ menu bên phải) */}
@@ -434,7 +488,17 @@ export default function EditorPage() {
           <VisualsPanel
             onClose={() => setActiveTab(null)}
             activeShot={activeShot}
+            shots={shots}
             characters={characters}
+            onSelectShot={handleSelectShot}
+            onScrollToScript={handleScrollToScript}
+            onOpenStoryAssetsForEdit={handleEditCharacter}
+            onOpenStoryAssetsForCreate={() => {
+              setActiveTab("assets");
+            }}
+            onUpdateShotVisual={handleUpdateShotVisual}
+            initialViewMode={visualsViewMode}
+            forceDetailShotId={visualsDetailShotId}
           />
         )}
 

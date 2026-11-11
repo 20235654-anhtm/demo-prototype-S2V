@@ -34,6 +34,27 @@ export interface CharacterAsset {
   volume: number;          // Âm lượng (mặc định 100 hoặc 150%)
 }
 
+// Cảnh báo thực thể phát hiện trong văn bản chưa được liên kết tới Asset
+export interface AssetLinkWarning {
+  id: string;
+  name: string;
+  entityName?: string;
+  kind: "character" | "location" | "prop";
+  suggestedAssetId?: string; // ID của asset trong StoryAssets nếu có tên khớp/gần giống
+}
+
+// Cấu hình hình ảnh chi tiết của phân cảnh
+export interface ShotVisualData {
+  image?: string;
+  prompt: string;
+  isPromptModified?: boolean; // Đánh dấu prompt đã bị sửa tay nhưng chưa sinh lại
+  status: "idle" | "generating" | "ready" | "stale" | "error";
+  linkedAssetIds: string[]; // Danh sách ID các tài sản (nhân vật, địa điểm, vật phẩm) được gắn vào shot
+  isAssetChanged?: boolean; // Đánh dấu có asset liên kết vừa được cập nhật ảnh đại diện mới
+  staleReason?: string; // Ví dụ: "Ảnh nhân vật Tiêu Viêm vừa được cập nhật trong Story Assets"
+  unlinkedWarnings?: AssetLinkWarning[]; // Danh sách thực thể chưa gán link (phục vụ Ảnh 1)
+}
+
 export interface Shot {
   id: string;
   order: number;
@@ -43,6 +64,7 @@ export interface Shot {
   image: string;        // URL ảnh đại diện
   isLocked?: boolean;   // Đã khóa hình ảnh hay chưa
   blocks?: DialogueBlock[]; // Các khối thoại phân vai trong phân cảnh
+  visual?: ShotVisualData;  // Cấu hình hình ảnh & tài sản liên kết
 }
 
 export interface DiffProposal {
