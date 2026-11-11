@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   FileText,
-  Sparkles,
+  RefreshCw,
 } from "lucide-react";
 import ShotCard from "./ShotCard";
 import ScriptSelectionToolbar from "./Resplit/ScriptSelectionToolbar";
@@ -143,13 +143,13 @@ export default function ScriptPanel({
         <div className="flex items-center gap-1">
           {/* Nút chia lại toàn bộ */}
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={onOpenResplitModal}
-            className="h-6 px-2 text-[11px] font-medium text-brand-strong dark:text-brand hover:bg-brand/10 dark:hover:bg-brand/15 cursor-pointer gap-1"
+            className="h-7 px-2.5 text-xs font-semibold gap-1.5 cursor-pointer border-brand/40 text-brand-strong dark:text-brand hover:bg-brand/10 hover:text-brand-strong shadow-2xs"
             title="Mở gợi ý chia lại toàn bộ kịch bản"
           >
-            <Sparkles className="w-3 h-3" />
+            <RefreshCw className="w-3 h-3 text-brand" />
             <span>Chia lại tất cả</span>
           </Button>
         </div>

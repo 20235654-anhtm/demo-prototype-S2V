@@ -24,7 +24,7 @@ export default function EditorSidebar({
   const isSettingsActive = activeTab === "settings";
 
   return (
-    <aside className="w-12 border-l flex flex-col items-center py-3 justify-between bg-white dark:bg-neutral-900 shrink-0 z-10 select-none">
+    <aside className="w-12 border-l flex flex-col items-center py-3 bg-white dark:bg-neutral-900 shrink-0 z-10 select-none">
       <div className="flex flex-col items-center gap-2">
         {/* 1. Nút Tài sản truyện */}
         <Tooltip>
@@ -67,28 +67,28 @@ export default function EditorSidebar({
             <span>Hình ảnh phân cảnh</span>
           </TooltipContent>
         </Tooltip>
-      </div>
 
-      {/* Nút Settings ở dưới cùng */}
-      <Tooltip>
-        <TooltipTrigger render={
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggleSettings}
-            className={`h-9 w-9 rounded-lg transition-colors cursor-pointer ${
-              isSettingsActive
-                ? "bg-muted text-foreground font-medium hover:bg-muted/80"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            }`}
-          />
-        }>
-          <Settings className="w-4 h-4" />
-        </TooltipTrigger>
-        <TooltipContent side="left">
-          <span>Cài đặt dự án</span>
-        </TooltipContent>
-      </Tooltip>
+        {/* 3. Nút Cài đặt dự án */}
+        <Tooltip>
+          <TooltipTrigger render={
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleSettings}
+              className={`h-9 w-9 rounded-lg transition-colors cursor-pointer ${
+                isSettingsActive
+                  ? "bg-muted text-foreground font-medium hover:bg-muted/80"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            />
+          }>
+            <Settings className="w-4 h-4" />
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <span>Cài đặt dự án</span>
+          </TooltipContent>
+        </Tooltip>
+      </div>
     </aside>
   );
 }

@@ -34,6 +34,7 @@ export default function VisualsPanel({
   const [viewMode, setViewMode] = useState<"list" | "detail">(initialViewMode);
   const [prompt, setPrompt] = useState("");
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isRegeneratingAll, setIsRegeneratingAll] = useState(false);
 
   // Mẫu prompt mô tả hình ảnh cho 12 phân cảnh
   const defaultPrompts: Record<string, string> = {
@@ -95,6 +96,13 @@ export default function VisualsPanel({
     setTimeout(() => {
       setIsRegenerating(false);
     }, 1200);
+  };
+
+  const handleRegenerateAll = () => {
+    setIsRegeneratingAll(true);
+    setTimeout(() => {
+      setIsRegeneratingAll(false);
+    }, 1500);
   };
 
   const handleInsertKeyword = (keyword: string) => {
@@ -166,10 +174,21 @@ export default function VisualsPanel({
       {viewMode === "list" ? (
         // === GIAO DIỆN DANH SÁCH CÁC HÌNH ẢNH PHÂN CẢNH ===
         <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider truncate">
               Tất cả phân cảnh ({shots.length})
             </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRegenerateAll}
+              disabled={isRegeneratingAll}
+              className="h-7 px-2.5 text-xs font-semibold gap-1.5 cursor-pointer border-brand/40 text-brand-strong dark:text-brand hover:bg-brand/10 hover:text-brand-strong shrink-0 shadow-2xs"
+              title="Sinh lại ảnh cho toàn bộ phân cảnh"
+            >
+              <RefreshCw className={cn("w-3 h-3", isRegeneratingAll && "animate-spin")} />
+              <span>{isRegeneratingAll ? "Đang sinh lại..." : "Sinh lại tất cả"}</span>
+            </Button>
           </div>
 
           <div className="flex flex-col gap-3">
