@@ -643,25 +643,22 @@ export default function VisualsPanel({
                       </div>
 
                       {/* Badges cảnh báo nếu có */}
-                      <div className="flex flex-wrap items-center gap-1 pt-0.5">
-                        {isError && (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
-                            <AlertTriangle className="w-2.5 h-2.5" />
-                            {visual?.errorMessage || "Lỗi tạo hình ảnh"}
-                          </span>
-                        )}
-                        {isChanged && !isError && (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
-                            <RefreshCw className="w-2.5 h-2.5 text-muted-foreground" />
-                            Cần cập nhật ảnh
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Trích dẫn câu thoại */}
-                      <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
-                        {shot.text}
-                      </p>
+                      {((isError) || (isChanged && !isError)) && (
+                        <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                          {isError && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
+                              <AlertTriangle className="w-2.5 h-2.5" />
+                              {visual?.errorMessage || "Lỗi tạo hình ảnh"}
+                            </span>
+                          )}
+                          {isChanged && !isError && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
+                              <RefreshCw className="w-2.5 h-2.5 text-muted-foreground" />
+                              Cần cập nhật ảnh
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </article>
                 );
