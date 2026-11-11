@@ -575,7 +575,6 @@ export default function VisualsPanel({
             <div className="space-y-3">
               {filteredShots.map((shot) => {
                 const visual = localVisuals[shot.id] || shot.visual;
-                const hasWarnings = (visual?.unlinkedWarnings?.length || 0) > 0;
                 const isError = visual?.status === "error";
                 const isChanged =
                   visual?.status === "stale" ||
@@ -652,12 +651,6 @@ export default function VisualsPanel({
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
                             <AlertTriangle className="w-2.5 h-2.5" />
                             {visual?.errorMessage || "Lỗi tạo hình ảnh"}
-                          </span>
-                        )}
-                        {hasWarnings && (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
-                            <AlertTriangle className="w-2.5 h-2.5 text-muted-foreground" />
-                            Thiếu liên kết asset
                           </span>
                         )}
                         {isChanged && !isError && (
