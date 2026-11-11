@@ -76,7 +76,7 @@ export const EntityLinkWarningBox = ({
               >
                 <span className="shrink-0">{renderKindIcon(warning.kind)}</span>
                 <span className="font-medium text-foreground text-[11px]">
-                  {displayName}
+                  {displayName.toLowerCase()}
                 </span>
                 {isGlobal && shotCode && (
                   <span className="text-[10px] text-muted-foreground font-normal">
