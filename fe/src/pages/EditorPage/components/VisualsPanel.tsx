@@ -12,16 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import type { Shot, CharacterAsset, ShotVisualData, AssetLinkWarning } from "@/types/script";
+import type { Shot, CharacterAsset, ShotVisualData } from "@/types/script";
 import {
   mockStoryAssets,
   type StoryAsset,
   type StoryAssetKind,
 } from "@/mocks/mockStoryDetails";
-import {
-  EntityLinkWarningBox,
-  type WarningItemWithShot,
-} from "./Visuals/EntityLinkWarningBox";
 import { AssetSelectPopover } from "./Visuals/AssetSelectPopover";
 
 export const DEFAULT_SHOT_PROMPTS: Record<string, string> = {
@@ -155,24 +151,6 @@ export default function VisualsPanel({
     );
   }, [currentDetailShot, localVisuals]);
 
-  // Danh sách warnings toàn cục trên tất cả phân cảnh
-  const allGlobalWarnings: WarningItemWithShot[] = useMemo(() => {
-    const list: WarningItemWithShot[] = [];
-    shots.forEach((shot) => {
-      const v = localVisuals[shot.id] || shot.visual;
-      if (v?.unlinkedWarnings && v.unlinkedWarnings.length > 0) {
-        v.unlinkedWarnings.forEach((w) => {
-          list.push({
-            shotId: shot.id,
-            shotCode: shot.code,
-            warning: w,
-          });
-        });
-      }
-    });
-    return list;
-  }, [shots, localVisuals]);
-
   // Đếm số lượng phân cảnh có thay đổi cần sinh lại
   const changedShotsCount = useMemo(() => {
     return shots.filter((s) => {
@@ -302,36 +280,6 @@ export default function VisualsPanel({
     }, 1500);
   };
 
-  // Handler giải quyết warning: gắn entity với asset
-  const handleLinkEntity = (
-    warning: AssetLinkWarning,
-    shotId: string,
-    asset: StoryAsset
-  ) => {
-    setLocalVisuals((prev) => {
-      const current = prev[shotId] || {
-        prompt: "",
-        status: "ready",
-        linkedAssetIds: [],
-        unlinkedWarnings: [],
-      };
-      const nextWarnings = (current.unlinkedWarnings || []).filter(
-        (w) => w.id !== warning.id
-      );
-      const nextAssetIds = Array.from(
-        new Set([...(current.linkedAssetIds || []), asset.id])
-      );
-      return {
-        ...prev,
-        [shotId]: {
-          ...current,
-          unlinkedWarnings: nextWarnings,
-          linkedAssetIds: nextAssetIds,
-        },
-      };
-    });
-  };
-
   // Handler gán thêm asset vào shot đang xem chi tiết
   const handleAddAssetToShot = (asset: StoryAsset) => {
     if (!currentDetailShot) return;
@@ -388,17 +336,6 @@ export default function VisualsPanel({
     };
   }, [currentVisual.linkedAssetIds]);
 
-  // Cảnh báo riêng của cảnh hiện tại
-  const currentShotWarnings: WarningItemWithShot[] = useMemo(() => {
-    if (!currentDetailShot) return [];
-    const warnings = currentVisual.unlinkedWarnings || [];
-    return warnings.map((w) => ({
-      shotId: currentDetailShot.id,
-      shotCode: currentDetailShot.code,
-      warning: w,
-    }));
-  }, [currentDetailShot, currentVisual.unlinkedWarnings]);
-
   return (
     <div
       style={width ? { width: `${width}px`, flexBasis: `${width}px` } : undefined}
@@ -432,17 +369,6 @@ export default function VisualsPanel({
 
           {/* Thân cuộn: Overview */}
           <div className="flex-1 min-h-0 overflow-y-auto p-3.5 space-y-3.5">
-            {/* 1. Hộp cảnh báo thiếu liên kết toàn cục (Chuẩn Ảnh 1) */}
-            {allGlobalWarnings.length > 0 && (
-              <EntityLinkWarningBox
-                warnings={allGlobalWarnings}
-                isGlobal={true}
-                onLinkEntity={handleLinkEntity}
-                onEditAsset={onOpenStoryAssetsForEdit}
-                onCreateNewAsset={onOpenStoryAssetsForCreate}
-              />
-            )}
-
             {/* 2. Cặp nút hành động hàng loạt (Batch Action Buttons) */}
             <div className="space-y-1.5">
               <Button
@@ -748,17 +674,6 @@ export default function VisualsPanel({
               </div>
             )}
 
-            {/* 3. Cảnh báo thực thể chưa liên kết riêng của cảnh này */}
-            {currentShotWarnings.length > 0 && (
-              <EntityLinkWarningBox
-                warnings={currentShotWarnings}
-                isGlobal={false}
-                onLinkEntity={handleLinkEntity}
-                onEditAsset={onOpenStoryAssetsForEdit}
-                onCreateNewAsset={onOpenStoryAssetsForCreate}
-              />
-            )}
-
             {/* 4. Asset Bindings theo 3 nhóm rõ rệt: Nhân vật, Địa điểm, Vật phẩm */}
             <div className="space-y-3 pt-2 border-t border-border/70">
               <label className="text-xs font-bold text-foreground block">
@@ -916,11 +831,11 @@ export default function VisualsPanel({
               </div>
             </div>
 
-            {/* 5. Prompt & Góc máy */}
+            {/* 5. Mô tả phân cảnh */}
             <div className="space-y-2 pt-2 border-t border-border/70">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-foreground">
-                  Prompt sinh ảnh & Góc máy
+                  Mô tả phân cảnh
                 </label>
                 <div className="flex items-center gap-1">
                   <button
