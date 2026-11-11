@@ -10,7 +10,7 @@ import {
   type StoryAssetKind,
 } from "@/mocks/mockStoryDetails";
 import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
-import AssetDetailDialog from "./AssetDetailDialog";
+import AssetDetailInline from "@/pages/EditorPage/components/AssetDetailInline";
 
 type AssetFilter = StoryAssetKind;
 
@@ -20,12 +20,36 @@ const FILTER_OPTIONS: Array<{ id: StoryAssetKind; label: string }> = [
   { id: "prop", label: STORY_ASSET_KIND_LABEL.prop },
 ];
 
-export default function StoryAssetsView() {
+interface StoryAssetsViewProps {
+  selectedAsset?: StoryAsset | null;
+  onSelectAsset?: (asset: StoryAsset | null) => void;
+  activeFilter?: AssetFilter;
+  onFilterChange?: (filter: AssetFilter) => void;
+}
+
+export default function StoryAssetsView({
+  selectedAsset: controlledSelectedAsset,
+  onSelectAsset,
+  activeFilter,
+  onFilterChange,
+}: StoryAssetsViewProps) {
   const [assets, setAssets] = useState<StoryAsset[]>(mockStoryAssets);
-  const [filter, setFilter] = useState<AssetFilter>("character");
+  const [internalFilter, setInternalFilter] = useState<AssetFilter>("character");
   const [query, setQuery] = useState("");
-  const [selectedAsset, setSelectedAsset] = useState<StoryAsset | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [internalSelectedAsset, setInternalSelectedAsset] = useState<StoryAsset | null>(null);
+
+  const filter = activeFilter !== undefined ? activeFilter : internalFilter;
+  const setFilter = (nextFilter: AssetFilter) => {
+    setInternalFilter(nextFilter);
+    onFilterChange?.(nextFilter);
+  };
+
+  const selectedAsset = controlledSelectedAsset !== undefined ? controlledSelectedAsset : internalSelectedAsset;
+
+  const setSelectedAsset = (asset: StoryAsset | null) => {
+    setInternalSelectedAsset(asset);
+    onSelectAsset?.(asset);
+  };
 
   const filteredAssets = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -45,7 +69,6 @@ export default function StoryAssetsView() {
 
   const handleOpenDetail = (asset: StoryAsset) => {
     setSelectedAsset(asset);
-    setDialogOpen(true);
   };
 
   const handleAddNewAsset = () => {
@@ -68,14 +91,30 @@ export default function StoryAssetsView() {
 
     setAssets((prev) => [newAsset, ...prev]);
     setSelectedAsset(newAsset);
-    setDialogOpen(true);
   };
 
   const handleUpdateAsset = (updated: StoryAsset) => {
     setAssets((prev) =>
       prev.map((item) => (item.id === updated.id ? updated : item))
     );
+    setSelectedAsset(updated);
   };
+
+  const handleBack = () => {
+    setSelectedAsset(null);
+  };
+
+  if (selectedAsset) {
+    return (
+      <div className="-m-4 h-[calc(100%+2rem)] flex flex-col">
+        <AssetDetailInline
+          asset={selectedAsset}
+          onBack={handleBack}
+          onSave={handleUpdateAsset}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -141,7 +180,7 @@ export default function StoryAssetsView() {
               onClick={() => handleOpenDetail(asset)}
               className="group rounded-2xl border bg-card p-3 shadow-2xs transition-all flex flex-col items-center text-center cursor-pointer hover:border-brand/40 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] select-none"
             >
-              {/* Ô ảnh ở trên (địa điểm dùng aspect-video hoặc aspect-[16/9] tạo cảm giác bối cảnh rộng, nhân vật/vật phẩm giữ aspect-square) */}
+              {/* Ô ảnh ở trên */}
               <div
                 className={cn(
                   "relative w-full rounded-xl border border-dashed border-border bg-muted/40 p-2 overflow-hidden flex items-center justify-center group-hover:border-brand/40 transition-colors",
@@ -180,14 +219,6 @@ export default function StoryAssetsView() {
           </p>
         </div>
       )}
-
-      {/* Popup chi tiết tài sản (Nhân vật / Địa điểm / Vật phẩm) */}
-      <AssetDetailDialog
-        asset={selectedAsset}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSave={handleUpdateAsset}
-      />
     </div>
   );
 }

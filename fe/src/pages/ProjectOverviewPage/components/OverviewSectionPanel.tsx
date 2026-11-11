@@ -6,12 +6,13 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
 import type { StoryChapter } from "@/lib/storyChapters";
 import { getOverviewSectionMeta } from "../sections";
 import type { OverviewSection } from "../types";
 import ChapterListView from "./ChapterListView";
 import StoryAssetsView from "./StoryAssetsView";
+import { STORY_ASSET_KIND_LABEL, type StoryAsset, type StoryAssetKind } from "@/mocks/mockStoryDetails";
 
 const MIN_PANEL_WIDTH = 280;
 const MAX_PANEL_WIDTH = 560;
@@ -34,7 +35,6 @@ export default function OverviewSectionPanel({
   onClose,
 }: OverviewSectionPanelProps) {
   const meta = getOverviewSectionMeta(section);
-  const Icon = meta.icon;
   const [panelWidth, setPanelWidth] = useState(380);
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined"
@@ -43,6 +43,14 @@ export default function OverviewSectionPanel({
   );
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
+
+  const [selectedAsset, setSelectedAsset] = useState<StoryAsset | null>(null);
+  const [assetFilter, setAssetFilter] = useState<StoryAssetKind>("character");
+
+  useEffect(() => {
+    // Reset selected asset when section changes
+    setSelectedAsset(null);
+  }, [section]);
 
   useEffect(() => {
     const query = window.matchMedia("(min-width: 1024px)");
@@ -103,13 +111,46 @@ export default function OverviewSectionPanel({
     >
       <aside className="flex flex-1 flex-col min-h-0 overflow-hidden">
         <div className="flex items-center justify-between gap-2 border-b px-4 py-3 shrink-0">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-brand/15 text-brand-strong dark:text-brand flex items-center justify-center shrink-0">
-              <Icon className="w-4 h-4" />
-            </div>
-            <h2 className="truncate text-sm font-semibold text-foreground">
-              {meta.label}
-            </h2>
+          <div className="flex items-center gap-1.5 min-w-0 text-sm overflow-hidden">
+            {section === "assets" ? (
+              selectedAsset ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAsset(null)}
+                    className="font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0 truncate"
+                  >
+                    Tài sản truyện
+                  </button>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAsset(null)}
+                    className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                  >
+                    {STORY_ASSET_KIND_LABEL[selectedAsset.kind]}
+                  </button>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span className="font-semibold text-foreground truncate min-w-0">
+                    {selectedAsset.name}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="font-semibold text-muted-foreground shrink-0 truncate">
+                    Tài sản truyện
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span className="font-semibold text-foreground truncate min-w-0">
+                    {STORY_ASSET_KIND_LABEL[assetFilter]}
+                  </span>
+                </>
+              )
+            ) : (
+              <h2 className="truncate text-sm font-semibold text-foreground">
+                {meta.label}
+              </h2>
+            )}
           </div>
           <Button
             variant="ghost"
@@ -131,7 +172,14 @@ export default function OverviewSectionPanel({
               onOpenInStudio={onOpenInStudio}
             />
           )}
-          {section === "assets" && <StoryAssetsView />}
+          {section === "assets" && (
+            <StoryAssetsView
+              selectedAsset={selectedAsset}
+              onSelectAsset={setSelectedAsset}
+              activeFilter={assetFilter}
+              onFilterChange={setAssetFilter}
+            />
+          )}
         </div>
       </aside>
 
