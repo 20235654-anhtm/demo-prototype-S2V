@@ -89,15 +89,15 @@ export default function CanvasPreview({
         </div>
 
         {/* 1. Màn hình Video Canvas trung tâm */}
-        <div className="flex-1 min-h-0 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+        <div className="flex-1 min-h-0 flex items-center justify-center p-2 sm:p-4 overflow-hidden">
           {currentShot ? (
             <div
               className="relative rounded-2xl overflow-hidden shadow-xl border border-border/80 flex items-center justify-center transition-all duration-300"
               style={{
                 aspectRatio: currentRatio.css,
                 backgroundColor: bgColor,
-                width: "auto",
-                height: "100%",
+                width: "100%",
+                height: "auto",
                 maxWidth: "100%",
                 maxHeight: "100%",
               }}
@@ -106,15 +106,8 @@ export default function CanvasPreview({
               <img
                 src={currentShot.image}
                 alt={currentShot.code}
-                className="w-full h-full object-contain select-none"
+                className="w-full h-full object-cover select-none"
               />
-
-              {/* Subtitle Overlay (Phụ đề kịch bản) - Đã ẩn theo yêu cầu */}
-              {/* <div className="absolute inset-x-6 bottom-5 text-center pointer-events-none">
-                <p className="inline-block px-4 py-2 rounded-xl bg-black/75 text-white text-xs sm:text-sm font-medium leading-relaxed backdrop-blur-md max-w-2xl shadow-lg border border-white/10">
-                  {currentShot.text}
-                </p>
-              </div> */}
             </div>
           ) : (
             <div className="text-muted-foreground text-sm">

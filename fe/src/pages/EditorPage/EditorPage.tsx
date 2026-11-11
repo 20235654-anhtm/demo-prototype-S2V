@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type PointerEvent as ReactPointerEvent } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import EditorHeader from "./components/EditorHeader";
 import EditorSidebar from "./components/EditorSidebar";
@@ -28,6 +28,71 @@ export default function EditorPage() {
   // 1. Quản lý trạng thái các Panel & Menu Sidebar
   type RightTabType = "assets" | "visuals" | "settings" | null;
   const [activeTab, setActiveTab] = useState<RightTabType>(null); // Tab phụ (assets, visuals, settings)
+  const [visualsViewMode, setVisualsViewMode] = useState<"list" | "detail">("list");
+
+  // 1.0 Quản lý kéo dãn độ rộng 2 thanh bên trái và phải
+  const [leftWidth, setLeftWidth] = useState<number>(490);
+  const [rightWidth, setRightWidth] = useState<number>(420);
+
+  const leftStartXRef = useRef(0);
+  const leftStartWidthRef = useRef(0);
+  const rightStartXRef = useRef(0);
+  const rightStartWidthRef = useRef(0);
+
+  const handleLeftResizeStart = (e: ReactPointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    leftStartXRef.current = e.clientX;
+    leftStartWidthRef.current = leftWidth;
+
+    const previousUserSelect = document.body.style.userSelect;
+    document.body.style.userSelect = "none";
+
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      const maxWidth = Math.min(750, window.innerWidth * 0.55);
+      const nextWidth = Math.min(
+        Math.max(leftStartWidthRef.current + moveEvent.clientX - leftStartXRef.current, 380),
+        maxWidth
+      );
+      setLeftWidth(nextWidth);
+    };
+
+    const handlePointerUp = () => {
+      document.body.style.userSelect = previousUserSelect;
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  };
+
+  const handleRightResizeStart = (e: ReactPointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    rightStartXRef.current = e.clientX;
+    rightStartWidthRef.current = rightWidth;
+
+    const previousUserSelect = document.body.style.userSelect;
+    document.body.style.userSelect = "none";
+
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      const maxWidth = Math.min(650, window.innerWidth * 0.5);
+      // Kéo sang trái -> clientX giảm -> độ rộng tăng
+      const nextWidth = Math.min(
+        Math.max(rightStartWidthRef.current - (moveEvent.clientX - rightStartXRef.current), 320),
+        maxWidth
+      );
+      setRightWidth(nextWidth);
+    };
+
+    const handlePointerUp = () => {
+      document.body.style.userSelect = previousUserSelect;
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  };
 
   // 1.1 Quản lý danh sách nhân vật & điều hướng chọn nhân vật
   const [characters] = useState<CharacterAsset[]>(mockCharacters);
@@ -77,12 +142,13 @@ export default function EditorPage() {
 
   // Khi chọn một phân cảnh (click ShotCard hoặc Scene trên Timeline):
   // Chuyển activeShotId VÀ chuyển con trỏ thời gian timeline về mốc bắt đầu của phân cảnh đó
-  // Đồng thời tự động mở tab Hình ảnh phân cảnh (visuals) ở panel bên phải nếu đang không mở
+  // Đồng thời tự động mở tab Hình ảnh phân cảnh (visuals) ở panel bên phải ở chế độ "detail"
   const handleSelectShot = (id: string) => {
     setActiveShotId(id);
 
-    // Mở panel visuals để xem và chỉnh sửa thông tin chi tiết của cảnh đó
+    // Mở panel visuals ở chế độ chi tiết của cảnh đó
     setActiveTab("visuals");
+    setVisualsViewMode("detail");
 
     let startTime = 0;
     for (const s of shots) {
@@ -179,7 +245,12 @@ export default function EditorPage() {
   };
 
   const handleToggleVisualsTab = () => {
-    setActiveTab((prev) => (prev === "visuals" ? null : "visuals"));
+    if (activeTab === "visuals") {
+      setActiveTab(null);
+    } else {
+      setActiveTab("visuals");
+      setVisualsViewMode("list"); // Bấm thông thường từ menu bên phải -> mở danh sách phân cảnh
+    }
   };
 
   const handleToggleSettingsTab = () => {
@@ -380,29 +451,44 @@ export default function EditorPage() {
       {/* 2. Thân Studio: Cột kịch bản (luôn hiện bên trái) + Canvas Preview + Menu Sidebar bên phải */}
       <div className="flex-1 min-h-0 flex overflow-hidden">
         {/* (1) CỘT KỊCH BẢN & CẤU HÌNH GIỌNG (Luôn luôn hiển thị) */}
-        <ScriptPanel
-          shots={shots}
-          characters={characters}
-          activeShotId={activeShotId}
-          selectedShotIds={selectedShotIds}
-          onSelectShot={handleSelectShot}
-          onToggleSelectShot={handleToggleSelectShot}
-          onClearSelection={() => setSelectedShotIds([])}
-          onTextChange={handleTextChange}
-          onShotUpdate={handleShotUpdate}
-          onToggleLock={handleToggleLock}
-          onOpenResplitModal={() => setIsResplitModalOpen(true)}
-          onRequestResplitScoped={handleRequestResplitScoped}
-          proposal={proposal}
-          onApplyProposal={handleApplyProposal}
-          onCancelProposal={() => setProposal(null)}
-          onMergeShots={handleMergeShots}
-          onEditCharacter={handleEditCharacter}
-          onSeekWord={(t) => setCurrentTime(t)}
-          onAddNewCharacter={() => handleEditCharacter("new")}
-          currentTime={currentTime}
-          isPlaying={isPlaying}
-        />
+        <div className="relative shrink-0 flex">
+          <ScriptPanel
+            width={leftWidth}
+            shots={shots}
+            characters={characters}
+            activeShotId={activeShotId}
+            selectedShotIds={selectedShotIds}
+            onSelectShot={handleSelectShot}
+            onToggleSelectShot={handleToggleSelectShot}
+            onClearSelection={() => setSelectedShotIds([])}
+            onTextChange={handleTextChange}
+            onShotUpdate={handleShotUpdate}
+            onToggleLock={handleToggleLock}
+            onOpenResplitModal={() => setIsResplitModalOpen(true)}
+            onRequestResplitScoped={handleRequestResplitScoped}
+            proposal={proposal}
+            onApplyProposal={handleApplyProposal}
+            onCancelProposal={() => setProposal(null)}
+            onMergeShots={handleMergeShots}
+            onEditCharacter={handleEditCharacter}
+            onSeekWord={(t) => setCurrentTime(t)}
+            onAddNewCharacter={() => handleEditCharacter("new")}
+            currentTime={currentTime}
+            isPlaying={isPlaying}
+          />
+          {/* Handle kéo dãn thanh bên trái */}
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Kéo để thay đổi độ rộng cột kịch bản"
+            tabIndex={0}
+            onPointerDown={handleLeftResizeStart}
+            title="Kéo để thay đổi độ rộng"
+            className="group absolute -right-1.5 top-0 z-20 hidden h-full w-3 cursor-col-resize touch-none items-center justify-center lg:flex select-none"
+          >
+            <span className="h-full w-0.5 bg-transparent transition-colors group-hover:bg-brand/60 group-focus-visible:bg-brand" />
+          </div>
+        </div>
 
         {/* (2) KHUNG CANVAS PREVIEW (Tự co giãn flex-1 chiếm không gian trung tâm) */}
         <CanvasPreview
@@ -420,27 +506,53 @@ export default function EditorPage() {
           onSelectShot={handleSelectShot}
         />
 
-        {/* (3) BẢNG TÀI SẢN TRUYỆN (Nếu mở từ menu bên phải) */}
-        {activeTab === "assets" && (
-          <StoryAssetsPanel
-            onClose={() => setActiveTab(null)}
-            selectedAssetId={selectedCharacterId}
-            onSelectAssetId={setSelectedCharacterId}
-          />
-        )}
+        {/* Cụm thanh bên phải có thể kéo dãn */}
+        {activeTab && (
+          <div className="relative shrink-0 flex">
+            {/* Handle kéo dãn thanh bên phải */}
+            <div
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Kéo để thay đổi độ rộng thanh bên phải"
+              tabIndex={0}
+              onPointerDown={handleRightResizeStart}
+              title="Kéo để thay đổi độ rộng"
+              className="group absolute -left-1.5 top-0 z-20 hidden h-full w-3 cursor-col-resize touch-none items-center justify-center lg:flex select-none"
+            >
+              <span className="h-full w-0.5 bg-transparent transition-colors group-hover:bg-brand/60 group-focus-visible:bg-brand" />
+            </div>
 
-        {/* (4) BẢNG HÌNH ẢNH PHÂN CẢNH (Nếu mở từ menu bên phải hoặc khi click phân cảnh) */}
-        {activeTab === "visuals" && (
-          <VisualsPanel
-            onClose={() => setActiveTab(null)}
-            activeShot={activeShot}
-            characters={characters}
-          />
-        )}
+            {/* (3) BẢNG TÀI SẢN TRUYỆN (Nếu mở từ menu bên phải) */}
+            {activeTab === "assets" && (
+              <StoryAssetsPanel
+                width={rightWidth}
+                onClose={() => setActiveTab(null)}
+                selectedAssetId={selectedCharacterId}
+                onSelectAssetId={setSelectedCharacterId}
+              />
+            )}
 
-        {/* (5) BẢNG CÀI ĐẶT DỰ ÁN (Nếu mở từ menu bên phải) */}
-        {activeTab === "settings" && (
-          <ProjectSettingsPanel onClose={() => setActiveTab(null)} />
+            {/* (4) BẢNG HÌNH ẢNH PHÂN CẢNH (Nếu mở từ menu bên phải hoặc khi click phân cảnh) */}
+            {activeTab === "visuals" && (
+              <VisualsPanel
+                width={rightWidth}
+                onClose={() => setActiveTab(null)}
+                activeShot={activeShot}
+                shots={shots}
+                onSelectShot={handleSelectShot}
+                characters={characters}
+                initialViewMode={visualsViewMode}
+              />
+            )}
+
+            {/* (5) BẢNG CÀI ĐẶT DỰ ÁN (Nếu mở từ menu bên phải) */}
+            {activeTab === "settings" && (
+              <ProjectSettingsPanel
+                width={rightWidth}
+                onClose={() => setActiveTab(null)}
+              />
+            )}
+          </div>
         )}
 
         {/* (6) THANH MENU CỘT BÊN PHẢI NGOÀI CÙNG (Sidebar) */}

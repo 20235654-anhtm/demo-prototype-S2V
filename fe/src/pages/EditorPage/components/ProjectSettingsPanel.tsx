@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "cn";
 
 interface ProjectSettingsPanelProps {
+  width?: number;
   onClose: () => void;
 }
 
@@ -29,7 +30,7 @@ interface PauseSetting {
   newline: number; // Xuống dòng
 }
 
-export default function ProjectSettingsPanel({ onClose }: ProjectSettingsPanelProps) {
+export default function ProjectSettingsPanel({ width, onClose }: ProjectSettingsPanelProps) {
   // 1. Quản lý thiết lập ngắt nghỉ (Pause Settings)
   const [isPauseDetailOpen, setIsPauseDetailOpen] = useState(false);
   const [pauseValues, setPauseValues] = useState<PauseSetting>({
@@ -75,7 +76,10 @@ export default function ProjectSettingsPanel({ onClose }: ProjectSettingsPanelPr
   };
 
   return (
-    <div className="w-80 lg:w-[420px] border-l flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none overflow-hidden relative">
+    <div
+      style={width ? { width: `${width}px`, flexBasis: `${width}px` } : undefined}
+      className="w-80 lg:w-[420px] border-l flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none overflow-hidden relative"
+    >
       {/* 1. Header chuẩn có tiêu đề và nút đóng ✕ */}
       <div className="h-12 px-4 border-b flex items-center justify-between shrink-0 bg-muted/20">
         <div className="flex items-center gap-2">

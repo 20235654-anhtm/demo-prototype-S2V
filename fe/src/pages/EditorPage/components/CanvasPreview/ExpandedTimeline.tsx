@@ -423,55 +423,63 @@ export default function ExpandedTimeline({
               })}
             </div>
 
-            {/* TRACK 1: Video Scenes (Phân cảnh hình ảnh) */}
+            {/* TRACK 1: Video Scenes (Phân cảnh hình ảnh) - Căn chính xác tuyệt đối theo time của từng cảnh */}
             <div
-              className="h-20 border-b flex items-center px-1 gap-1.5 bg-neutral-100/40 dark:bg-neutral-900/40 cursor-pointer"
+              className="relative h-20 border-b bg-neutral-100/40 dark:bg-neutral-900/40 cursor-pointer overflow-hidden"
               onClick={(e) => seekFromX(e.clientX)}
             >
-              {shots.map((shot) => {
-                const shotWidth = Math.max(90, shot.duration * pixelsPerSec);
-                const isSelected = shot.id === activeShotId;
+              {(() => {
+                let accumulatedStart = 0;
+                return shots.map((shot) => {
+                  const shotLeft = accumulatedStart * pixelsPerSec;
+                  const shotWidth = Math.max(2, shot.duration * pixelsPerSec);
+                  const isSelected = shot.id === activeShotId;
+                  accumulatedStart += shot.duration;
 
-                return (
-                  <div
-                    key={shot.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectShot(shot.id);
-                    }}
-                    style={{ width: `${shotWidth}px` }}
-                    className={`h-16 rounded-md overflow-hidden relative border transition-all cursor-pointer group shrink-0 ${
-                      isSelected
-                        ? "border-2 border-primary shadow-sm ring-2 ring-primary/20"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <img
-                      src={shot.image}
-                      alt={shot.code}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/30" />
+                  return (
+                    <div
+                      key={shot.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectShot(shot.id);
+                      }}
+                      style={{
+                        left: `${shotLeft}px`,
+                        width: `${shotWidth}px`,
+                      }}
+                      className={`absolute top-2 h-16 rounded-md overflow-hidden border transition-all cursor-pointer group shrink-0 ${
+                        isSelected
+                          ? "border-2 border-primary shadow-sm ring-2 ring-primary/20 z-10"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <img
+                        src={shot.image}
+                        alt={shot.code}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/30" />
 
-                    {/* Badge thông tin cảnh */}
-                    <div className="absolute top-1 left-1.5 flex items-center gap-1">
-                      <span className="text-[10px] font-semibold text-white drop-shadow">
-                        {shot.code}
-                      </span>
+                      {/* Badge thông tin cảnh */}
+                      <div className="absolute top-1 left-1.5 flex items-center gap-1">
+                        <span className="text-[10px] font-semibold text-white drop-shadow">
+                          {shot.code}
+                        </span>
+                      </div>
+
+                      <div className="absolute top-1 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Eye className="w-3 h-3 text-white drop-shadow" />
+                      </div>
+
+                      <div className="absolute bottom-1 right-1.5">
+                        <span className="text-[10px] font-mono font-medium text-neutral-200 drop-shadow">
+                          {shot.duration.toFixed(1)}s
+                        </span>
+                      </div>
                     </div>
-
-                    <div className="absolute top-1 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Eye className="w-3 h-3 text-white drop-shadow" />
-                    </div>
-
-                    <div className="absolute bottom-1 right-1.5">
-                      <span className="text-[10px] font-mono font-medium text-neutral-200 drop-shadow">
-                        {shot.duration.toFixed(1)}s
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
 
             {/* TRACK 2: Voice Audio Clips (Phân đoạn giọng đọc thông minh) */}

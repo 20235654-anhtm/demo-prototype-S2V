@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "cn";
-import { X, Search, Plus, ChevronRight } from "lucide-react";
+import { X, Search, Plus, ChevronRight, ArrowLeft } from "lucide-react";
 import {
   STORY_ASSET_KIND_LABEL,
   mockStoryAssets,
@@ -21,12 +21,14 @@ const FILTER_OPTIONS: Array<{ id: StoryAssetKind; label: string }> = [
 ];
 
 interface StoryAssetsPanelProps {
+  width?: number;
   onClose: () => void;
   selectedAssetId?: string | null;
   onSelectAssetId?: (id: string | null) => void;
 }
 
 export default function StoryAssetsPanel({
+  width,
   onClose,
   selectedAssetId,
   onSelectAssetId,
@@ -107,10 +109,25 @@ export default function StoryAssetsPanel({
   };
 
   return (
-    <div className="w-80 lg:w-[420px] border-l flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none overflow-hidden">
+    <div
+      style={width ? { width: `${width}px`, flexBasis: `${width}px` } : undefined}
+      className="w-80 lg:w-[420px] border-l flex flex-col h-full bg-white dark:bg-neutral-900 shrink-0 select-none overflow-hidden relative"
+    >
       {/* 1. Header chuẩn: Bỏ icon, có Breadcrumb Tài sản truyện > [Phân loại] > [Tên] và nút đóng ✕ */}
-      <div className="h-12 px-4 border-b flex items-center justify-between shrink-0 bg-muted/20">
+      <div className="h-12 px-3 border-b flex items-center justify-between shrink-0 bg-muted/20">
         <div className="flex items-center gap-1.5 min-w-0 text-sm overflow-hidden">
+          {selectedAsset && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBackToList}
+              className="h-7 w-7 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer shrink-0 mr-0.5"
+              title="Quay lại danh sách"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          )}
+
           <button
             type="button"
             onClick={handleBackToList}

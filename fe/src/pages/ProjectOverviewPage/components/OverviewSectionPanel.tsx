@@ -6,7 +6,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { Button } from "@/components/ui/button";
-import { X, ChevronRight } from "lucide-react";
+import { X, ChevronRight, ArrowLeft } from "lucide-react";
 import type { StoryChapter } from "@/lib/storyChapters";
 import { getOverviewSectionMeta } from "../sections";
 import type { OverviewSection } from "../types";
@@ -35,7 +35,8 @@ export default function OverviewSectionPanel({
   onClose,
 }: OverviewSectionPanelProps) {
   const meta = getOverviewSectionMeta(section);
-  const [panelWidth, setPanelWidth] = useState(380);
+  // Đồng bộ kích thước mặc định bằng thanh bên phải trang Studio (420px)
+  const [panelWidth, setPanelWidth] = useState(420);
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(min-width: 1024px)").matches
@@ -110,11 +111,20 @@ export default function OverviewSectionPanel({
       className="relative w-full lg:w-auto shrink-0 flex flex-col min-h-0 max-h-[45vh] lg:max-h-none border-b lg:border-b-0 lg:border-r bg-white dark:bg-neutral-900"
     >
       <aside className="flex flex-1 flex-col min-h-0 overflow-hidden">
-        <div className="flex items-center justify-between gap-2 border-b px-4 py-3 shrink-0">
+        <div className="flex items-center justify-between gap-2 border-b px-3 py-3 shrink-0">
           <div className="flex items-center gap-1.5 min-w-0 text-sm overflow-hidden">
             {section === "assets" ? (
               selectedAsset ? (
                 <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSelectedAsset(null)}
+                    className="h-7 w-7 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer shrink-0 mr-0.5"
+                    title="Quay lại danh sách"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </Button>
                   <button
                     type="button"
                     onClick={() => setSelectedAsset(null)}
