@@ -49,6 +49,7 @@ export interface ShotVisualData {
   prompt: string;
   isPromptModified?: boolean; // Đánh dấu prompt đã bị sửa tay nhưng chưa sinh lại
   status: "idle" | "generating" | "ready" | "stale" | "error";
+  errorMessage?: string; // Chi tiết lỗi sinh ảnh (nếu status = 'error')
   linkedAssetIds: string[]; // Danh sách ID các tài sản (nhân vật, địa điểm, vật phẩm) được gắn vào shot
   isAssetChanged?: boolean; // Đánh dấu có asset liên kết vừa được cập nhật ảnh đại diện mới
   staleReason?: string; // Ví dụ: "Ảnh nhân vật Tiêu Viêm vừa được cập nhật trong Story Assets"

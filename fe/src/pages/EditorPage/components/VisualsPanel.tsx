@@ -571,63 +571,109 @@ export default function VisualsPanel({
               </button>
             </div>
 
-            {/* 4. Danh sách Storyboard Card (gọn gàng, tỉ lệ 16:9, chuẩn đặc tả) */}
-            <div className="space-y-2">
+            {/* 4. Danh sách Storyboard Card (gọn gàng, ô ảnh to full chiều ngang, tiêu đề cảnh ở dưới) */}
+            <div className="space-y-3">
               {filteredShots.map((shot) => {
                 const visual = localVisuals[shot.id] || shot.visual;
                 const hasWarnings = (visual?.unlinkedWarnings?.length || 0) > 0;
+                const isError = visual?.status === "error";
                 const isChanged =
                   visual?.status === "stale" ||
                   visual?.isAssetChanged ||
                   visual?.isPromptModified;
 
                 return (
-                  <div
+                  <article
                     key={shot.id}
-                    onClick={() => handleOpenDetail(shot)}
-                    className="p-2.5 rounded-xl border border-border/70 hover:border-foreground/30 bg-card hover:bg-muted/40 transition-all cursor-pointer group shadow-2xs space-y-2"
+                    onClick={() => {
+                      if (isError) {
+                        const errorMsg =
+                          visual?.errorMessage ||
+                          "Lỗi sinh ảnh: Không thể kết nối tới mô hình AI hoặc prompt không hợp lệ. Vui lòng thử lại.";
+                        console.error(`[${shot.code}] Lỗi sinh hình ảnh:`, {
+                          shotId: shot.id,
+                          code: shot.code,
+                          error: errorMsg,
+                          visual,
+                        });
+                        alert(`[${shot.code}] Chi tiết lỗi: ${errorMsg}`);
+                      } else {
+                        handleOpenDetail(shot);
+                      }
+                    }}
+                    className={cn(
+                      "group rounded-xl border p-2.5 transition-all flex flex-col gap-2 cursor-pointer select-none shadow-2xs",
+                      isError
+                        ? "border-destructive/80 bg-destructive/5 hover:border-destructive hover:bg-destructive/10 ring-1 ring-destructive/30"
+                        : "border-border/70 bg-card hover:border-foreground/30 hover:bg-muted/40"
+                    )}
                   >
-                    <div className="flex items-start gap-2.5">
-                      {/* Thumbnail 16:9 sắc nét */}
-                      <div className="w-28 aspect-video rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200 dark:border-neutral-800 shrink-0 relative">
-                        <img
-                          src={shot.image}
-                          alt={shot.code}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
+                    {/* Thumbnail cảnh phóng to chiếm full 100% chiều ngang */}
+                    <div className="relative w-full aspect-video rounded-lg border border-border/80 bg-neutral-100 dark:bg-neutral-800 overflow-hidden flex items-center justify-center">
+                      <img
+                        src={shot.image}
+                        alt={shot.code}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+                      />
 
-                      {/* Thông tin cảnh */}
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
-                            {shot.code}
-                          </span>
+                      {/* Huy hiệu cảnh báo lỗi đỏ phủ trên góc ảnh nếu có lỗi */}
+                      {isError && (
+                        <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold shadow-xs">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>Sinh ảnh lỗi</span>
                         </div>
-
-                        {/* Badges cảnh báo nếu có */}
-                        <div className="flex flex-wrap items-center gap-1 pt-0.5">
-                          {hasWarnings && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
-                              <AlertTriangle className="w-2.5 h-2.5 text-muted-foreground" />
-                              Thiếu liên kết asset
-                            </span>
-                          )}
-                          {isChanged && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
-                              <RefreshCw className="w-2.5 h-2.5 text-muted-foreground" />
-                              Cần cập nhật ảnh
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Trích dẫn câu thoại */}
-                        <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
-                          {shot.text}
-                        </p>
-                      </div>
+                      )}
                     </div>
-                  </div>
+
+                    {/* Tên phân cảnh và thông tin ở dưới ảnh */}
+                    <div className="space-y-1 px-0.5">
+                      <div className="flex items-center justify-between">
+                        <span
+                          className={cn(
+                            "font-bold text-xs transition-colors",
+                            isError
+                              ? "text-destructive"
+                              : "text-foreground group-hover:text-primary"
+                          )}
+                        >
+                          {shot.code}
+                        </span>
+
+                        {isError && (
+                          <span className="text-[10px] text-destructive font-medium underline">
+                            Bấm xem log lỗi
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Badges cảnh báo nếu có */}
+                      <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                        {isError && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
+                            <AlertTriangle className="w-2.5 h-2.5" />
+                            {visual?.errorMessage || "Lỗi tạo hình ảnh"}
+                          </span>
+                        )}
+                        {hasWarnings && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
+                            <AlertTriangle className="w-2.5 h-2.5 text-muted-foreground" />
+                            Thiếu liên kết asset
+                          </span>
+                        )}
+                        {isChanged && !isError && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
+                            <RefreshCw className="w-2.5 h-2.5 text-muted-foreground" />
+                            Cần cập nhật ảnh
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Trích dẫn câu thoại */}
+                      <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+                        {shot.text}
+                      </p>
+                    </div>
+                  </article>
                 );
               })}
             </div>
