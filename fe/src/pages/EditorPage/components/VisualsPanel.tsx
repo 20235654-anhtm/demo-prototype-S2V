@@ -391,8 +391,6 @@ export default function VisualsPanel({
                   visual?.isAssetChanged ||
                   visual?.isPromptModified;
 
-                const isNeedsUpdate = isError || isChanged;
-
                 return (
                   <article
                     key={shot.id}
@@ -414,8 +412,10 @@ export default function VisualsPanel({
                     }}
                     className={cn(
                       "group rounded-xl border p-2.5 transition-all flex flex-col gap-2 cursor-pointer select-none shadow-2xs",
-                      isNeedsUpdate
+                      isError
                         ? "border-destructive/80 bg-destructive/5 hover:border-destructive hover:bg-destructive/10 ring-1 ring-destructive/30"
+                        : isChanged
+                        ? "border-brand/70 bg-brand/5 hover:border-brand hover:bg-brand/10 ring-1 ring-brand/25"
                         : "border-border/70 bg-card hover:border-foreground/30 hover:bg-muted/40"
                     )}
                   >
@@ -443,28 +443,28 @@ export default function VisualsPanel({
                           <span
                             className={cn(
                               "font-bold text-xs transition-colors",
-                              isNeedsUpdate
+                              isError
                                 ? "text-destructive"
+                                : isChanged
+                                ? "text-foreground font-bold"
                                 : "text-foreground group-hover:text-primary"
                             )}
                           >
                             {shot.code.replace("Cảnh", "Phân cảnh")}
                           </span>
 
-                          {/* Note bên cạnh Phân cảnh X nếu cần cập nhật ảnh */}
-                          {isNeedsUpdate && (
+                          {/* Note bên cạnh Phân cảnh X nếu cần cập nhật ảnh hoặc bị lỗi */}
+                          {isError && (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/25">
-                              {isError ? (
-                                <>
-                                  <AlertTriangle className="w-2.5 h-2.5" />
-                                  <span>Lỗi sinh ảnh</span>
-                                </>
-                              ) : (
-                                <>
-                                  <RefreshCw className="w-2.5 h-2.5" />
-                                  <span>Cần cập nhật ảnh</span>
-                                </>
-                              )}
+                              <AlertTriangle className="w-2.5 h-2.5" />
+                              <span>Lỗi sinh ảnh</span>
+                            </span>
+                          )}
+
+                          {isChanged && !isError && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-brand/15 text-foreground border border-brand/40">
+                              <RefreshCw className="w-2.5 h-2.5 text-foreground/80" />
+                              <span>Cần cập nhật ảnh</span>
                             </span>
                           )}
                         </div>
