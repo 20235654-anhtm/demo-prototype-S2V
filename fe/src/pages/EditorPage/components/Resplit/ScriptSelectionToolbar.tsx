@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles, Link2, X, CheckSquare } from "lucide-react";
+import { RefreshCw, Link2, X, CheckSquare } from "lucide-react";
 
 interface ScriptSelectionToolbarProps {
   selectedCount: number;
@@ -34,13 +34,13 @@ export default function ScriptSelectionToolbar({
 
       {/* Middle & Right: Actions */}
       <div className="flex items-center gap-1.5">
-        {/* Button ✦ Chia lại (Điểm nhấn AI) */}
+        {/* Button Chia lại (cùng icon RefreshCw với Chia lại tất cả) */}
         <Button
           size="sm"
           onClick={onOpenResplit}
           className="h-7 px-2.5 text-xs bg-brand hover:bg-brand-hover text-brand-foreground font-medium shadow-2xs cursor-pointer gap-1 transition-colors"
         >
-          <Sparkles className="w-3 h-3 text-brand-foreground" />
+          <RefreshCw className="w-3 h-3 text-brand-foreground" />
           <span>Chia lại</span>
         </Button>
 

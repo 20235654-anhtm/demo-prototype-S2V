@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles, Check } from "lucide-react";
+import { RefreshCw, Check } from "lucide-react";
 import DialogueBlockCard from "./DialogueScript/DialogueBlockCard";
 import {
   splitBlockWithLine,
@@ -168,7 +168,7 @@ export default function ShotCard({
 
       {/* 3. Phần Thân Thoại Liền Mạch (Seamless Flow, không khung viền) */}
       <div className="flex-1 min-w-0 relative pr-6">
-        {/* Nút [✨ Chia lại] nổi ở góc trên bên phải khi Hover hoặc Active */}
+        {/* Nút [Chia lại] nổi ở góc trên bên phải khi Hover hoặc Active */}
         <Button
           variant="ghost"
           size="sm"
@@ -183,7 +183,7 @@ export default function ShotCard({
           )}
           title="Chia lại phân cảnh này"
         >
-          <Sparkles className="w-3 h-3 text-brand" />
+          <RefreshCw className="w-3 h-3 text-brand" />
           <span>Chia lại</span>
         </Button>
 

@@ -632,7 +632,7 @@ export default function VisualsPanel({
                               : "text-foreground group-hover:text-primary"
                           )}
                         >
-                          {shot.code}
+                          {shot.code.replace("Cảnh", "Phân cảnh")}
                         </span>
 
                         {isError && (
@@ -697,7 +697,7 @@ export default function VisualsPanel({
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
 
               <span className="font-semibold text-sm text-foreground truncate min-w-0">
-                {currentDetailShot.code}
+                {currentDetailShot.code.replace("Cảnh", "Phân cảnh")}
               </span>
             </div>
 
