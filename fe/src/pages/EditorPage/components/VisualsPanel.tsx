@@ -583,7 +583,7 @@ export default function VisualsPanel({
                   </h4>
                   <p className="text-[11px] text-muted-foreground mt-0.5 leading-normal">
                     {currentVisual.staleReason ||
-                      "Ảnh nhân vật hoặc bối cảnh trong cảnh này vừa được thay đổi trong Story Assets. Hãy bấm 'Sinh lại hình ảnh này' để cập nhật diện mạo mới."}
+                      "Ảnh nhân vật hoặc bối cảnh trong cảnh này vừa được thay đổi. Hãy bấm 'Sinh lại hình ảnh này' để cập nhật diện mạo mới."}
                   </p>
                 </div>
               </div>

@@ -163,7 +163,7 @@ export const mockInitialShots: Shot[] = [
         "Tiêu Viêm cúi đầu nắm chặt tay móng tay đâm vào da thịt, bóng lưng cô đơn giữa quảng trường đá rộng lớn, ánh hoàng hôn chiếu xiên tạo bóng dài u uất, góc máy thấp ấn tượng.",
       status: "stale",
       isAssetChanged: true,
-      staleReason: "Ảnh nhân vật Tiêu Viêm vừa được cập nhật trong Story Assets.",
+      staleReason: "Ảnh nhân vật Tiêu Viêm vừa được cập nhật.",
       linkedAssetIds: ["asset-tieu-vien", "asset-quang-truong"],
     },
   },
