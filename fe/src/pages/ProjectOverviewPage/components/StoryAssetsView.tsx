@@ -106,7 +106,7 @@ export default function StoryAssetsView({
 
   if (selectedAsset) {
     return (
-      <div className="-m-4 h-[calc(100%+2rem)] flex flex-col">
+      <div className="flex-1 min-h-0 flex flex-col">
         <AssetDetailInline
           asset={selectedAsset}
           onBack={handleBack}
@@ -117,9 +117,9 @@ export default function StoryAssetsView({
   }
 
   return (
-    <div className="space-y-4">
-      {/* Bộ lọc + nút thêm mới + tìm kiếm */}
-      <div className="flex flex-col gap-2.5">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      {/* Bộ lọc + nút thêm mới + tìm kiếm (cố định trên đầu) */}
+      <div className="shrink-0 p-4 pb-3 flex flex-col gap-2.5">
         <div className="flex items-center gap-2">
           {/* Bộ tabs lọc phân loại dạng pill liền mạch */}
           <div className="flex-1 min-w-0 p-1 bg-muted/60 dark:bg-muted/30 rounded-xl flex items-center gap-1">
@@ -166,59 +166,62 @@ export default function StoryAssetsView({
         </div>
       </div>
 
-      {/* Danh sách tài sản: Nhân vật & Vật phẩm 2 cột/hàng, Địa điểm 1 cột/hàng */}
-      {filteredAssets.length > 0 ? (
-        <div
-          className={cn(
-            "grid gap-3",
-            filter === "location" ? "grid-cols-1" : "grid-cols-2"
-          )}
-        >
-          {filteredAssets.map((asset) => (
-            <article
-              key={asset.id}
-              onClick={() => handleOpenDetail(asset)}
-              className="group rounded-2xl border bg-card p-3 shadow-2xs transition-all flex flex-col items-center text-center cursor-pointer hover:border-brand/40 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] select-none"
-            >
-              {/* Ô ảnh ở trên */}
-              <div
-                className={cn(
-                  "relative w-full rounded-xl border border-dashed border-border bg-muted/40 p-2 overflow-hidden flex items-center justify-center group-hover:border-brand/40 transition-colors",
-                  filter === "location" ? "aspect-[16/9]" : "aspect-square"
-                )}
+      {/* Khu vực cuộn chỉ dành riêng cho Danh sách tài sản */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-4">
+        {/* Danh sách tài sản: Nhân vật & Vật phẩm 2 cột/hàng, Địa điểm 1 cột/hàng */}
+        {filteredAssets.length > 0 ? (
+          <div
+            className={cn(
+              "grid gap-3",
+              filter === "location" ? "grid-cols-1" : "grid-cols-2"
+            )}
+          >
+            {filteredAssets.map((asset) => (
+              <article
+                key={asset.id}
+                onClick={() => handleOpenDetail(asset)}
+                className="group rounded-2xl border bg-card p-3 shadow-2xs transition-all flex flex-col items-center text-center cursor-pointer hover:border-brand/40 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] select-none"
               >
-                <img
-                  src={asset.imageUrl || PLACEHOLDER_IMAGE}
-                  alt={asset.name}
-                  className="w-full h-full object-contain rounded-lg"
-                />
-              </div>
+                {/* Ô ảnh ở trên */}
+                <div
+                  className={cn(
+                    "relative w-full rounded-xl border border-dashed border-border bg-muted/40 p-2 overflow-hidden flex items-center justify-center group-hover:border-brand/40 transition-colors",
+                    filter === "location" ? "aspect-[16/9]" : "aspect-square"
+                  )}
+                >
+                  <img
+                    src={asset.imageUrl || PLACEHOLDER_IMAGE}
+                    alt={asset.name}
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                </div>
 
-              {/* Tên ở dưới */}
-              <div className="w-full mt-2.5 px-1">
-                <h3 className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-brand-strong dark:group-hover:text-brand transition-colors truncate">
-                  {asset.name}
-                </h3>
-                {asset.kind === "character" && asset.voiceName && (
-                  <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-normal">
-                    Giọng: <span className="text-foreground/90 font-medium">{asset.voiceName}</span>
-                  </p>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-xl border border-dashed bg-card/60 py-14 flex flex-col items-center justify-center text-center">
-          <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-            <Search className="w-5 h-5" />
+                {/* Tên ở dưới */}
+                <div className="w-full mt-2.5 px-1">
+                  <h3 className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-brand-strong dark:group-hover:text-brand transition-colors truncate">
+                    {asset.name}
+                  </h3>
+                  {asset.kind === "character" && asset.voiceName && (
+                    <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-normal">
+                      Giọng: <span className="text-foreground/90 font-medium">{asset.voiceName}</span>
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
           </div>
-          <p className="mt-3 text-sm font-medium">Không tìm thấy tài sản nào</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Thử đổi bộ lọc hoặc từ khóa tìm kiếm khác.
-          </p>
-        </div>
-      )}
+        ) : (
+          <div className="rounded-xl border border-dashed bg-card/60 py-14 flex flex-col items-center justify-center text-center">
+            <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+              <Search className="w-5 h-5" />
+            </div>
+            <p className="mt-3 text-sm font-medium">Không tìm thấy tài sản nào</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Thử đổi bộ lọc hoặc từ khóa tìm kiếm khác.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

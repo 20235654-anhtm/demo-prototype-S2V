@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef, type PointerEvent as ReactPointerEvent } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import EditorHeader from "./components/EditorHeader";
-import EditorSidebar from "./components/EditorSidebar";
 import ScriptPanel from "./components/ScriptPanel";
-import StoryAssetsPanel from "./components/StoryAssetsPanel";
-import VisualsPanel from "./components/VisualsPanel";
+import StoryAssetsModal from "./components/StoryAssetsModal";
+import ShotVisualModal from "./components/Visuals/ShotVisualModal";
 import CanvasPreview from "./components/CanvasPreview/CanvasPreview";
 import ResplitAllModal from "./components/Resplit/ResplitAllModal";
 import { mockInitialShots } from "@/mocks/mockShots";
@@ -31,19 +30,15 @@ export default function EditorPage() {
   const projectTitle = currentProject?.title || "Đấu Phá Thương Khung";
 
   // 1. Quản lý trạng thái các Panel & Menu Sidebar
-  type RightTabType = "assets" | "visuals" | null;
-  const [activeTab, setActiveTab] = useState<RightTabType>(null); // Tab phụ (assets, visuals)
-  const [visualsViewMode, setVisualsViewMode] = useState<"overview" | "detail">("overview");
-  const [visualsDetailShotId, setVisualsDetailShotId] = useState<string | null>(null);
+  const [isAssetsModalOpen, setIsAssetsModalOpen] = useState(false);
+  const [isVisualModalOpen, setIsVisualModalOpen] = useState(false);
+  const [visualModalShotId, setVisualModalShotId] = useState<string | null>(null);
 
   // 1.0 Quản lý kéo dãn độ rộng 2 thanh bên trái và phải
   const [leftWidth, setLeftWidth] = useState<number>(490);
-  const [rightWidth, setRightWidth] = useState<number>(420);
 
   const leftStartXRef = useRef(0);
   const leftStartWidthRef = useRef(0);
-  const rightStartXRef = useRef(0);
-  const rightStartWidthRef = useRef(0);
 
   const handleLeftResizeStart = (e: ReactPointerEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -60,34 +55,6 @@ export default function EditorPage() {
         maxWidth
       );
       setLeftWidth(nextWidth);
-    };
-
-    const handlePointerUp = () => {
-      document.body.style.userSelect = previousUserSelect;
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", handlePointerUp);
-    };
-
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
-  };
-
-  const handleRightResizeStart = (e: ReactPointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    rightStartXRef.current = e.clientX;
-    rightStartWidthRef.current = rightWidth;
-
-    const previousUserSelect = document.body.style.userSelect;
-    document.body.style.userSelect = "none";
-
-    const handlePointerMove = (moveEvent: PointerEvent) => {
-      const maxWidth = Math.min(650, window.innerWidth * 0.5);
-      // Kéo sang trái -> clientX giảm -> độ rộng tăng
-      const nextWidth = Math.min(
-        Math.max(rightStartWidthRef.current - (moveEvent.clientX - rightStartXRef.current), 320),
-        maxWidth
-      );
-      setRightWidth(nextWidth);
     };
 
     const handlePointerUp = () => {
@@ -124,7 +91,7 @@ export default function EditorPage() {
   // Callback khi người dùng bấm [✏] ở bất kỳ đâu để mở Story Assets và điều hướng đúng nhân vật
   const handleEditCharacter = (characterId: string) => {
     setSelectedCharacterId(characterId);
-    setActiveTab("assets");
+    setIsAssetsModalOpen(true);
   };
 
   // Cập nhật phân cảnh khi có thay đổi khối thoại/tách câu/sửa chữ
@@ -162,21 +129,8 @@ export default function EditorPage() {
   // Khi click nút [🎨 Chỉnh ảnh Cảnh X] trên Canvas Preview
   const handleOpenVisualsDetail = (shotId: string) => {
     setActiveShotId(shotId);
-    setVisualsDetailShotId(shotId);
-    setVisualsViewMode("detail");
-    setActiveTab("visuals");
-  };
-
-  // Cuộn mượt tới phân cảnh trong ScriptPanel và nhấp nháy flash ring
-  const handleScrollToScript = (shotId: string) => {
-    const el = document.getElementById(`shot-card-${shotId}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.classList.add("ring-2", "ring-primary", "ring-offset-2");
-      setTimeout(() => {
-        el.classList.remove("ring-2", "ring-primary", "ring-offset-2");
-      }, 1500);
-    }
+    setVisualModalShotId(shotId);
+    setIsVisualModalOpen(true);
   };
 
   // Cập nhật thuộc tính visual của phân cảnh
@@ -285,19 +239,6 @@ export default function EditorPage() {
   }, [isPlaying, currentTime, shots]);
 
   // Logic Sidebar bên trái
-  const handleToggleAssetsTab = () => {
-    setActiveTab((prev) => (prev === "assets" ? null : "assets"));
-  };
-
-  const handleToggleVisualsTab = () => {
-    setActiveTab((prev) => {
-      if (prev === "visuals") return null;
-      setVisualsViewMode("overview");
-      setVisualsDetailShotId(null);
-      return "visuals";
-    });
-  };
-
   // Logic tương tác kịch bản
   const handleToggleSelectShot = (id: string, checked: boolean) => {
     setSelectedShotIds((prev) =>
@@ -546,63 +487,33 @@ export default function EditorPage() {
           onRewind={(s) => setCurrentTime((t) => Math.max(0, t - s))}
           onSelectShot={handleSelectShot}
           onOpenVisualsDetail={handleOpenVisualsDetail}
-        />
-
-        {/* Cụm thanh bên phải có thể kéo dãn */}
-        {activeTab && (
-          <div className="relative shrink-0 flex">
-            {/* Handle kéo dãn thanh bên phải */}
-            <div
-              role="separator"
-              aria-orientation="vertical"
-              aria-label="Kéo để thay đổi độ rộng thanh bên phải"
-              tabIndex={0}
-              onPointerDown={handleRightResizeStart}
-              title="Kéo để thay đổi độ rộng"
-              className="group absolute -left-1.5 top-0 z-20 hidden h-full w-3 cursor-col-resize touch-none items-center justify-center lg:flex select-none"
-            >
-              <span className="h-full w-0.5 bg-transparent transition-colors group-hover:bg-brand/60 group-focus-visible:bg-brand" />
-            </div>
-
-            {/* (3) BẢNG TÀI SẢN TRUYỆN (Nếu mở từ menu bên phải) */}
-            {activeTab === "assets" && (
-              <StoryAssetsPanel
-                width={rightWidth}
-                onClose={() => setActiveTab(null)}
-                selectedAssetId={selectedCharacterId}
-                onSelectAssetId={setSelectedCharacterId}
-              />
-            )}
-
-            {/* (4) BẢNG HÌNH ẢNH PHÂN CẢNH (Nếu mở từ menu bên phải hoặc khi click phân cảnh) */}
-            {activeTab === "visuals" && (
-              <VisualsPanel
-                width={rightWidth}
-                onClose={() => setActiveTab(null)}
-                activeShot={activeShot}
-                shots={shots}
-                characters={characters}
-                onSelectShot={handleSelectShot}
-                onScrollToScript={handleScrollToScript}
-                onOpenStoryAssetsForEdit={handleEditCharacter}
-                onOpenStoryAssetsForCreate={() => {
-                  setActiveTab("assets");
-                }}
-                onUpdateShotVisual={handleUpdateShotVisual}
-                initialViewMode={visualsViewMode}
-                forceDetailShotId={visualsDetailShotId}
-              />
-            )}
-          </div>
-        )}
-
-        {/* (5) THANH MENU CỘT BÊN PHẢI NGOÀI CÙNG (Sidebar) */}
-        <EditorSidebar
-          activeTab={activeTab}
-          onToggleAssets={handleToggleAssetsTab}
-          onToggleVisuals={handleToggleVisualsTab}
+          onOpenStoryAssets={() => setIsAssetsModalOpen(true)}
         />
       </div>
+
+      {/* Modal chỉnh sửa hình ảnh phân cảnh (Overlayer dạng Modal/Dialog) */}
+      <ShotVisualModal
+        open={isVisualModalOpen}
+        onOpenChange={setIsVisualModalOpen}
+        shot={
+          shots.find((s) => s.id === (visualModalShotId || activeShotId)) ||
+          activeShot
+        }
+        onUpdateShotVisual={handleUpdateShotVisual}
+        onOpenStoryAssetsForEdit={handleEditCharacter}
+        onOpenStoryAssetsForCreate={() => {
+          setIsVisualModalOpen(false);
+          setIsAssetsModalOpen(true);
+        }}
+      />
+
+      {/* Modal Tài sản truyện */}
+      <StoryAssetsModal
+        open={isAssetsModalOpen}
+        onOpenChange={setIsAssetsModalOpen}
+        selectedAssetId={selectedCharacterId}
+        onSelectAssetId={setSelectedCharacterId}
+      />
 
       {/* Modal Re-split all shots */}
       <ResplitAllModal

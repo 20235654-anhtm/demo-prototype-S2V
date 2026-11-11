@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Maximize2, Minimize2, Check, Palette } from "lucide-react";
+import { Maximize2, Minimize2, Check, Palette, Users } from "lucide-react";
 import { ColorPickerPanel } from "./ColorPickerPanel";
 
 export interface AspectRatioOption {
@@ -68,6 +68,7 @@ interface ControlsPillProps {
   onToggleFullscreen: () => void;
   activeShotCode?: string;
   onOpenVisualsDetail?: () => void;
+  onOpenStoryAssets?: () => void;
 }
 
 export default function ControlsPill({
@@ -79,6 +80,7 @@ export default function ControlsPill({
   onToggleFullscreen,
   activeShotCode,
   onOpenVisualsDetail,
+  onOpenStoryAssets,
 }: ControlsPillProps) {
   const [showAspectMenu, setShowAspectMenu] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -186,6 +188,22 @@ export default function ControlsPill({
         )}
       </div>
 
+      {/* 2.4 Nút Tài sản truyện */}
+      {onOpenStoryAssets && (
+        <>
+          <div className="w-px h-4 bg-border" />
+          <button
+            type="button"
+            onClick={onOpenStoryAssets}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+            title="Mở tài sản truyện"
+          >
+            <Users className="w-3.5 h-3.5 text-primary" />
+            <span>Tài sản truyện</span>
+          </button>
+        </>
+      )}
+
       {/* 2.5 Dynamic Context Button: Chỉnh ảnh {activeShotCode} */}
       {activeShotCode && onOpenVisualsDetail && (
         <>
@@ -197,7 +215,7 @@ export default function ControlsPill({
             title={`Mở chỉnh sửa hình ảnh chi tiết cho ${activeShotCode}`}
           >
             <Palette className="w-3.5 h-3.5 text-primary" />
-            <span>Chỉnh ảnh {activeShotCode}</span>
+            <span>{activeShotCode.replace("Cảnh", "Phân cảnh")}</span>
           </button>
         </>
       )}

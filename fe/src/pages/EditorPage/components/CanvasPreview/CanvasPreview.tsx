@@ -18,6 +18,7 @@ interface CanvasPreviewProps {
   onRewind: (seconds: number) => void;
   onSelectShot: (id: string) => void;
   onOpenVisualsDetail?: (shotId: string) => void;
+  onOpenStoryAssets?: () => void;
 }
 
 export default function CanvasPreview({
@@ -34,6 +35,7 @@ export default function CanvasPreview({
   onRewind,
   onSelectShot,
   onOpenVisualsDetail,
+  onOpenStoryAssets,
 }: CanvasPreviewProps) {
   const currentShot = activeShot || shots[0];
 
@@ -88,6 +90,7 @@ export default function CanvasPreview({
             isFullscreen={isFullscreen}
             onToggleFullscreen={handleToggleFullscreen}
             activeShotCode={currentShot?.code}
+            onOpenStoryAssets={onOpenStoryAssets}
             onOpenVisualsDetail={
               onOpenVisualsDetail && currentShot
                 ? () => onOpenVisualsDetail(currentShot.id)

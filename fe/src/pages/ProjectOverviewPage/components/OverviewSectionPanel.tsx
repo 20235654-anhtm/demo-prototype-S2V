@@ -6,6 +6,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "cn";
 import { X, ChevronRight, ArrowLeft } from "lucide-react";
 import type { StoryChapter } from "@/lib/storyChapters";
 import { getOverviewSectionMeta } from "../sections";
@@ -174,7 +175,14 @@ export default function OverviewSectionPanel({
           </Button>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto p-4">
+        <div
+          className={cn(
+            "flex-1 min-h-0",
+            section === "assets"
+              ? "flex flex-col overflow-hidden"
+              : "overflow-y-auto p-4"
+          )}
+        >
           {section === "chapters" && (
             <ChapterListView
               chapters={chapters}
