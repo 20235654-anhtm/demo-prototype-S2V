@@ -193,10 +193,10 @@ export default function ControlsPill({
           <button
             type="button"
             onClick={onOpenVisualsDetail}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
             title={`Mở chỉnh sửa hình ảnh chi tiết cho ${activeShotCode}`}
           >
-            <Palette className="w-3.5 h-3.5" />
+            <Palette className="w-3.5 h-3.5 text-primary" />
             <span>Chỉnh ảnh {activeShotCode}</span>
           </button>
         </>

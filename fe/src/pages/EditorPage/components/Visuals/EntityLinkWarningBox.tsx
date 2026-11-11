@@ -37,26 +37,26 @@ export const EntityLinkWarningBox = ({
   const renderKindIcon = (kind: StoryAssetKind) => {
     switch (kind) {
       case "character":
-        return <User className="w-3.5 h-3.5 text-blue-600" />;
+        return <User className="w-3.5 h-3.5 text-muted-foreground" />;
       case "location":
-        return <MapPin className="w-3.5 h-3.5 text-emerald-600" />;
+        return <MapPin className="w-3.5 h-3.5 text-muted-foreground" />;
       case "prop":
-        return <Box className="w-3.5 h-3.5 text-amber-600" />;
+        return <Box className="w-3.5 h-3.5 text-muted-foreground" />;
     }
   };
 
   return (
     <>
-      <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl space-y-2">
+      <div className="p-3 bg-muted/50 border border-border/80 rounded-xl space-y-2">
         <div className="flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <AlertTriangle className="w-4 h-4 text-brand-strong dark:text-brand shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <h4 className="text-xs font-semibold text-amber-900 leading-tight">
+            <h4 className="text-xs font-semibold text-foreground leading-tight">
               {isGlobal
                 ? "Có thực thể chưa liên kết với Story Assets"
                 : "Phát hiện thực thể chưa liên kết trong kịch bản cảnh này"}
             </h4>
-            <p className="text-[11px] text-amber-700/90 mt-0.5 leading-normal">
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-normal">
               {isGlobal
                 ? "Liên kết thực thể với Story Assets để hình ảnh nhân vật và bối cảnh luôn đồng nhất qua các cảnh."
                 : "Liên kết để AI áp dụng đúng diện mạo và đặc điểm đã thiết lập trong Story Assets."}
@@ -72,21 +72,21 @@ export const EntityLinkWarningBox = ({
             return (
               <div
                 key={`${item.shotId}-${warning.id}-${idx}`}
-                className="inline-flex items-center gap-1.5 px-2 py-1 bg-white/90 border border-amber-300/70 rounded-md shadow-2xs text-xs text-neutral-800"
+                className="inline-flex items-center gap-1.5 px-2 py-1 bg-background border border-border rounded-md shadow-2xs text-xs text-foreground"
               >
                 <span className="shrink-0">{renderKindIcon(warning.kind)}</span>
-                <span className="font-medium text-neutral-800 text-[11px]">
+                <span className="font-medium text-foreground text-[11px]">
                   {displayName}
                 </span>
                 {isGlobal && shotCode && (
-                  <span className="text-[10px] text-neutral-400 font-normal">
+                  <span className="text-[10px] text-muted-foreground font-normal">
                     ({shotCode})
                   </span>
                 )}
                 <button
                   type="button"
                   onClick={() => setActiveWarningItem(item)}
-                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-medium transition-colors shadow-2xs cursor-pointer ml-1"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-brand hover:bg-brand-hover text-brand-foreground rounded text-[10px] font-semibold transition-colors shadow-2xs cursor-pointer ml-1"
                 >
                   <Link2 className="w-2.5 h-2.5" />
                   Link

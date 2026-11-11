@@ -173,9 +173,9 @@ export default function EditorPage() {
     const el = document.getElementById(`shot-card-${shotId}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.classList.add("ring-2", "ring-amber-400", "ring-offset-2");
+      el.classList.add("ring-2", "ring-primary", "ring-offset-2");
       setTimeout(() => {
-        el.classList.remove("ring-2", "ring-amber-400", "ring-offset-2");
+        el.classList.remove("ring-2", "ring-primary", "ring-offset-2");
       }, 1500);
     }
   };

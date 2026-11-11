@@ -71,11 +71,11 @@ export const AssetSelectPopover: React.FC<AssetSelectPopoverProps> = ({
   const renderKindIcon = () => {
     switch (kind) {
       case "character":
-        return <User className="w-4 h-4 text-blue-500" />;
+        return <User className="w-4 h-4 text-foreground" />;
       case "location":
-        return <MapPin className="w-4 h-4 text-emerald-500" />;
+        return <MapPin className="w-4 h-4 text-foreground" />;
       case "prop":
-        return <Box className="w-4 h-4 text-amber-500" />;
+        return <Box className="w-4 h-4 text-foreground" />;
     }
   };
 
@@ -114,7 +114,7 @@ export const AssetSelectPopover: React.FC<AssetSelectPopoverProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Tìm ${kindLabel} hoặc nhập tên mới...`}
-              className="w-full pl-9 pr-3 py-2 text-xs text-neutral-800 bg-neutral-50 rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all placeholder:text-neutral-400"
+              className="w-full pl-9 pr-3 py-2 text-xs text-neutral-800 bg-neutral-50 rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-all placeholder:text-neutral-400"
             />
           </div>
         </div>
@@ -131,7 +131,7 @@ export const AssetSelectPopover: React.FC<AssetSelectPopoverProps> = ({
                     onCreateNewAsset?.(kind, searchQuery.trim());
                     onClose();
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-foreground bg-brand hover:bg-brand-hover rounded-lg transition-colors cursor-pointer shadow-2xs"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Tạo mới "{searchQuery.trim()}" vào Story Assets
@@ -153,7 +153,7 @@ export const AssetSelectPopover: React.FC<AssetSelectPopoverProps> = ({
                   }}
                   className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors cursor-pointer group ${
                     isSelected
-                      ? "bg-amber-50/70 text-amber-950 font-medium"
+                      ? "bg-muted font-medium text-foreground"
                       : "hover:bg-neutral-50 text-neutral-700"
                   }`}
                 >
@@ -173,7 +173,7 @@ export const AssetSelectPopover: React.FC<AssetSelectPopoverProps> = ({
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs truncate">{asset.name}</span>
                         {isSelected && (
-                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-white shrink-0">
+                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground shrink-0">
                             <Check className="w-2.5 h-2.5 stroke-[3]" />
                           </span>
                         )}

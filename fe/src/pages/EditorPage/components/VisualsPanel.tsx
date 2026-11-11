@@ -437,7 +437,7 @@ export default function VisualsPanel({
           {/* Header */}
           <div className="h-12 px-4 border-b flex items-center justify-between shrink-0 bg-muted/20">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-md bg-muted text-foreground flex items-center justify-center shrink-0">
                 <ImageIcon className="w-4 h-4" />
               </div>
               <span className="font-semibold text-xs text-foreground">
@@ -477,13 +477,13 @@ export default function VisualsPanel({
                 size="sm"
                 onClick={handleGenerateAll}
                 disabled={isBatchGenerating}
-                className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs gap-1.5 cursor-pointer shadow-xs h-9 uppercase tracking-wide"
+                className="w-full bg-brand hover:bg-brand-hover text-brand-foreground font-semibold text-xs gap-1.5 cursor-pointer shadow-2xs h-8.5"
               >
-                <Zap className={cn("w-4 h-4", isBatchGenerating && "animate-spin")} />
+                <Zap className={cn("w-3.5 h-3.5", isBatchGenerating && "animate-spin")} />
                 <span>
                   {isBatchGenerating
                     ? "Đang sinh toàn bộ ảnh..."
-                    : "⚡ Sinh tất cả ảnh"}
+                    : "Sinh tất cả ảnh"}
                 </span>
               </Button>
 
@@ -493,10 +493,10 @@ export default function VisualsPanel({
                   variant="outline"
                   onClick={handleRegenerateChanged}
                   disabled={isBatchGenerating}
-                  className="w-full border-blue-200 bg-blue-50/70 hover:bg-blue-100/80 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300 font-semibold text-xs gap-1.5 cursor-pointer h-8"
+                  className="w-full border-border bg-card hover:bg-muted text-foreground font-medium text-xs gap-1.5 cursor-pointer h-8 shadow-2xs"
                 >
                   <RefreshCw
-                    className={cn("w-3.5 h-3.5 text-blue-600", isBatchGenerating && "animate-spin")}
+                    className={cn("w-3.5 h-3.5 text-muted-foreground", isBatchGenerating && "animate-spin")}
                   />
                   <span>
                     Sinh lại ({changedShotsCount}) cảnh có thay đổi
@@ -513,8 +513,8 @@ export default function VisualsPanel({
                 className={cn(
                   "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors shrink-0 cursor-pointer",
                   filter === "all"
-                    ? "bg-neutral-800 text-white dark:bg-neutral-200 dark:text-neutral-900"
-                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70 dark:bg-neutral-800 dark:text-neutral-300"
+                    ? "bg-foreground text-background font-semibold"
+                    : "bg-muted/70 text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
                 Tất cả ({shots.length})
@@ -525,8 +525,8 @@ export default function VisualsPanel({
                 className={cn(
                   "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors shrink-0 cursor-pointer",
                   filter === "missing_image"
-                    ? "bg-neutral-800 text-white dark:bg-neutral-200 dark:text-neutral-900"
-                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70 dark:bg-neutral-800 dark:text-neutral-300"
+                    ? "bg-foreground text-background font-semibold"
+                    : "bg-muted/70 text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
                 Chưa có ảnh (
@@ -543,8 +543,8 @@ export default function VisualsPanel({
                 className={cn(
                   "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors shrink-0 cursor-pointer",
                   filter === "changed"
-                    ? "bg-blue-600 text-white"
-                    : "bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300"
+                    ? "bg-foreground text-background font-semibold"
+                    : "bg-muted/70 text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
                 Có thay đổi ({changedShotsCount})
@@ -555,8 +555,8 @@ export default function VisualsPanel({
                 className={cn(
                   "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors shrink-0 cursor-pointer",
                   filter === "unlinked"
-                    ? "bg-amber-600 text-white"
-                    : "bg-amber-50 text-amber-800 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-300"
+                    ? "bg-foreground text-background font-semibold"
+                    : "bg-muted/70 text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
                 Thiếu liên kết (
@@ -585,11 +585,11 @@ export default function VisualsPanel({
                   <div
                     key={shot.id}
                     onClick={() => handleOpenDetail(shot)}
-                    className="p-2.5 rounded-xl border border-border/70 hover:border-amber-400/80 bg-card hover:bg-amber-50/20 dark:hover:bg-amber-950/10 transition-all cursor-pointer group shadow-2xs space-y-2"
+                    className="p-2.5 rounded-xl border border-border/70 hover:border-foreground/30 bg-card hover:bg-muted/40 transition-all cursor-pointer group shadow-2xs space-y-2"
                   >
                     <div className="flex items-start gap-2.5">
                       {/* Thumbnail 16:9 sắc nét */}
-                      <div className="w-28 aspect-video rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200 shrink-0 relative">
+                      <div className="w-28 aspect-video rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200 dark:border-neutral-800 shrink-0 relative">
                         <img
                           src={shot.image}
                           alt={shot.code}
@@ -600,22 +600,22 @@ export default function VisualsPanel({
                       {/* Thông tin cảnh */}
                       <div className="flex-1 min-w-0 space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-xs text-foreground group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
+                          <span className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
                             {shot.code}
                           </span>
                         </div>
 
-                        {/* Badges cảnh báo nếu có (KHÔNG hiển thị tag thừa [✓ Đã có ảnh]) */}
+                        {/* Badges cảnh báo nếu có */}
                         <div className="flex flex-wrap items-center gap-1 pt-0.5">
                           {hasWarnings && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 border border-amber-200">
-                              <AlertTriangle className="w-2.5 h-2.5 text-amber-600" />
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
+                              <AlertTriangle className="w-2.5 h-2.5 text-muted-foreground" />
                               Thiếu liên kết asset
                             </span>
                           )}
                           {isChanged && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                              <RefreshCw className="w-2.5 h-2.5 text-blue-600" />
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border">
+                              <RefreshCw className="w-2.5 h-2.5 text-muted-foreground" />
                               Cần cập nhật ảnh
                             </span>
                           )}
@@ -666,10 +666,10 @@ export default function VisualsPanel({
                 <button
                   type="button"
                   onClick={() => onScrollToScript(currentDetailShot.id)}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-neutral-600 hover:text-amber-700 hover:bg-amber-50 border border-neutral-200/80 dark:border-neutral-700 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors cursor-pointer"
                   title="Cuộn tới kịch bản phân cảnh này"
                 >
-                  <Eye className="w-3.5 h-3.5 text-amber-600" />
+                  <Eye className="w-3.5 h-3.5 text-muted-foreground" />
                   <span>Kịch bản</span>
                 </button>
               )}
@@ -704,7 +704,7 @@ export default function VisualsPanel({
 
                 {isRegenerating && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xs gap-2 text-white">
-                    <RefreshCw className="w-6 h-6 animate-spin text-amber-400" />
+                    <RefreshCw className="w-6 h-6 animate-spin text-brand" />
                     <span className="text-xs font-semibold">
                       AI đang sinh ảnh mới...
                     </span>
@@ -716,7 +716,7 @@ export default function VisualsPanel({
                 size="sm"
                 onClick={handleRegenerateSingle}
                 disabled={isRegenerating}
-                className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs gap-1.5 cursor-pointer shadow-xs h-8.5"
+                className="w-full bg-brand hover:bg-brand-hover text-brand-foreground font-semibold text-xs gap-1.5 cursor-pointer shadow-2xs h-8.5"
               >
                 <RefreshCw
                   className={cn("w-3.5 h-3.5", isRegenerating && "animate-spin")}
@@ -731,13 +731,13 @@ export default function VisualsPanel({
 
             {/* 2. Banner cảnh báo ngoại hình thay đổi (Stale Asset Alert Banner) */}
             {(currentVisual.isAssetChanged || currentVisual.status === "stale") && (
-              <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-xl flex items-start gap-2.5">
-                <RefreshCw className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+              <div className="p-3 bg-muted/60 border border-border rounded-xl flex items-start gap-2.5">
+                <RefreshCw className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-semibold text-blue-900">
+                  <h4 className="text-xs font-semibold text-foreground">
                     Cần cập nhật lại ảnh
                   </h4>
-                  <p className="text-[11px] text-blue-700 mt-0.5 leading-normal">
+                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-normal">
                     {currentVisual.staleReason ||
                       "Ảnh nhân vật hoặc bối cảnh trong cảnh này vừa được thay đổi trong Story Assets. Hãy bấm 'Sinh lại hình ảnh này' để cập nhật diện mạo mới."}
                   </p>
@@ -763,16 +763,16 @@ export default function VisualsPanel({
               </label>
 
               {/* Nhóm 1: 👤 Nhân vật */}
-              <div className="space-y-1.5 bg-neutral-50/60 dark:bg-neutral-800/40 p-2.5 rounded-lg border border-neutral-200/70 dark:border-neutral-700/60">
+              <div className="space-y-1.5 bg-muted/30 p-2.5 rounded-lg border border-border/70">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-blue-600" />
+                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-muted-foreground" />
                     <span>Nhân vật ({linkedAssetsGrouped.characters.length})</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setActivePopoverKind("character")}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 cursor-pointer transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-foreground bg-muted hover:bg-muted/80 border border-border cursor-pointer transition-colors"
                   >
                     <Plus className="w-2.5 h-2.5" />
                     Gán nhân vật
@@ -783,22 +783,22 @@ export default function VisualsPanel({
                   {linkedAssetsGrouped.characters.map((asset) => (
                     <div
                       key={asset.id}
-                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md text-xs shadow-2xs group"
+                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-background border border-border rounded-md text-xs shadow-2xs group"
                     >
-                      <div className="w-4 h-4 rounded-full overflow-hidden bg-neutral-100 shrink-0">
+                      <div className="w-4 h-4 rounded-full overflow-hidden bg-muted shrink-0">
                         <img
                           src={asset.imageUrl || "/wireframe-placeholder.svg"}
                           alt={asset.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <span className="font-medium text-[11px] text-neutral-800 dark:text-neutral-200">
+                      <span className="font-medium text-[11px] text-foreground">
                         {asset.name}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveAssetFromShot(asset.id)}
-                        className="text-neutral-400 hover:text-red-500 rounded p-0.5 transition-colors cursor-pointer"
+                        className="text-muted-foreground hover:text-destructive rounded p-0.5 transition-colors cursor-pointer"
                         title="Gỡ bỏ liên kết"
                       >
                         <X className="w-3 h-3" />
@@ -806,7 +806,7 @@ export default function VisualsPanel({
                     </div>
                   ))}
                   {linkedAssetsGrouped.characters.length === 0 && (
-                    <p className="text-[11px] text-neutral-400 italic">
+                    <p className="text-[11px] text-muted-foreground italic">
                       Chưa gán nhân vật nào.
                     </p>
                   )}
@@ -814,16 +814,16 @@ export default function VisualsPanel({
               </div>
 
               {/* Nhóm 2: 📍 Địa điểm */}
-              <div className="space-y-1.5 bg-neutral-50/60 dark:bg-neutral-800/40 p-2.5 rounded-lg border border-neutral-200/70 dark:border-neutral-700/60">
+              <div className="space-y-1.5 bg-muted/30 p-2.5 rounded-lg border border-border/70">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
                     <span>Địa điểm ({linkedAssetsGrouped.locations.length})</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setActivePopoverKind("location")}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 cursor-pointer transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-foreground bg-muted hover:bg-muted/80 border border-border cursor-pointer transition-colors"
                   >
                     <Plus className="w-2.5 h-2.5" />
                     Gán địa điểm
@@ -834,22 +834,22 @@ export default function VisualsPanel({
                   {linkedAssetsGrouped.locations.map((asset) => (
                     <div
                       key={asset.id}
-                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md text-xs shadow-2xs group"
+                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-background border border-border rounded-md text-xs shadow-2xs group"
                     >
-                      <div className="w-4 h-4 rounded-full overflow-hidden bg-neutral-100 shrink-0">
+                      <div className="w-4 h-4 rounded-full overflow-hidden bg-muted shrink-0">
                         <img
                           src={asset.imageUrl || "/wireframe-placeholder.svg"}
                           alt={asset.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <span className="font-medium text-[11px] text-neutral-800 dark:text-neutral-200">
+                      <span className="font-medium text-[11px] text-foreground">
                         {asset.name}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveAssetFromShot(asset.id)}
-                        className="text-neutral-400 hover:text-red-500 rounded p-0.5 transition-colors cursor-pointer"
+                        className="text-muted-foreground hover:text-destructive rounded p-0.5 transition-colors cursor-pointer"
                         title="Gỡ bỏ liên kết"
                       >
                         <X className="w-3 h-3" />
@@ -857,7 +857,7 @@ export default function VisualsPanel({
                     </div>
                   ))}
                   {linkedAssetsGrouped.locations.length === 0 && (
-                    <p className="text-[11px] text-neutral-400 italic">
+                    <p className="text-[11px] text-muted-foreground italic">
                       Chưa gán địa điểm nào.
                     </p>
                   )}
@@ -865,16 +865,16 @@ export default function VisualsPanel({
               </div>
 
               {/* Nhóm 3: 🔧 Vật phẩm */}
-              <div className="space-y-1.5 bg-neutral-50/60 dark:bg-neutral-800/40 p-2.5 rounded-lg border border-neutral-200/70 dark:border-neutral-700/60">
+              <div className="space-y-1.5 bg-muted/30 p-2.5 rounded-lg border border-border/70">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
-                    <Box className="w-3.5 h-3.5 text-amber-600" />
+                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                    <Box className="w-3.5 h-3.5 text-muted-foreground" />
                     <span>Vật phẩm ({linkedAssetsGrouped.props.length})</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setActivePopoverKind("prop")}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 cursor-pointer transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-foreground bg-muted hover:bg-muted/80 border border-border cursor-pointer transition-colors"
                   >
                     <Plus className="w-2.5 h-2.5" />
                     Gán vật phẩm
@@ -885,22 +885,22 @@ export default function VisualsPanel({
                   {linkedAssetsGrouped.props.map((asset) => (
                     <div
                       key={asset.id}
-                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md text-xs shadow-2xs group"
+                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-background border border-border rounded-md text-xs shadow-2xs group"
                     >
-                      <div className="w-4 h-4 rounded-full overflow-hidden bg-neutral-100 shrink-0">
+                      <div className="w-4 h-4 rounded-full overflow-hidden bg-muted shrink-0">
                         <img
                           src={asset.imageUrl || "/wireframe-placeholder.svg"}
                           alt={asset.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <span className="font-medium text-[11px] text-neutral-800 dark:text-neutral-200">
+                      <span className="font-medium text-[11px] text-foreground">
                         {asset.name}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveAssetFromShot(asset.id)}
-                        className="text-neutral-400 hover:text-red-500 rounded p-0.5 transition-colors cursor-pointer"
+                        className="text-muted-foreground hover:text-destructive rounded p-0.5 transition-colors cursor-pointer"
                         title="Gỡ bỏ liên kết"
                       >
                         <X className="w-3 h-3" />
@@ -908,7 +908,7 @@ export default function VisualsPanel({
                     </div>
                   ))}
                   {linkedAssetsGrouped.props.length === 0 && (
-                    <p className="text-[11px] text-neutral-400 italic">
+                    <p className="text-[11px] text-muted-foreground italic">
                       Chưa gán vật phẩm nào.
                     </p>
                   )}
@@ -920,23 +920,23 @@ export default function VisualsPanel({
             <div className="space-y-2 pt-2 border-t border-border/70">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <Sparkles className="w-3.5 h-3.5 text-brand-strong dark:text-brand" />
                   <span>Prompt sinh ảnh & Góc máy</span>
                 </label>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={handleAIOptimizePrompt}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-brand-foreground bg-brand hover:bg-brand-hover transition-colors cursor-pointer shadow-2xs"
                     title="AI bổ sung chi tiết phong cách, ánh sáng, góc máy"
                   >
-                    <Wand2 className="w-2.5 h-2.5 text-amber-600" />
+                    <Wand2 className="w-2.5 h-2.5" />
                     AI tối ưu prompt
                   </button>
                   <button
                     type="button"
                     onClick={handleRestoreDefaultPrompt}
-                    className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                    className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
                     title="Khôi phục prompt gốc"
                   >
                     <RotateCcw className="w-3 h-3" />
@@ -949,12 +949,12 @@ export default function VisualsPanel({
                 onChange={(e) => handlePromptChange(e.target.value)}
                 rows={4}
                 placeholder="Mô tả bối cảnh, nhân vật, góc máy..."
-                className="text-xs leading-relaxed resize-none font-normal text-foreground bg-muted/20 border-neutral-200 focus:ring-amber-400"
+                className="text-xs leading-relaxed resize-none font-normal text-foreground bg-muted/20 border-border focus:ring-ring"
               />
 
               {/* Chèn nhanh từ khóa góc máy / hiệu ứng */}
               <div className="flex flex-wrap items-center gap-1 pt-1">
-                <span className="text-[10px] text-neutral-400">Gợi ý:</span>
+                <span className="text-[10px] text-muted-foreground">Gợi ý:</span>
                 {[
                   "Cận cảnh",
                   "Góc máy thấp",
@@ -966,7 +966,7 @@ export default function VisualsPanel({
                     key={tag}
                     type="button"
                     onClick={() => handleInsertKeyword(tag)}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300 transition-colors cursor-pointer"
+                    className="text-[10px] px-1.5 py-0.5 rounded bg-muted hover:bg-muted/80 text-foreground transition-colors cursor-pointer"
                   >
                     +{tag}
                   </button>
