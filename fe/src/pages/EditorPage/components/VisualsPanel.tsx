@@ -677,7 +677,7 @@ export default function VisualsPanel({
             {/* 4. Asset Bindings theo 3 nhóm rõ rệt: Nhân vật, Địa điểm, Vật phẩm */}
             <div className="space-y-3 pt-2 border-t border-border/70">
               <label className="text-xs font-bold text-foreground block">
-                Liên kết tài sản
+                Liên kết tài sản truyện
               </label>
 
               {/* Nhóm 1: Nhân vật */}
