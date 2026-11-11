@@ -1,11 +1,7 @@
 import { useState, useRef, useEffect, Fragment } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  FileText,
-  RefreshCw,
-} from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import ShotCard from "./ShotCard";
 import ScriptSelectionToolbar from "./Resplit/ScriptSelectionToolbar";
 import DiffPreview from "./Resplit/DiffPreview";
@@ -132,12 +128,10 @@ export default function ScriptPanel({
     >
       {/* 1. Header ScriptPanel */}
       <div className="h-10 px-3.5 border-b flex items-center justify-between shrink-0 bg-muted/20">
-        <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-primary" />
-          <span className="font-semibold text-xs">Kịch bản phân cảnh</span>
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
-            {shots.length} cảnh
-          </Badge>
+        <div className="flex items-center min-w-0 text-sm overflow-hidden">
+          <span className="font-semibold text-sm text-foreground truncate min-w-0">
+            Kịch bản phân cảnh
+          </span>
         </div>
 
         <div className="flex items-center gap-1">
