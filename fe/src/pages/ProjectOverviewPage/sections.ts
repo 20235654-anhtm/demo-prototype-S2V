@@ -36,7 +36,7 @@ export const OVERVIEW_SECTIONS: OverviewSectionMeta[] = [
   {
     id: "settings",
     label: "Cài đặt dự án",
-    description: "Ngắt nghỉ, nhạc nền & định dạng video",
+    description: "Cấu hình ngắt nghỉ giọng đọc",
     icon: Settings,
   },
 ];

@@ -427,7 +427,11 @@ export default function EditorPage() {
       <EditorHeader
         title={projectTitle}
         chapter={selectedChapter}
-        onExport={() => alert("Đang chuẩn bị xuất file video MP4 chất lượng cao...")}
+        onExport={(opts) =>
+          alert(
+            `Đang chuẩn bị xuất file video MP4 (${opts?.resolution.toUpperCase() || "1080P"} - ${opts?.fps || "30"} FPS)...`
+          )
+        }
       />
 
       {/* 2. Thân Studio: Cột kịch bản (luôn hiện bên trái) + Canvas Preview + Menu Sidebar bên phải */}

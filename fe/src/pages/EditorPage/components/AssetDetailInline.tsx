@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { RefreshCw, Check, ArrowLeft } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { PLACEHOLDER_IMAGE } from "@/lib/placeholderImage";
 import CharacterVoiceSelect from "@/pages/HomePage/components/CreateStoryModal/CharacterVoiceSelect";
 import type { VoiceOption } from "@/pages/HomePage/components/CreateStoryModal/types";
@@ -13,13 +13,12 @@ import {
 
 interface AssetDetailInlineProps {
   asset: StoryAsset;
-  onBack: () => void;
+  onBack?: () => void;
   onSave?: (updatedAsset: StoryAsset) => void;
 }
 
 export default function AssetDetailInline({
   asset,
-  onBack,
   onSave,
 }: AssetDetailInlineProps) {
   const [name, setName] = useState("");
@@ -28,7 +27,6 @@ export default function AssetDetailInline({
   const [voiceId, setVoiceId] = useState<string | undefined>(undefined);
   const [voiceName, setVoiceName] = useState<string | undefined>(undefined);
   const [isRegenerating, setIsRegenerating] = useState(false);
-  const [isSavedToast, setIsSavedToast] = useState(false);
 
   useEffect(() => {
     if (asset) {
@@ -42,44 +40,52 @@ export default function AssetDetailInline({
       setVoiceId(asset.voiceId);
       setVoiceName(asset.voiceName);
     }
-  }, [asset]);
+  }, [asset.id]);
 
   const kindLabel = STORY_ASSET_KIND_LABEL[asset.kind] || "Tài sản";
+
+  const triggerAutoSave = (patch: Partial<StoryAsset>) => {
+    onSave?.({
+      ...asset,
+      name,
+      description,
+      imagePrompt: description,
+      imageUrl,
+      voiceId: asset.kind === "character" ? voiceId : undefined,
+      voiceName: asset.kind === "character" ? voiceName : undefined,
+      ...patch,
+    });
+  };
 
   const handleRegenerate = () => {
     setIsRegenerating(true);
     setTimeout(() => {
-      setImageUrl(asset.imageUrl || PLACEHOLDER_IMAGE);
+      const nextImg = asset.imageUrl || PLACEHOLDER_IMAGE;
+      setImageUrl(nextImg);
       setIsRegenerating(false);
+      triggerAutoSave({ imageUrl: nextImg });
     }, 1000);
+  };
+
+  const handleNameChange = (nextName: string) => {
+    setName(nextName);
+    triggerAutoSave({ name: nextName });
+  };
+
+  const handleDescriptionChange = (nextDesc: string) => {
+    setDescription(nextDesc);
+    triggerAutoSave({ description: nextDesc, imagePrompt: nextDesc });
   };
 
   const handleSelectVoice = (voice: VoiceOption) => {
     setVoiceId(voice.id);
     setVoiceName(voice.name);
-  };
-
-  const handleSave = () => {
-    if (onSave) {
-      onSave({
-        ...asset,
-        name,
-        description,
-        imagePrompt: description,
-        imageUrl,
-        voiceId: asset.kind === "character" ? voiceId : undefined,
-        voiceName: asset.kind === "character" ? voiceName : undefined,
-      });
-    }
-    setIsSavedToast(true);
-    setTimeout(() => {
-      setIsSavedToast(false);
-    }, 800);
+    triggerAutoSave({ voiceId: voice.id, voiceName: voice.name });
   };
 
   return (
     <div className="flex-1 min-h-0 flex flex-col h-full bg-white dark:bg-neutral-900 overflow-hidden">
-      {/* Thân cuộn chứa form chi tiết */}
+      {/* Thân cuộn chứa form chi tiết (Tự động lưu mọi thay đổi) */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
         {/* Khung ảnh + Nút Tạo lại ảnh */}
         <div className="flex flex-col items-center">
@@ -122,7 +128,7 @@ export default function AssetDetailInline({
             </label>
             <Input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => handleNameChange(e.target.value)}
               placeholder={`Nhập tên ${kindLabel.toLowerCase()}...`}
               className="h-9 text-xs"
             />
@@ -135,7 +141,7 @@ export default function AssetDetailInline({
             </label>
             <Textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => handleDescriptionChange(e.target.value)}
               placeholder={`Nhập mô tả tạo hình ${kindLabel.toLowerCase()}...`}
               rows={3}
               className="text-xs leading-relaxed resize-none font-normal text-foreground bg-muted/20"
@@ -156,36 +162,6 @@ export default function AssetDetailInline({
             </div>
           )}
         </div>
-      </div>
-
-      {/* Footer lưu & quay lại */}
-      <div className="p-3 border-t flex items-center justify-between gap-2 bg-muted/10 shrink-0">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="text-xs cursor-pointer gap-1 text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Quay lại</span>
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          onClick={handleSave}
-          disabled={isSavedToast}
-          className="bg-brand hover:bg-brand-hover text-brand-foreground text-xs font-semibold cursor-pointer gap-1 shadow-2xs"
-        >
-          {isSavedToast ? (
-            <>
-              <Check className="w-3.5 h-3.5" />
-              <span>Đã lưu</span>
-            </>
-          ) : (
-            "Lưu thay đổi"
-          )}
-        </Button>
       </div>
     </div>
   );
