@@ -74,7 +74,7 @@ export default function VisualsPanel({
 
   // Bộ lọc ở chế độ overview
   const [filter, setFilter] = useState<
-    "all" | "missing_image" | "changed" | "unlinked"
+    "all" | "missing_image" | "changed" | "unlinked" | "error"
   >("all");
 
   // State cục bộ lưu visual data của các shots (prompt, linkedAssets, warnings...)
@@ -159,10 +159,21 @@ export default function VisualsPanel({
     }).length;
   }, [shots, localVisuals]);
 
+  // Đếm số lượng phân cảnh bị lỗi
+  const errorShotsCount = useMemo(() => {
+    return shots.filter((s) => {
+      const v = localVisuals[s.id] || s.visual;
+      return v?.status === "error";
+    }).length;
+  }, [shots, localVisuals]);
+
   // Lọc shots theo filter pill
   const filteredShots = useMemo(() => {
     return shots.filter((shot) => {
       const v = localVisuals[shot.id] || shot.visual;
+      if (filter === "error") {
+        return v?.status === "error";
+      }
       if (filter === "missing_image") {
         return v?.status === "idle";
       }
@@ -404,27 +415,45 @@ export default function VisualsPanel({
             </div>
 
             {/* 3. Bộ lọc trạng thái (Filter pills) */}
-            <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none border-b border-border/50">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-border/50 text-[11px]">
               <button
                 type="button"
                 onClick={() => setFilter("all")}
                 className={cn(
-                  "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors shrink-0 cursor-pointer",
+                  "px-2.5 py-1 rounded-full font-medium transition-all shrink-0 cursor-pointer border",
                   filter === "all"
-                    ? "bg-foreground text-background font-semibold"
-                    : "bg-muted/70 text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-foreground text-background font-semibold border-foreground shadow-2xs"
+                    : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                 )}
               >
                 Tất cả ({shots.length})
               </button>
+
+              {/* Tag Lỗi hiển thị in đỏ nổi bật nếu có lỗi */}
+              {errorShotsCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setFilter("error")}
+                  className={cn(
+                    "px-2.5 py-1 rounded-full font-semibold transition-all shrink-0 cursor-pointer border flex items-center gap-1",
+                    filter === "error"
+                      ? "bg-destructive text-destructive-foreground border-destructive shadow-2xs"
+                      : "bg-destructive/10 text-destructive border-destructive/30 hover:bg-destructive/15"
+                  )}
+                >
+                  <AlertTriangle className="w-3 h-3" />
+                  <span>Có lỗi ({errorShotsCount})</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={() => setFilter("missing_image")}
                 className={cn(
-                  "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors shrink-0 cursor-pointer",
+                  "px-2.5 py-1 rounded-full font-medium transition-all shrink-0 cursor-pointer border",
                   filter === "missing_image"
-                    ? "bg-foreground text-background font-semibold"
-                    : "bg-muted/70 text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-foreground text-background font-semibold border-foreground shadow-2xs"
+                    : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                 )}
               >
                 Chưa có ảnh (
@@ -439,10 +468,10 @@ export default function VisualsPanel({
                 type="button"
                 onClick={() => setFilter("changed")}
                 className={cn(
-                  "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors shrink-0 cursor-pointer",
+                  "px-2.5 py-1 rounded-full font-medium transition-all shrink-0 cursor-pointer border",
                   filter === "changed"
-                    ? "bg-foreground text-background font-semibold"
-                    : "bg-muted/70 text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-foreground text-background font-semibold border-foreground shadow-2xs"
+                    : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                 )}
               >
                 Có thay đổi ({changedShotsCount})
@@ -451,10 +480,10 @@ export default function VisualsPanel({
                 type="button"
                 onClick={() => setFilter("unlinked")}
                 className={cn(
-                  "px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors shrink-0 cursor-pointer",
+                  "px-2.5 py-1 rounded-full font-medium transition-all shrink-0 cursor-pointer border",
                   filter === "unlinked"
-                    ? "bg-foreground text-background font-semibold"
-                    : "bg-muted/70 text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-foreground text-background font-semibold border-foreground shadow-2xs"
+                    : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                 )}
               >
                 Thiếu liên kết (
