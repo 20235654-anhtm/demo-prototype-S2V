@@ -800,7 +800,7 @@ export default function VisualsPanel({
             {/* 4. Asset Bindings theo 3 nhóm rõ rệt: Nhân vật, Địa điểm, Vật phẩm */}
             <div className="space-y-3 pt-2 border-t border-border/70">
               <label className="text-xs font-bold text-foreground block">
-                Liên kết Story Assets ({currentVisual.linkedAssetIds?.length || 0})
+                Liên kết Story Assets
               </label>
 
               {/* Nhóm 1: 👤 Nhân vật */}
@@ -808,15 +808,15 @@ export default function VisualsPanel({
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>Nhân vật ({linkedAssetsGrouped.characters.length})</span>
+                    <span>Nhân vật</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setActivePopoverKind("character")}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-foreground bg-muted hover:bg-muted/80 border border-border cursor-pointer transition-colors"
                   >
-                    <Plus className="w-2.5 h-2.5" />
-                    Gán nhân vật
+                    <Plus className="w-3 h-3" />
+                    <span>Thêm</span>
                   </button>
                 </div>
 
@@ -859,15 +859,15 @@ export default function VisualsPanel({
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>Địa điểm ({linkedAssetsGrouped.locations.length})</span>
+                    <span>Địa điểm</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setActivePopoverKind("location")}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-foreground bg-muted hover:bg-muted/80 border border-border cursor-pointer transition-colors"
                   >
-                    <Plus className="w-2.5 h-2.5" />
-                    Gán địa điểm
+                    <Plus className="w-3 h-3" />
+                    <span>Thêm</span>
                   </button>
                 </div>
 
@@ -910,15 +910,15 @@ export default function VisualsPanel({
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
                     <Box className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>Vật phẩm ({linkedAssetsGrouped.props.length})</span>
+                    <span>Vật phẩm</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setActivePopoverKind("prop")}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-foreground bg-muted hover:bg-muted/80 border border-border cursor-pointer transition-colors"
                   >
-                    <Plus className="w-2.5 h-2.5" />
-                    Gán vật phẩm
+                    <Plus className="w-3 h-3" />
+                    <span>Thêm</span>
                   </button>
                 </div>
 
