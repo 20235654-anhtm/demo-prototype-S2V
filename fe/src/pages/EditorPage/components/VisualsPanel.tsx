@@ -5,7 +5,6 @@ import {
   X,
   ArrowLeft,
   ChevronRight,
-  Eye,
   Zap,
   AlertTriangle,
   RotateCcw,
@@ -13,7 +12,6 @@ import {
   User,
   MapPin,
   Box,
-  Wand2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -67,7 +65,7 @@ export default function VisualsPanel({
   activeShot: propActiveShot,
   shots = [],
   onSelectShot,
-  onScrollToScript,
+  onScrollToScript: _onScrollToScript,
   onOpenStoryAssetsForEdit,
   onOpenStoryAssetsForCreate,
   onUpdateShotVisual,
@@ -233,18 +231,6 @@ export default function VisualsPanel({
     });
   };
 
-  // Handler: AI tối ưu prompt
-  const handleAIOptimizePrompt = () => {
-    if (!currentDetailShot) return;
-    const current = currentVisual.prompt.trim();
-    const enhancements =
-      ", cinematic lighting, 8k resolution, Unreal Engine 5 render, highly detailed, dramatic atmosphere, dynamic camera angle";
-    const optimized = current.includes("cinematic")
-      ? current + ", volumetric dust, depth of field"
-      : current + enhancements;
-    handlePromptChange(optimized);
-  };
-
   // Handler: Khôi phục prompt gốc
   const handleRestoreDefaultPrompt = () => {
     if (!currentDetailShot) return;
@@ -252,13 +238,6 @@ export default function VisualsPanel({
       DEFAULT_SHOT_PROMPTS[currentDetailShot.id] ||
       `Phân cảnh minh họa: ${currentDetailShot.text}. Phong cách 3D cinematic độ phân giải cao.`;
     handlePromptChange(defaultPrompt);
-  };
-
-  // Handler: Chèn từ khóa nhanh
-  const handleInsertKeyword = (keyword: string) => {
-    const current = currentVisual.prompt.trim();
-    const updated = current ? `${current}, ${keyword}` : keyword;
-    handlePromptChange(updated);
   };
 
   // Handler: Sinh lại ảnh cho 1 cảnh
@@ -702,19 +681,6 @@ export default function VisualsPanel({
             </div>
 
             <div className="flex items-center gap-1">
-              {/* Nút Cuộn đến kịch bản này (mượt + flash ring) */}
-              {onScrollToScript && (
-                <button
-                  type="button"
-                  onClick={() => onScrollToScript(currentDetailShot.id)}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors cursor-pointer"
-                  title="Cuộn tới kịch bản phân cảnh này"
-                >
-                  <Eye className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span>Kịch bản</span>
-                </button>
-              )}
-
               {onClose && (
                 <Button
                   variant="ghost"
@@ -967,15 +933,6 @@ export default function VisualsPanel({
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={handleAIOptimizePrompt}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-brand-foreground bg-brand hover:bg-brand-hover transition-colors cursor-pointer shadow-2xs"
-                    title="AI bổ sung chi tiết phong cách, ánh sáng, góc máy"
-                  >
-                    <Wand2 className="w-2.5 h-2.5" />
-                    AI tối ưu prompt
-                  </button>
-                  <button
-                    type="button"
                     onClick={handleRestoreDefaultPrompt}
                     className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
                     title="Khôi phục prompt gốc"
@@ -992,27 +949,6 @@ export default function VisualsPanel({
                 placeholder="Mô tả bối cảnh, nhân vật, góc máy..."
                 className="text-xs leading-relaxed resize-none font-normal text-foreground bg-muted/20 border-border focus:ring-ring"
               />
-
-              {/* Chèn nhanh từ khóa góc máy / hiệu ứng */}
-              <div className="flex flex-wrap items-center gap-1 pt-1">
-                <span className="text-[10px] text-muted-foreground">Gợi ý:</span>
-                {[
-                  "Cận cảnh",
-                  "Góc máy thấp",
-                  "Toàn cảnh",
-                  "3D Cinematic",
-                  "Ánh sáng hoàng hôn",
-                ].map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => handleInsertKeyword(tag)}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-muted hover:bg-muted/80 text-foreground transition-colors cursor-pointer"
-                  >
-                    +{tag}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
 
