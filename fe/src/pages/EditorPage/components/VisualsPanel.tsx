@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  Image as ImageIcon,
   Sparkles,
   RefreshCw,
   X,
@@ -436,12 +435,9 @@ export default function VisualsPanel({
       {viewMode === "overview" && (
         <>
           {/* Header */}
-          <div className="h-12 px-4 border-b flex items-center justify-between shrink-0 bg-muted/20">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-md bg-muted text-foreground flex items-center justify-center shrink-0">
-                <ImageIcon className="w-4 h-4" />
-              </div>
-              <span className="font-semibold text-xs text-foreground">
+          <div className="h-12 px-3 border-b flex items-center justify-between shrink-0 bg-muted/20">
+            <div className="flex items-center min-w-0 text-sm overflow-hidden">
+              <span className="font-semibold text-sm text-foreground truncate min-w-0">
                 Hình ảnh phân cảnh
               </span>
             </div>
@@ -451,7 +447,7 @@ export default function VisualsPanel({
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="h-7 w-7 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
+                className="h-7 w-7 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer shrink-0 ml-2"
                 title="Đóng panel hình ảnh"
               >
                 <X className="w-3.5 h-3.5" />
