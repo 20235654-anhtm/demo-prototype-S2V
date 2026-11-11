@@ -17,6 +17,7 @@ interface CanvasPreviewProps {
   onSeek: (time: number) => void;
   onRewind: (seconds: number) => void;
   onSelectShot: (id: string) => void;
+  onOpenVisualsDetail?: (shotId: string) => void;
 }
 
 export default function CanvasPreview({
@@ -32,6 +33,7 @@ export default function CanvasPreview({
   onSeek,
   onRewind,
   onSelectShot,
+  onOpenVisualsDetail,
 }: CanvasPreviewProps) {
   const currentShot = activeShot || shots[0];
 
@@ -85,6 +87,12 @@ export default function CanvasPreview({
             onBgColorChange={setBgColor}
             isFullscreen={isFullscreen}
             onToggleFullscreen={handleToggleFullscreen}
+            activeShotCode={currentShot?.code}
+            onOpenVisualsDetail={
+              onOpenVisualsDetail && currentShot
+                ? () => onOpenVisualsDetail(currentShot.id)
+                : undefined
+            }
           />
         </div>
 

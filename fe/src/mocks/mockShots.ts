@@ -59,6 +59,12 @@ export const mockInitialShots: Shot[] = [
         ],
       },
     ],
+    visual: {
+      prompt:
+        "Cận cảnh ma thạch bia cổ kính khổng lồ trên quảng trường Tiêu gia, bề mặt đá đen khắc phù văn phát sáng vàng rực rỡ với dòng chữ Đấu chi lực tam đoạn, không khí trang nghiêm huyền bí, phong cách 3D cinematic độ phân giải cao.",
+      status: "ready",
+      linkedAssetIds: ["asset-quang-truong", "asset-ma-thach-bia"],
+    },
   },
 
   // Cảnh 2: Trắc nghiệm viên công bố
@@ -110,6 +116,16 @@ export const mockInitialShots: Shot[] = [
         ],
       },
     ],
+    visual: {
+      prompt:
+        "Trung niên trắc nghiệm viên áo xám nghiêm nghị đứng cạnh ma thạch bia phán xét, phía sau là đám đông tộc nhân Tiêu gia xôn xao chỉ trỏ, ánh mắt Tiêu Viêm trầm lặng tự giễu, phong cách phim hoạt hình 3D tiên hiệp.",
+      status: "ready",
+      linkedAssetIds: ["asset-tieu-vien", "asset-trac-nghiem-vien"],
+      unlinkedWarnings: [
+        { id: "warn-thanh", name: "Thanh", kind: "character" },
+        { id: "warn-tui-xach", name: "túi xách", kind: "prop" },
+      ],
+    },
   },
 
   // Cảnh 3: Đám đông xôn xao châm chọc
@@ -142,6 +158,14 @@ export const mockInitialShots: Shot[] = [
         ],
       },
     ],
+    visual: {
+      prompt:
+        "Tiêu Viêm cúi đầu nắm chặt tay móng tay đâm vào da thịt, bóng lưng cô đơn giữa quảng trường đá rộng lớn, ánh hoàng hôn chiếu xiên tạo bóng dài u uất, góc máy thấp ấn tượng.",
+      status: "stale",
+      isAssetChanged: true,
+      staleReason: "Ảnh nhân vật Tiêu Viêm vừa được cập nhật trong Story Assets.",
+      linkedAssetIds: ["asset-tieu-vien", "asset-quang-truong"],
+    },
   },
 
   // Cảnh 4: Tiêu Viêm cô đơn lùi về cuối hàng
@@ -174,6 +198,13 @@ export const mockInitialShots: Shot[] = [
         ],
       },
     ],
+    visual: {
+      prompt:
+        "Tiêu Mị đứng trước Ma Thạch Bia, bàn tay thon dài chạm nhẹ vào bia đá đen bóng, mặt bia phát ra luồng sáng màu vàng kim chói lọi, nét mặt tự hào.",
+      status: "ready",
+      isPromptModified: true,
+      linkedAssetIds: ["asset-quang-truong", "asset-ma-thach-bia"],
+    },
   },
 
   // Cảnh 5: Tiêu Mị xuất hiện trước ma thạch bia
@@ -221,6 +252,13 @@ export const mockInitialShots: Shot[] = [
         ],
       },
     ],
+    visual: {
+      prompt:
+        "Tiêu Huân Nhi y phục tím nhạt thanh lịch thoát tục, bàn tay ngọc đặt lên Ma Thạch Bia phát ra ánh hào quang chói lòa rực rỡ, góc quay cận cảnh nửa thân trên.",
+      status: "ready",
+      isPromptModified: false,
+      linkedAssetIds: ["asset-tieu-huan-nhi", "asset-quang-truong", "asset-ma-thach-bia"],
+    },
   },
 
   // Cảnh 6: Kết quả thất đoạn của Tiêu Mị
@@ -517,5 +555,12 @@ export const mockInitialShots: Shot[] = [
         ],
       },
     ],
+    visual: {
+      prompt:
+        "Tiêu Huân Nhi mỉm cười dịu dàng nghiêng đầu nhìn Tiêu Viêm, gió nhẹ thổi tà áo tím lay động, ánh mắt chứa đựng sự tin tưởng tuyệt đối, nền trời chiều ấm áp.",
+      status: "idle",
+      isPromptModified: false,
+      linkedAssetIds: ["asset-tieu-vien", "asset-huan-nhi"],
+    },
   },
 ];
